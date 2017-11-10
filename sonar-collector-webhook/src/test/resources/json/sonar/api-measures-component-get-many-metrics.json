@@ -1,0 +1,96 @@
+{
+    "component": {
+        "id": "AV9zpvC6KRUdRrN4kKZg",
+        "key": "no.priv.bang.ukelonn:parent",
+        "name": "ukelonn parent project",
+        "qualifier": "TRK",
+        "measures": [
+            {
+                "metric": "code_smells",
+                "value": "19",
+                "periods": [
+                    {
+                        "index": 1,
+                        "value": "-170"
+                    }
+                ]
+            },
+            {
+                "metric": "new_bugs",
+                "periods": [
+                    {
+                        "index": 1,
+                        "value": "0"
+                    }
+                ]
+            },
+            {
+                "metric": "new_coverage",
+                "periods": [
+                    {
+                        "index": 1,
+                        "value": "92.9824561403509"
+                    }
+                ]
+            },
+            {
+                "metric": "new_code_smells",
+                "periods": [
+                    {
+                        "index": 1,
+                        "value": "0"
+                    }
+                ]
+            },
+            {
+                "metric": "new_vulnerabilities",
+                "periods": [
+                    {
+                        "index": 1,
+                        "value": "0"
+                    }
+                ]
+            },
+            {
+                "metric": "vulnerabilities",
+                "value": "0",
+                "periods": [
+                    {
+                        "index": 1,
+                        "value": "-2"
+                    }
+                ]
+            },
+            {
+                "metric": "bugs",
+                "value": "0",
+                "periods": [
+                    {
+                        "index": 1,
+                        "value": "0"
+                    }
+                ]
+            },
+            {
+                "metric": "lines",
+                "value": "5504",
+                "periods": [
+                    {
+                        "index": 1,
+                        "value": "-48"
+                    }
+                ]
+            },
+            {
+                "metric": "coverage",
+                "value": "76.7",
+                "periods": [
+                    {
+                        "index": 1,
+                        "value": "10.7"
+                    }
+                ]
+            }
+        ]
+    }
+}

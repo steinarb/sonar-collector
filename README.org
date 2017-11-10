@@ -1,12 +1,12 @@
 * SonarQube metrics collector
 
-This is a utility to collect some key numbers for each SonarQube analysis triggered by maven builds. 
+This is a utility to collect some key numbers for each SonarQube analysis triggered by maven builds.
 
 The purpose of this is to log statistics that shows the improvement of the code quality of the projects over time.
 
-This utility consists of two parts:
- 1. A maven plugin that is run after the sonar part of the build has run to completion, that will poll the REST API of Sonar for some key metrics of the build, and after gathering the data, do a POST to a different REST API to save the data
- 2. A very simple web application that offers a REST API the maven plugin can POST to, and that will store the data in a PostgreSQL database
+This utility consists of a servlet that serves as a [[https://docs.sonarqube.org/display/SONAR/Webhooks][webhook that is called by Sonar when completing an analysis]].  The webhook POST data doesn't have the necessary information (which are some key metrics of the build).
+
+So when receiving a POST, the servlet will do a callback to the SonarQube REST API to retrieve the metrics, which will then be stored in a PostgreSQL database.
 
 ** Status of the project
 
@@ -14,8 +14,95 @@ Build badges go here.
 
 ** How to build the application
 
-Instructions for how to clone and build the project goes here
+Procedure:
+ 1. Clone the project
+    #+BEGIN_EXAMPLE
+      mkdir -p ~/git
+      cd ~/git
+      git clone https://github.com/steinarb/sonar-collector.git
+    #+END_EXAMPLE
+ 2. Build the project with maven
+    #+BEGIN_EXAMPLE
+      cd ~/git/sonar-collector
+      mvn clean install
+    #+END_EXAMPLE
+
+** How to install and run the application
+
+This describes how to install and run the program on a debian GNU/linux system.
+
+*** Installe the required software
+
+As root, do the following command:
+#+BEGIN_EXAMPLE
+  apt-get update
+  apt-get postgresql install git maven openjdk-8-jdk postgresql ruby ruby-dev build-essential
+#+END_EXAMPLE
+
+*** Create the database
+
+Procedure:
+ 1. Create a PostgreSQL user matching the karaf user:
+    #+BEGIN_EXAMPLE
+      /bin/sudo -s /bin/bash postgres createuser karaf
+    #+END_EXAMPLE
+ 2. Create an empty database owned by the karaf user:
+    #+BEGIN_EXAMPLE
+      /bin/sudo -s /bin/bash postgres createdb -O karaf sonarcollector
+    #+END_EXAMPLE
+
+*** Install apache karaf
+
+Do the following steps as root
+ 1. Build the debian package
+    #+BEGIN_EXAMPLE
+      gem install fpm
+      cd /tmp
+      git clone https://github.com/steinarb/karaf-deb-packaging
+      cd karaf-deb-packaging
+      ./dist_karaf.sh
+      mkdir -p /root/debs
+      cp *.deb /root/debs
+    #+END_EXAMPLE
+ 2. Install the debian package
+    #+BEGIN_EXAMPLE
+      dpkg --install /tmp/karaf-deb-packaging/karaf_4.1.2-1_all.deb
+    #+END_EXAMPLE
+
+*** Install the application in karaf
+
+Procedure:
+ 1. SSH into karaf
+    #+BEGIN_EXAMPLE
+      ssh -p 8101 karaf@localhost
+    #+END_EXAMPLE
+    The password is "karaf" (without the quotes)
+ 2. In the karaf command shell, add a maven-repo snapshot repo that contains sonarcollector, built by travis CI:
+    #+BEGIN_EXAMPLE
+      config:edit org.ops4j.pax.url.mvn
+      config:property-append org.ops4j.pax.url.mvn.repositories ", https://maven.bang.priv.no/repository/@id=ukelonn@snapshots, http://maven.vaadin.com/vaadin-addons@id=vaadin"
+      config:property-set org.ops4j.pax.url.mvn.globalUpdatePolicy always
+      config:update
+    #+END_EXAMPLE
+ 3. Install the application
+    #+BEGIN_EXAMPLE
+      feature:repo-add mvn:no.priv.bang.sonar.sonar-collector/sonar-collector-webhook/LATEST/xml/features
+      feature:install sonar-collector-webhook
+    #+END_EXAMPLE
 
 ** License
 
 This utility is licensend under the Apache license v. 2.  See the LICENSE file for details.
+
+** List of things left to do
+
+This is my current TODO list for this project.  The list is dynamically added to and checked off, as I do things.  Things that are already done and committed will be removed.
+
+Here's the list [3/5]:
+ - [X] Try to remove jackson annotations and figure out if things still work, must be removed from both build dependencies and the karaf feature
+   - <2017-11-17 fr 22:46> The code worked fine without jackson annotations
+ - [X] Do logging for PostgreSQL connection errors
+   - <2017-11-17 fr 21:04> Fixed, the problem was that the order of the injections isn't defined, so the PostgreSQL datasource was injected before the logservice
+ - [X] Add database setup to the README
+ - [ ] Add travis CI build setup
+ - [ ] Add ftp deploy to the travis build setup

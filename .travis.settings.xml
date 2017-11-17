@@ -1,0 +1,24 @@
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                              http://maven.apache.org/xsd/settings-1.0.0.xsd">
+    <servers>
+        <server>
+            <id>ftp-maven-travis</id>
+            <username>${env.FTPUSER}</username>
+            <password>${env.FTPPASSWD}</password>
+        </server>
+    </servers>
+    <profiles>
+        <profile>
+            <id>karaf-deploy</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <ukelonn-server-url>${env.UKELONNURL}</ukelonn-server-url>
+                <ukelonn-server-basic-auth-token>${env.UKELONNBASICAUTHTOKEN}</ukelonn-server-basic-auth-token>
+            </properties>
+        </profile>
+    </profiles>
+</settings>

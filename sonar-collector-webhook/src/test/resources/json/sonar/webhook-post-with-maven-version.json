@@ -5,7 +5,7 @@
         "name": "Example"
     },
     "properties": {
-        "mavenVersion": "1.0.0"
+        "sonar.analysis.mavenVersion": "1.0.0"
     },
     "qualityGate": {
         "conditions": [

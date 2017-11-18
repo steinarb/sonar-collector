@@ -55,6 +55,7 @@ import liquibase.resource.ClassLoaderResourceAccessor;
 
 @Component(service={Servlet.class}, property={"alias=/sonar-collector"} )
 public class SonarCollectorServlet extends HttpServlet {
+    private static final String MAVEN_VERSION = "sonar.analysis.mavenVersion";
     private static final long serialVersionUID = -8421243385012454373L;
     private static final String SONAR_MEASURES_COMPONENTS_METRIC_KEYS = "sonar.measures.components.metricKeys";
     private static final String SONARCOLLECTOR_JDBCURL = "sonar.collector.jdbcurl";
@@ -158,7 +159,7 @@ public class SonarCollectorServlet extends HttpServlet {
         JsonNode root = mapper.readTree(request.getInputStream());
         build.analysedAt = ZonedDateTime.parse(root.path("analysedAt").asText(), isoZonedDateTimeformatter).toEpochSecond();
         build.project = root.path("project").path("key").asText();
-        build.version = root.path("properties").path("mavenVersion").asText();
+        build.version = root.path("properties").path(MAVEN_VERSION).asText();
         logWarningIfVersionIsMissing(build);
         build.serverUrl = new URL(root.path("serverUrl").asText());
         URL measurementsUrl = createSonarMeasurementsComponentUrl(build, getMetricKeys());
@@ -171,7 +172,7 @@ public class SonarCollectorServlet extends HttpServlet {
 
     private void logWarningIfVersionIsMissing(SonarBuild build) {
         if ("".equals(build.version)) {
-            logservice.log(LogService.LOG_WARNING, String.format("Maven version is missing from build \"%s\". Remember to add -DmavenVersion=$POM_VERSION to the sonar command", build.project));
+            logservice.log(LogService.LOG_WARNING, String.format("Maven version is missing from build \"%s\". Remember to add -D%s=$POM_VERSION to the sonar command", build.project, MAVEN_VERSION));
         }
     }
 

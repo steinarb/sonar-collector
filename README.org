@@ -10,7 +10,13 @@ So when receiving a POST, the servlet will do a callback to the SonarQube REST A
 
 ** Status of the project
 
-Build badges go here.
+[[https://travis-ci.org/steinarb/sonar-collector][file:https://travis-ci.org/steinarb/sonar-collector.svg?branch=master]] [[https://coveralls.io/r/steinarb/sonar-collector][file:https://coveralls.io/repos/steinarb/sonar-collector/badge.svg]]
+
+
+*** SonarCloud
+
+[[https://sonarcloud.io/dashboard/index/no.priv.bang.sonar.sonar-collector%3Aparent][file:https://sonarcloud.io/api/badges/measure?key=no.priv.bang.sonar.sonar-collector%3Aparent&metric=lines#.svg]] [[https://sonarcloud.io/dashboard/index/no.priv.bang.sonar.sonar-collector%3Aparent][file:https://sonarcloud.io/api/badges/measure?key=no.priv.bang.sonar.sonar-collector%3Aparent&metric=bugs#.svg]] [[https://sonarcloud.io/dashboard/index/no.priv.bang.sonar.sonar-collector%3Aparent][file:https://sonarcloud.io/api/badges/measure?key=no.priv.bang.sonar.sonar-collector%3Aparent&metric=new_bugs#.svg]] [[https://sonarcloud.io/dashboard/index/no.priv.bang.sonar.sonar-collector%3Aparent][file:https://sonarcloud.io/api/badges/measure?key=no.priv.bang.sonar.sonar-collector%3Aparent&metric=vulnerabilities#.svg]] [[https://sonarcloud.io/dashboard/index/no.priv.bang.sonar.sonar-collector%3Aparent][file:https://sonarcloud.io/api/badges/measure?key=no.priv.bang.sonar.sonar-collector%3Aparent&metric=new_vulnerabilities#.svg]] [[https://sonarcloud.io/dashboard/index/no.priv.bang.sonar.sonar-collector%3Aparent][file:https://sonarcloud.io/api/badges/measure?key=no.priv.bang.sonar.sonar-collector%3Aparent&metric=code_smells#.svg]] [[https://sonarcloud.io/dashboard/index/no.priv.bang.sonar.sonar-collector%3Aparent][file:https://sonarcloud.io/api/badges/measure?key=no.priv.bang.sonar.sonar-collector%3Aparent&metric=new_code_smells#.svg]] [[https://sonarcloud.io/dashboard/index/no.priv.bang.sonar.sonar-collector%3Aparent][file:https://sonarcloud.io/api/badges/measure?key=no.priv.bang.sonar.sonar-collector%3Aparent&metric=coverage#.svg]] [[https://sonarcloud.io/dashboard/index/no.priv.bang.sonar.sonar-collector%3Aparent][file:https://sonarcloud.io/api/badges/measure?key=no.priv.bang.sonar.sonar-collector%3Aparent&metric=new_coverage#.svg]]
+
 
 ** How to build the application
 
@@ -31,7 +37,7 @@ Procedure:
 
 This describes how to install and run the program on a debian GNU/linux system.
 
-*** Installe the required software
+*** Install the required software
 
 As root, do the following command:
 #+BEGIN_EXAMPLE
@@ -80,7 +86,7 @@ Procedure:
  2. In the karaf command shell, add a maven-repo snapshot repo that contains sonarcollector, built by travis CI:
     #+BEGIN_EXAMPLE
       config:edit org.ops4j.pax.url.mvn
-      config:property-append org.ops4j.pax.url.mvn.repositories ", https://maven.bang.priv.no/repository/@id=ukelonn@snapshots, http://maven.vaadin.com/vaadin-addons@id=vaadin"
+      config:property-append org.ops4j.pax.url.mvn.repositories ", https://maven.bang.priv.no/repository/@id=sonar-collector@snapshots, http://maven.vaadin.com/vaadin-addons@id=vaadin"
       config:property-set org.ops4j.pax.url.mvn.globalUpdatePolicy always
       config:update
     #+END_EXAMPLE
@@ -98,11 +104,11 @@ This utility is licensend under the Apache license v. 2.  See the LICENSE file f
 
 This is my current TODO list for this project.  The list is dynamically added to and checked off, as I do things.  Things that are already done and committed will be removed.
 
-Here's the list [3/5]:
+Here's the list [4/5]:
  - [X] Try to remove jackson annotations and figure out if things still work, must be removed from both build dependencies and the karaf feature
    - <2017-11-17 fr 22:46> The code worked fine without jackson annotations
  - [X] Do logging for PostgreSQL connection errors
    - <2017-11-17 fr 21:04> Fixed, the problem was that the order of the injections isn't defined, so the PostgreSQL datasource was injected before the logservice
  - [X] Add database setup to the README
- - [ ] Add travis CI build setup
+ - [X] Add travis CI build setup
  - [ ] Add ftp deploy to the travis build setup

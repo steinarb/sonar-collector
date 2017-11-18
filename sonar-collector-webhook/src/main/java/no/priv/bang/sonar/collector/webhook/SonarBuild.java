@@ -16,9 +16,18 @@
 package no.priv.bang.sonar.collector.webhook;
 
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Map;
 
 public class SonarBuild {
+    public final static String[] MEASUREMENT_FIELDS = {"lines", "bugs", "new_bugs", "vulnerabilities", "new_vulnerabilities", "code_smells", "new_code_smells", "coverage", "new_coverage"};
+
+    public SonarBuild() {
+        measurements = new HashMap<>();
+        for (String fieldName : MEASUREMENT_FIELDS) {
+            measurements.put(fieldName, "");
+        }
+    }
 
     public long analysedAt;
     public String project;

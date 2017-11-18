@@ -28,7 +28,6 @@ import java.sql.Timestamp;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -165,7 +164,7 @@ public class SonarCollectorServlet extends HttpServlet {
         URL measurementsUrl = createSonarMeasurementsComponentUrl(build, getMetricKeys());
         HttpURLConnection connection = openConnection(measurementsUrl);
         JsonNode measurementsRoot = mapper.readTree(connection.getInputStream());
-        build.measurements = parseMeasures(measurementsRoot.path("component").path("measures"));
+        parseMeasures(build.measurements, measurementsRoot.path("component").path("measures"));
 
         return build;
     }
@@ -203,8 +202,7 @@ public class SonarCollectorServlet extends HttpServlet {
         return !"".equals(version) && !version.endsWith("-SNAPSHOT");
     }
 
-    public Map<String, String> parseMeasures(JsonNode measuresNode) {
-        HashMap<String, String> measuresResults = new HashMap<>();
+    public Map<String, String> parseMeasures(Map<String, String> measuresResults, JsonNode measuresNode) {
         for (JsonNode measureNode : measuresNode) {
             String metric = measureNode.path("metric").asText();
             String value = measureNode.path("value").asText();

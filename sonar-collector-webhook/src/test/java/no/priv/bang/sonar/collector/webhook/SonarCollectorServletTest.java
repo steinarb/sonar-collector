@@ -29,7 +29,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.ZonedDateTime;
-import java.util.Map;
+import java.util.HashMap;
 import java.util.Properties;
 
 import javax.servlet.ReadListener;
@@ -194,7 +194,8 @@ public class SonarCollectorServletTest {
         SonarCollectorServlet servlet = new SonarCollectorServlet();
 
         String[] metricKeys = servlet.getMetricKeys();
-        Map<String, String> measures = servlet.parseMeasures(measuresNode);
+        HashMap<String, String> measures = new HashMap<>();
+        servlet.parseMeasures(measures, measuresNode);
         assertEquals(metricKeys.length, measures.size());
         assertEquals("0", measures.get("new_bugs"));
     }
@@ -214,7 +215,8 @@ public class SonarCollectorServletTest {
         JsonNode measuresNode = root.path("component").path("measures");
         SonarCollectorServlet servlet = new SonarCollectorServlet();
 
-        Map<String, String> measures = servlet.parseMeasures(measuresNode);
+        HashMap<String, String> measures = new HashMap<>();
+        servlet.parseMeasures(measures, measuresNode);
         assertEquals("Parse results weren't empty", 0, measures.size());
     }
 

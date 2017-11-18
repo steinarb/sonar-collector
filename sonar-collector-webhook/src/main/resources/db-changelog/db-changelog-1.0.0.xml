@@ -15,7 +15,7 @@
 
     <changeSet author="sb" id="sonar-collector-measures-1.0.0">
         <createTable tableName="measures">
-            <column autoIncrement="true" name="id" type="INTEGER">
+            <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints primaryKey="true" primaryKeyName="SONAR_MEASURES_ID"/>
             </column>
             <column name="project_key" type="VARCHAR(64)">
@@ -30,31 +30,31 @@
             <column name="analysis_time" type="TIMESTAMP" defaultValueComputed="CURRENT_TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
-            <column name="lines" type="VARCHAR(64)">
+            <column name="lines" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="bugs" type="VARCHAR(64)">
+            <column name="bugs" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="new_bugs" type="VARCHAR(64)">
+            <column name="new_bugs" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="vulnerabilities" type="VARCHAR(64)">
+            <column name="vulnerabilities" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="new_vulnerabilities" type="VARCHAR(64)">
+            <column name="new_vulnerabilities" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="code_smells" type="VARCHAR(64)">
+            <column name="code_smells" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="new_code_smells" type="VARCHAR(64)">
+            <column name="new_code_smells" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
-            <column name="coverage" type="VARCHAR(64)">
+            <column name="coverage" type="DOUBLE">
                 <constraints nullable="false"/>
             </column>
-            <column name="new_coverage" type="VARCHAR(64)">
+            <column name="new_coverage" type="DOUBLE">
                 <constraints nullable="false"/>
             </column>
         </createTable>

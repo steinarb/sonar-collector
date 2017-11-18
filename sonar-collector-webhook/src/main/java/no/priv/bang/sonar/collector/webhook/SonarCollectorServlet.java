@@ -184,15 +184,15 @@ public class SonarCollectorServlet extends HttpServlet {
                 statement.setString(2, build.version);
                 statement.setBoolean(3, isRelease);
                 statement.setTimestamp(4, new Timestamp(build.analysedAt));
-                statement.setString(5, build.measurements.get("lines"));
-                statement.setString(6, build.measurements.get("bugs"));
-                statement.setString(7, build.measurements.get("new_bugs"));
-                statement.setString(8, build.measurements.get("vulnerabilities"));
-                statement.setString(9, build.measurements.get("new_vulnerabilities"));
-                statement.setString(10, build.measurements.get("code_smells"));
-                statement.setString(11, build.measurements.get("new_code_smells"));
-                statement.setString(12, build.measurements.get("coverage"));
-                statement.setString(13, build.measurements.get("new_coverage"));
+                statement.setLong(5, Long.valueOf(build.measurements.get("lines")));
+                statement.setLong(6, Long.valueOf(build.measurements.get("bugs")));
+                statement.setLong(7, Long.valueOf(build.measurements.get("new_bugs")));
+                statement.setLong(8, Long.valueOf(build.measurements.get("vulnerabilities")));
+                statement.setLong(9, Long.valueOf(build.measurements.get("new_vulnerabilities")));
+                statement.setLong(10, Long.valueOf(build.measurements.get("code_smells")));
+                statement.setLong(11, Long.valueOf(build.measurements.get("new_code_smells")));
+                statement.setDouble(12, Double.valueOf(build.measurements.get("coverage")));
+                statement.setDouble(13, Double.valueOf(build.measurements.get("new_coverage")));
 
                 return statement.executeUpdate();
             }

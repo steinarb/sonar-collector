@@ -104,11 +104,13 @@ This utility is licensend under the Apache license v. 2.  See the LICENSE file f
 
 This is my current TODO list for this project.  The list is dynamically added to and checked off, as I do things.  Things that are already done and committed will be removed.
 
-Here's the list [4/5]:
+Here's the list [5/7]:
  - [X] Try to remove jackson annotations and figure out if things still work, must be removed from both build dependencies and the karaf feature
    - <2017-11-17 fr 22:46> The code worked fine without jackson annotations
  - [X] Do logging for PostgreSQL connection errors
    - <2017-11-17 fr 21:04> Fixed, the problem was that the order of the injections isn't defined, so the PostgreSQL datasource was injected before the logservice
  - [X] Add database setup to the README
  - [X] Add travis CI build setup
+ - [X] Make the database column values be numeric
  - [ ] Add ftp deploy to the travis build setup
+ - [ ] Fix the timestamp

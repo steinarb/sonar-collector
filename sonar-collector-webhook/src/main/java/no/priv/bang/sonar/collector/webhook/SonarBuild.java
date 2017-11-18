@@ -25,7 +25,7 @@ public class SonarBuild {
     public SonarBuild() {
         measurements = new HashMap<>();
         for (String fieldName : MEASUREMENT_FIELDS) {
-            measurements.put(fieldName, "");
+            measurements.put(fieldName, "0");
         }
     }
 

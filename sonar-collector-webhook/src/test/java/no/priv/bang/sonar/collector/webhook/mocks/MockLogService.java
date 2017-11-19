@@ -37,20 +37,21 @@ public class MockLogService implements LogService {
     }
 
     public void log(int level, String message, Throwable exception) {
-        String messageWithLevel = errorLevel[level] + message;
+        String messageWithLevel = errorLevel[level] + message + " " + exception.toString();
         logmessages.add(messageWithLevel);
         System.err.println(messageWithLevel);
-        exception.printStackTrace();
     }
 
     public void log(ServiceReference sr, int level, String message) {
-        // TODO Auto-generated method stub
-
+        String messageWithLevel = errorLevel[level] + sr + " " + message;
+        logmessages.add(messageWithLevel);
+        System.err.println(messageWithLevel);
     }
 
     public void log(ServiceReference sr, int level, String message, Throwable exception) {
-        // TODO Auto-generated method stub
-
+        String messageWithLevel = errorLevel[level] + sr + " " + message + " " + exception.toString();
+        logmessages.add(messageWithLevel);
+        System.err.println(messageWithLevel);
     }
 
 }

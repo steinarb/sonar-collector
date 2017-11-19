@@ -70,9 +70,7 @@ public class SonarCollectorServlet extends HttpServlet {
     private final URLConnectionFactory factory;
     static final ObjectMapper mapper = new ObjectMapper();
     DataSource dataSource = NullDataSource.getInstance();
-    private LogService logservice;
-    private String savedLogMessage;
-    private Exception savedLogException;
+    private final LogServiceAdapter logservice = new LogServiceAdapter();
 
     @Reference
     public void setDataSourceFactory(DataSourceFactory dataSourceFactory) {
@@ -83,16 +81,7 @@ public class SonarCollectorServlet extends HttpServlet {
 
     @Reference
     public void setLogservice(LogService logservice) {
-        this.logservice = logservice;
-        logSavedException();
-    }
-
-    private void logSavedException() {
-        if (logservice != null && savedLogMessage != null) {
-            logservice.log(LogService.LOG_ERROR, savedLogMessage, savedLogException);
-            savedLogMessage = null;
-            savedLogException = null;
-        }
+        this.logservice.setService(logservice);
     }
 
     private DataSource connectDataSource(DataSourceFactory dataSourceFactory) {
@@ -107,12 +96,7 @@ public class SonarCollectorServlet extends HttpServlet {
     }
 
     private void logError(String message, Exception e) {
-        if (logservice != null) {
-            logservice.log(LogService.LOG_ERROR, message, e);
-        } else {
-            savedLogMessage = message;
-            savedLogException = e;
-        }
+        logservice.log(LogService.LOG_ERROR, message, e);
     }
 
     private void createSchemaWithLiquibase(DataSource db) {

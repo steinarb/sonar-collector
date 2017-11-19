@@ -1,9 +1,3 @@
-package no.priv.bang.sonar.collector.webhook;
-
-import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 /*
  * Copyright 2017 Steinar Bang
  *
@@ -19,6 +13,12 @@ import java.sql.SQLFeatureNotSupportedException;
  * See the License for the specific language governing permissions and limitations
  * under the License.
  */
+package no.priv.bang.sonar.collector.webhook;
+
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
 
 import javax.sql.DataSource;

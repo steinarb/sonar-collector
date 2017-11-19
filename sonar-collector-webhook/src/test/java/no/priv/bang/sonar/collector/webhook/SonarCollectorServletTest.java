@@ -33,6 +33,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Properties;
+import java.util.TimeZone;
 
 import javax.servlet.ReadListener;
 import javax.servlet.ServletException;
@@ -242,7 +243,7 @@ public class SonarCollectorServletTest {
         SonarCollectorServlet servlet = new SonarCollectorServlet();
         long timestamp = servlet.parseTimestamp("2017-11-19T10:39:24+0100");
         Date date = new Date(timestamp);
-        Calendar calendar = Calendar.getInstance();
+        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT+1"));
         calendar.setTime(date);
         System.out.println(String.format("Date: %s", date.toString()));
         assertEquals(2017, calendar.get(Calendar.YEAR));

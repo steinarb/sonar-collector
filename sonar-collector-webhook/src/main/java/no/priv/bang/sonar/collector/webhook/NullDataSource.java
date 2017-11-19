@@ -35,7 +35,7 @@ import javax.sql.DataSource;
  */
 public class NullDataSource implements DataSource {
 
-    private final static DataSource instance = new NullDataSource();
+    private static final DataSource instance = new NullDataSource();
 
     public static DataSource getInstance() {
         return instance;

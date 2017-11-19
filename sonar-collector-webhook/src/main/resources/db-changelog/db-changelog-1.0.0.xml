@@ -59,4 +59,13 @@
             </column>
         </createTable>
     </changeSet>
+
+    <changeSet author="sb" id="measure-add-indexes-1.0.0">
+        <createIndex indexName="idx_project_key" tableName="measures">
+            <column name="project_key" />
+        </createIndex>
+        <createIndex indexName="idx_version_is_release" tableName="measures">
+            <column name="version_is_release" />
+        </createIndex>
+    </changeSet>
 </databaseChangeLog>

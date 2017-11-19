@@ -41,60 +41,54 @@ public class NullDataSource implements DataSource {
         return instance;
     }
 
+    private PrintWriter logwriter = null;
+    private int timeout = 0;
+
     private NullDataSource() {
     }
 
     @Override
     public PrintWriter getLogWriter() throws SQLException {
-        // TODO Auto-generated method stub
-        return null;
+        return logwriter;
     }
 
     @Override
     public int getLoginTimeout() throws SQLException {
-        // TODO Auto-generated method stub
-        return 0;
+        return timeout;
     }
 
     @Override
     public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public void setLogWriter(PrintWriter arg0) throws SQLException {
-        // TODO Auto-generated method stub
-
+    public void setLogWriter(PrintWriter log) throws SQLException {
+        logwriter = log;
     }
 
     @Override
-    public void setLoginTimeout(int arg0) throws SQLException {
-        // TODO Auto-generated method stub
-
+    public void setLoginTimeout(int timeout) throws SQLException {
+        this.timeout = timeout;
     }
 
     @Override
-    public boolean isWrapperFor(Class<?> arg0) throws SQLException {
-        // TODO Auto-generated method stub
+    public boolean isWrapperFor(Class<?> clazz) throws SQLException {
         return false;
     }
 
     @Override
-    public <T> T unwrap(Class<T> arg0) throws SQLException {
-        // TODO Auto-generated method stub
+    public <T> T unwrap(Class<T> clazz) throws SQLException {
         return null;
     }
 
     @Override
     public Connection getConnection() throws SQLException {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public Connection getConnection(String arg0, String arg1) throws SQLException {
-        // TODO Auto-generated method stub
+    public Connection getConnection(String username, String password) throws SQLException {
         return null;
     }
 

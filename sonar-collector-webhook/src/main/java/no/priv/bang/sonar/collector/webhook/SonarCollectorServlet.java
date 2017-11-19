@@ -69,14 +69,14 @@ public class SonarCollectorServlet extends HttpServlet {
     private final Properties applicationProperties = new Properties();
     private final URLConnectionFactory factory;
     static final ObjectMapper mapper = new ObjectMapper();
-    DataSource dataSource = NullDataSource.getInstance();
+    final DataSourceAdapter dataSource = new DataSourceAdapter();
     private final LogServiceAdapter logservice = new LogServiceAdapter();
 
     @Reference
     public void setDataSourceFactory(DataSourceFactory dataSourceFactory) {
         DataSource db = connectDataSource(dataSourceFactory);
         createSchemaWithLiquibase(db);
-        dataSource = db;
+        dataSource.setDatasource(db);
     }
 
     @Reference

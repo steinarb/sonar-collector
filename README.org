@@ -104,7 +104,7 @@ This utility is licensend under the Apache license v. 2.  See the LICENSE file f
 
 This is my current TODO list for this project.  The list is dynamically added to and checked off, as I do things.  Things that are already done and committed will be removed.
 
-Here's the list [7/8]:
+Here's the list [8/8]:
  - [X] Try to remove jackson annotations and figure out if things still work, must be removed from both build dependencies and the karaf feature
    - <2017-11-17 fr 22:46> The code worked fine without jackson annotations
  - [X] Do logging for PostgreSQL connection errors
@@ -117,4 +117,5 @@ Here's the list [7/8]:
  - [X] Index the columns project_key version_is_release of the measures table
    - <2017-11-19 sø 13:24> The reason for this, is to make the SQL queries stay fast when the number of rows grow large
    - <2017-11-19 sø 13:39> Added a Liquibase changeSet to add the indexes
- - [ ] Add ftp deploy to the travis build setup
+ - [X] Add ftp deploy to the travis build setup
+   - <2017-11-19 sø 13:48> Added a deploy script to .travis.yml

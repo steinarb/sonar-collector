@@ -141,18 +141,18 @@ public class SonarCollectorServlet extends HttpServlet {
     SonarBuild callbackToSonarServerToGetMetrics(ServletRequest request) throws IOException {
         try(InputStream postbody = request.getInputStream()) {
             JsonNode root = mapper.readTree(postbody);
-            build.analysedAt = parseTimestamp(root.path("analysedAt").asText());
-            build.project = root.path("project").path("key").asText();
-            build.version = root.path("properties").path(MAVEN_VERSION).asText();
+            long analysedAt = parseTimestamp(root.path("analysedAt").asText());
+            String project = root.path("project").path("key").asText();
+            String version = root.path("properties").path(MAVEN_VERSION).asText();
+            URL serverUrl = new URL(root.path("serverUrl").asText());
+            SonarBuild build = new SonarBuild(analysedAt, project, version, serverUrl);
             logWarningIfVersionIsMissing(build);
-            build.serverUrl = new URL(root.path("serverUrl").asText());
             URL measurementsUrl = createSonarMeasurementsComponentUrl(build, getMetricKeys());
             HttpURLConnection connection = openConnection(measurementsUrl);
             JsonNode measurementsRoot = mapper.readTree(connection.getInputStream());
-            parseMeasures(build.measurements, measurementsRoot.path("component").path("measures"));
+            parseMeasures(build.getMeasurements(), measurementsRoot.path("component").path("measures"));
+            return build;
         }
-
-        return build;
     }
 
     long parseTimestamp(String timestamp) {
@@ -160,28 +160,28 @@ public class SonarCollectorServlet extends HttpServlet {
     }
 
     private void logWarningIfVersionIsMissing(SonarBuild build) {
-        if ("".equals(build.version)) {
-            logservice.log(LogService.LOG_WARNING, String.format("Maven version is missing from build \"%s\". Remember to add -D%s=$POM_VERSION to the sonar command", build.project, MAVEN_VERSION));
+        if ("".equals(build.getVersion())) {
+            logservice.log(LogService.LOG_WARNING, String.format("Maven version is missing from build \"%s\". Remember to add -D%s=$POM_VERSION to the sonar command", build.getProject(), MAVEN_VERSION));
         }
     }
 
     private int saveMeasuresInDatabase(SonarBuild build) throws SQLException {
-        boolean isRelease = versionIsReleaseVersion(build.version);
+        boolean isRelease = versionIsReleaseVersion(build.getVersion());
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement statement = connection.prepareStatement("insert into measures (project_key, version, version_is_release, analysis_time, lines, bugs, new_bugs, vulnerabilities, new_vulnerabilities, code_smells, new_code_smells, coverage, new_coverage) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
-                statement.setString(1, build.project);
-                statement.setString(2, build.version);
+                statement.setString(1, build.getProject());
+                statement.setString(2, build.getVersion());
                 statement.setBoolean(3, isRelease);
-                statement.setTimestamp(4, new Timestamp(build.analysedAt));
-                statement.setLong(5, Long.valueOf(build.measurements.get("lines")));
-                statement.setLong(6, Long.valueOf(build.measurements.get("bugs")));
-                statement.setLong(7, Long.valueOf(build.measurements.get("new_bugs")));
-                statement.setLong(8, Long.valueOf(build.measurements.get("vulnerabilities")));
-                statement.setLong(9, Long.valueOf(build.measurements.get("new_vulnerabilities")));
-                statement.setLong(10, Long.valueOf(build.measurements.get("code_smells")));
-                statement.setLong(11, Long.valueOf(build.measurements.get("new_code_smells")));
-                statement.setDouble(12, Double.valueOf(build.measurements.get("coverage")));
-                statement.setDouble(13, Double.valueOf(build.measurements.get("new_coverage")));
+                statement.setTimestamp(4, new Timestamp(build.getAnalysedAt()));
+                statement.setLong(5, Long.valueOf(build.getMeasurements().get("lines")));
+                statement.setLong(6, Long.valueOf(build.getMeasurements().get("bugs")));
+                statement.setLong(7, Long.valueOf(build.getMeasurements().get("new_bugs")));
+                statement.setLong(8, Long.valueOf(build.getMeasurements().get("vulnerabilities")));
+                statement.setLong(9, Long.valueOf(build.getMeasurements().get("new_vulnerabilities")));
+                statement.setLong(10, Long.valueOf(build.getMeasurements().get("code_smells")));
+                statement.setLong(11, Long.valueOf(build.getMeasurements().get("new_code_smells")));
+                statement.setDouble(12, Double.valueOf(build.getMeasurements().get("coverage")));
+                statement.setDouble(13, Double.valueOf(build.getMeasurements().get("new_coverage")));
 
                 return statement.executeUpdate();
             }
@@ -214,8 +214,8 @@ public class SonarCollectorServlet extends HttpServlet {
     }
 
     public URL createSonarMeasurementsComponentUrl(SonarBuild build, String[] metricKeys) throws UnsupportedEncodingException, MalformedURLException {
-        String localPath = String.format("/api/measures/component?componentKey=%s&metricKeys=%s", URLEncoder.encode(build.project,"UTF-8"), String.join(",", metricKeys));
-        return new URL(build.serverUrl, localPath);
+        String localPath = String.format("/api/measures/component?componentKey=%s&metricKeys=%s", URLEncoder.encode(build.getProject(),"UTF-8"), String.join(",", metricKeys));
+        return new URL(build.getServerUrl(), localPath);
     }
 
     HttpURLConnection openConnection(URL url) throws IOException {

@@ -20,19 +20,46 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SonarBuild {
-    public final static String[] MEASUREMENT_FIELDS = {"lines", "bugs", "new_bugs", "vulnerabilities", "new_vulnerabilities", "code_smells", "new_code_smells", "coverage", "new_coverage"};
+    static final String[] MEASUREMENT_FIELDS = {"lines", "bugs", "new_bugs", "vulnerabilities", "new_vulnerabilities", "code_smells", "new_code_smells", "coverage", "new_coverage"};
+    private long analysedAt;
+    private String project;
+    private String version;
+    private URL serverUrl;
+    private Map<String, String> measurements;
 
-    public SonarBuild() {
+    public SonarBuild(long analysedAt, String project, String version, URL serverUrl) {
+        this.analysedAt = analysedAt;
+        this.project = project;
+        this.version = version;
+        this.serverUrl = serverUrl;
+        initializeMeasurements();
+    }
+
+    private void initializeMeasurements() {
         measurements = new HashMap<>();
         for (String fieldName : MEASUREMENT_FIELDS) {
             measurements.put(fieldName, "0");
         }
     }
 
-    public long analysedAt;
-    public String project;
-    public String version;
-    public URL serverUrl;
-    public Map<String, String> measurements;
+    public long getAnalysedAt() {
+        return analysedAt;
+    }
+
+    public String getProject() {
+        return project;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public URL getServerUrl() {
+        return serverUrl;
+    }
+
+    public Map<String, String> getMeasurements() {
+        return measurements;
+    }
 
 }

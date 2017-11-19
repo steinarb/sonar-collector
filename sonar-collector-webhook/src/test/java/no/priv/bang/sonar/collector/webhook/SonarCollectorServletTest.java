@@ -154,22 +154,22 @@ public class SonarCollectorServletTest {
 
         long expectedTimeInMillisecondsSinceEpoch = ZonedDateTime.parse("2016-11-18T10:46:28+0100", SonarCollectorServlet.isoZonedDateTimeformatter).toEpochSecond() * 1000;
         SonarBuild build = servlet.callbackToSonarServerToGetMetrics(request);
-        assertEquals("org.sonarqube:example", build.project);
-        assertEquals(expectedTimeInMillisecondsSinceEpoch, build.analysedAt);
-        assertEquals("", build.version);
-        assertEquals("http://localhost:9000", build.serverUrl.toString());
+        assertEquals("org.sonarqube:example", build.getProject());
+        assertEquals(expectedTimeInMillisecondsSinceEpoch, build.getAnalysedAt());
+        assertEquals("", build.getVersion());
+        assertEquals("http://localhost:9000", build.getServerUrl().toString());
 
         SonarBuild buildWithMavenSnapshotVersion = servlet.callbackToSonarServerToGetMetrics(request);
-        assertEquals("org.sonarqube:example", buildWithMavenSnapshotVersion.project);
-        assertEquals(expectedTimeInMillisecondsSinceEpoch, buildWithMavenSnapshotVersion.analysedAt);
-        assertEquals("1.0.0-SNAPSHOT", buildWithMavenSnapshotVersion.version);
-        assertEquals("http://localhost:9000", buildWithMavenSnapshotVersion.serverUrl.toString());
+        assertEquals("org.sonarqube:example", buildWithMavenSnapshotVersion.getProject());
+        assertEquals(expectedTimeInMillisecondsSinceEpoch, buildWithMavenSnapshotVersion.getAnalysedAt());
+        assertEquals("1.0.0-SNAPSHOT", buildWithMavenSnapshotVersion.getVersion());
+        assertEquals("http://localhost:9000", buildWithMavenSnapshotVersion.getServerUrl().toString());
 
         SonarBuild buildWithMavenVersion = servlet.callbackToSonarServerToGetMetrics(request);
-        assertEquals("org.sonarqube:example", buildWithMavenVersion.project);
-        assertEquals(expectedTimeInMillisecondsSinceEpoch, buildWithMavenVersion.analysedAt);
-        assertEquals("1.0.0", buildWithMavenVersion.version);
-        assertEquals("http://localhost:9000", buildWithMavenVersion.serverUrl.toString());
+        assertEquals("org.sonarqube:example", buildWithMavenVersion.getProject());
+        assertEquals(expectedTimeInMillisecondsSinceEpoch, buildWithMavenVersion.getAnalysedAt());
+        assertEquals("1.0.0", buildWithMavenVersion.getVersion());
+        assertEquals("http://localhost:9000", buildWithMavenVersion.getServerUrl().toString());
     }
 
     @Test
@@ -178,16 +178,16 @@ public class SonarCollectorServletTest {
         SonarCollectorServlet servlet = new SonarCollectorServlet(factory);
         String[] metricKeys = servlet.getMetricKeys();
         assertEquals(9, metricKeys.length);
-        SonarBuild build = new SonarBuild();
-        build.project = "no.priv.bang.ukelonn:parent";
-        build.serverUrl = new URL("http://localhost:9000");
+        String project = "no.priv.bang.ukelonn:parent";
+        URL serverUrl = new URL("http://localhost:9000");
+        SonarBuild build = new SonarBuild(0, project, null, serverUrl);
         URL metricsUrl = servlet.createSonarMeasurementsComponentUrl(build, metricKeys);
-        assertEquals(build.serverUrl.getProtocol(), metricsUrl.getProtocol());
-        assertEquals(build.serverUrl.getHost(), metricsUrl.getHost());
-        assertEquals(build.serverUrl.getPort(), metricsUrl.getPort());
+        assertEquals(build.getServerUrl().getProtocol(), metricsUrl.getProtocol());
+        assertEquals(build.getServerUrl().getHost(), metricsUrl.getHost());
+        assertEquals(build.getServerUrl().getPort(), metricsUrl.getPort());
         assertEquals("/api/measures/component", metricsUrl.getPath());
         String query = URLDecoder.decode(metricsUrl.getQuery(), "UTF-8");
-        assertThat(query, containsString(build.project));
+        assertThat(query, containsString(build.getProject()));
     }
 
     @Test

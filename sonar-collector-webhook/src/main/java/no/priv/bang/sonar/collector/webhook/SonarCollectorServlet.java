@@ -16,6 +16,7 @@
 package no.priv.bang.sonar.collector.webhook;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -44,7 +45,6 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.jdbc.DataSourceFactory;
 import org.osgi.service.log.LogService;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -130,7 +130,7 @@ public class SonarCollectorServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
-            SonarBuild build = doCallbackToSonarServerToGetMetrics(request);
+            SonarBuild build = callbackToSonarServerToGetMetrics(request);
             saveMeasuresInDatabase(build);
         } catch (Exception e) {
             logservice.log(LogService.LOG_ERROR, "Sonar Collector caught exception ", e);
@@ -138,18 +138,19 @@ public class SonarCollectorServlet extends HttpServlet {
         }
     }
 
-    SonarBuild doCallbackToSonarServerToGetMetrics(ServletRequest request) throws JsonProcessingException, IOException {
-        SonarBuild build = new SonarBuild();
-        JsonNode root = mapper.readTree(request.getInputStream());
-        build.analysedAt = parseTimestamp(root.path("analysedAt").asText());
-        build.project = root.path("project").path("key").asText();
-        build.version = root.path("properties").path(MAVEN_VERSION).asText();
-        logWarningIfVersionIsMissing(build);
-        build.serverUrl = new URL(root.path("serverUrl").asText());
-        URL measurementsUrl = createSonarMeasurementsComponentUrl(build, getMetricKeys());
-        HttpURLConnection connection = openConnection(measurementsUrl);
-        JsonNode measurementsRoot = mapper.readTree(connection.getInputStream());
-        parseMeasures(build.measurements, measurementsRoot.path("component").path("measures"));
+    SonarBuild callbackToSonarServerToGetMetrics(ServletRequest request) throws IOException {
+        try(InputStream postbody = request.getInputStream()) {
+            JsonNode root = mapper.readTree(postbody);
+            build.analysedAt = parseTimestamp(root.path("analysedAt").asText());
+            build.project = root.path("project").path("key").asText();
+            build.version = root.path("properties").path(MAVEN_VERSION).asText();
+            logWarningIfVersionIsMissing(build);
+            build.serverUrl = new URL(root.path("serverUrl").asText());
+            URL measurementsUrl = createSonarMeasurementsComponentUrl(build, getMetricKeys());
+            HttpURLConnection connection = openConnection(measurementsUrl);
+            JsonNode measurementsRoot = mapper.readTree(connection.getInputStream());
+            parseMeasures(build.measurements, measurementsRoot.path("component").path("measures"));
+        }
 
         return build;
     }

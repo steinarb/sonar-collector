@@ -133,7 +133,7 @@ public class SonarCollectorServletTest {
     }
 
     @Test
-    public void testDoCallbackToSonarServerToGetMetrics() throws ServletException, IOException {
+    public void testCallbackToSonarServerToGetMetrics() throws ServletException, IOException {
         MockLogService logservice = new MockLogService();
         URLConnectionFactory factory = mock(URLConnectionFactory.class);
         HttpURLConnection[] connections = createConnectionFromResource("json/sonar/api-measures-component-get-many-metrics.json", 3);
@@ -153,19 +153,19 @@ public class SonarCollectorServletTest {
             .thenReturn(webhookPostBodyWithMavenVersion);
 
         long expectedTimeInMillisecondsSinceEpoch = ZonedDateTime.parse("2016-11-18T10:46:28+0100", SonarCollectorServlet.isoZonedDateTimeformatter).toEpochSecond() * 1000;
-        SonarBuild build = servlet.doCallbackToSonarServerToGetMetrics(request);
+        SonarBuild build = servlet.callbackToSonarServerToGetMetrics(request);
         assertEquals("org.sonarqube:example", build.project);
         assertEquals(expectedTimeInMillisecondsSinceEpoch, build.analysedAt);
         assertEquals("", build.version);
         assertEquals("http://localhost:9000", build.serverUrl.toString());
 
-        SonarBuild buildWithMavenSnapshotVersion = servlet.doCallbackToSonarServerToGetMetrics(request);
+        SonarBuild buildWithMavenSnapshotVersion = servlet.callbackToSonarServerToGetMetrics(request);
         assertEquals("org.sonarqube:example", buildWithMavenSnapshotVersion.project);
         assertEquals(expectedTimeInMillisecondsSinceEpoch, buildWithMavenSnapshotVersion.analysedAt);
         assertEquals("1.0.0-SNAPSHOT", buildWithMavenSnapshotVersion.version);
         assertEquals("http://localhost:9000", buildWithMavenSnapshotVersion.serverUrl.toString());
 
-        SonarBuild buildWithMavenVersion = servlet.doCallbackToSonarServerToGetMetrics(request);
+        SonarBuild buildWithMavenVersion = servlet.callbackToSonarServerToGetMetrics(request);
         assertEquals("org.sonarqube:example", buildWithMavenVersion.project);
         assertEquals(expectedTimeInMillisecondsSinceEpoch, buildWithMavenVersion.analysedAt);
         assertEquals("1.0.0", buildWithMavenVersion.version);

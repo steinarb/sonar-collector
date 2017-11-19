@@ -157,7 +157,7 @@ public class SonarCollectorServlet extends HttpServlet {
     SonarBuild doCallbackToSonarServerToGetMetrics(ServletRequest request) throws JsonProcessingException, IOException {
         SonarBuild build = new SonarBuild();
         JsonNode root = mapper.readTree(request.getInputStream());
-        build.analysedAt = ZonedDateTime.parse(root.path("analysedAt").asText(), isoZonedDateTimeformatter).toEpochSecond();
+        build.analysedAt = parseTimestamp(root.path("analysedAt").asText());
         build.project = root.path("project").path("key").asText();
         build.version = root.path("properties").path(MAVEN_VERSION).asText();
         logWarningIfVersionIsMissing(build);
@@ -168,6 +168,10 @@ public class SonarCollectorServlet extends HttpServlet {
         parseMeasures(build.measurements, measurementsRoot.path("component").path("measures"));
 
         return build;
+    }
+
+    long parseTimestamp(String timestamp) {
+        return ZonedDateTime.parse(timestamp, isoZonedDateTimeformatter).toEpochSecond() * 1000;
     }
 
     private void logWarningIfVersionIsMissing(SonarBuild build) {

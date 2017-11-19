@@ -29,6 +29,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.ZonedDateTime;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Properties;
 
@@ -149,7 +151,7 @@ public class SonarCollectorServletTest {
             .thenReturn(webhookPostBodyWithMavenSnapshotVersion)
             .thenReturn(webhookPostBodyWithMavenVersion);
 
-        long expectedTimeInMillisecondsSinceEpoch = ZonedDateTime.parse("2016-11-18T10:46:28+0100", SonarCollectorServlet.isoZonedDateTimeformatter).toEpochSecond();
+        long expectedTimeInMillisecondsSinceEpoch = ZonedDateTime.parse("2016-11-18T10:46:28+0100", SonarCollectorServlet.isoZonedDateTimeformatter).toEpochSecond() * 1000;
         SonarBuild build = servlet.doCallbackToSonarServerToGetMetrics(request);
         assertEquals("org.sonarqube:example", build.project);
         assertEquals(expectedTimeInMillisecondsSinceEpoch, build.analysedAt);
@@ -233,6 +235,21 @@ public class SonarCollectorServletTest {
         assertFalse(servlet.versionIsReleaseVersion(""));
         assertFalse(servlet.versionIsReleaseVersion("1.0.0-SNAPSHOT"));
         assertTrue(servlet.versionIsReleaseVersion("1.0.0"));
+    }
+
+    @Test
+    public void testParseTimestamp() throws IOException {
+        SonarCollectorServlet servlet = new SonarCollectorServlet();
+        long timestamp = servlet.parseTimestamp("2017-11-19T10:39:24+0100");
+        Date date = new Date(timestamp);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        System.out.println(String.format("Date: %s", date.toString()));
+        assertEquals(2017, calendar.get(Calendar.YEAR));
+        assertEquals(11, calendar.get(Calendar.MONTH) + 1); // January is 0
+        assertEquals(19, calendar.get(Calendar.DAY_OF_MONTH));
+        assertEquals(10, calendar.get(Calendar.HOUR_OF_DAY));
+        assertEquals(39, calendar.get(Calendar.MINUTE));
     }
 
     private HttpURLConnection[] createConnectionFromResource(String resource, int numberOfCopies) throws IOException {

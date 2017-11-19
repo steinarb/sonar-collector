@@ -329,4 +329,15 @@
         </plugins>
     </build>
 
+    <distributionManagement>
+        <repository>
+            <id>ftp-maven-travis</id>
+            <url>ftp://maven.bang.priv.no/repository</url>
+        </repository>
+        <snapshotRepository>
+            <id>ftp-maven-travis</id>
+            <url>ftp://maven.bang.priv.no/repository</url>
+        </snapshotRepository>
+    </distributionManagement>
+
 </project>

@@ -50,11 +50,11 @@ As root, do the following command:
 Procedure:
  1. Create a PostgreSQL user matching the karaf user:
     #+BEGIN_EXAMPLE
-      /bin/sudo -s /bin/bash postgres createuser karaf
+      /usr/bin/sudo -u postgres createuser karaf
     #+END_EXAMPLE
  2. Create an empty database owned by the karaf user:
     #+BEGIN_EXAMPLE
-      /bin/sudo -s /bin/bash postgres createdb -O karaf sonarcollector
+      /usr/bin/sudo -u postgres createdb -O karaf sonarcollector
     #+END_EXAMPLE
 
 *** Install apache karaf

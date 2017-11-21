@@ -1,0 +1,7 @@
+{
+    "errors": [
+        {
+            "msg": "Component key 'no.priv.bang.sonar.sonar-collector:parent' not found"
+        }
+    ]
+}

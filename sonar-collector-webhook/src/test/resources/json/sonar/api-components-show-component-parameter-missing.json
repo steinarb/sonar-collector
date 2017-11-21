@@ -1,0 +1,7 @@
+{
+    "errors": [
+        {
+            "msg": "Either 'componentId' or 'component' must be provided"
+        }
+    ]
+}

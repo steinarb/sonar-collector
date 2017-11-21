@@ -1,0 +1,15 @@
+{
+    "component": {
+        "organization": "default-organization",
+        "id": "AV_PTIC-nHoAyOYzcfvA",
+        "key": "no.priv.bang.sonar.sonar-collector:parent",
+        "name": "SonarQube data collector parent project",
+        "qualifier": "TRK",
+        "analysisDate": "2017-11-19T22:40:36+0100",
+        "tags": [],
+        "visibility": "public",
+        "leakPeriodDate": "2017-11-18T16:52:24+0100",
+        "version": "1.0.0"
+    },
+    "ancestors": []
+}

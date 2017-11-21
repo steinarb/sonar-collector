@@ -17,9 +17,7 @@ package no.priv.bang.sonar.collector.webhook;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.sql.Connection;
@@ -55,7 +53,6 @@ import liquibase.resource.ClassLoaderResourceAccessor;
 
 @Component(service={Servlet.class}, property={"alias=/sonar-collector"} )
 public class SonarCollectorServlet extends HttpServlet {
-    private static final String MAVEN_VERSION = "sonar.analysis.mavenVersion";
     private static final long serialVersionUID = -8421243385012454373L;
     private static final String SONAR_MEASURES_COMPONENTS_METRIC_KEYS = "sonar.measures.components.metricKeys";
     private static final String SONARCOLLECTOR_JDBCURL = "sonar.collector.jdbcurl";
@@ -143,13 +140,16 @@ public class SonarCollectorServlet extends HttpServlet {
             JsonNode root = mapper.readTree(postbody);
             long analysedAt = parseTimestamp(root.path("analysedAt").asText());
             String project = root.path("project").path("key").asText();
-            String version = root.path("properties").path(MAVEN_VERSION).asText();
             URL serverUrl = new URL(root.path("serverUrl").asText());
+            URL componentsShowUrl = createSonarComponentsShowUrl(serverUrl, project);
+            HttpURLConnection componentsShowUrlConnection = openConnection(componentsShowUrl);
+            JsonNode componentsShowRoot = mapper.readTree(componentsShowUrlConnection.getInputStream());
+            String version = componentsShowRoot.path("component").path("version").asText();
             SonarBuild build = new SonarBuild(analysedAt, project, version, serverUrl);
-            logWarningIfVersionIsMissing(build);
+            logWarningIfVersionIsMissing(build, componentsShowUrl);
             URL measurementsUrl = createSonarMeasurementsComponentUrl(build, getMetricKeys());
-            HttpURLConnection connection = openConnection(measurementsUrl);
-            JsonNode measurementsRoot = mapper.readTree(connection.getInputStream());
+            HttpURLConnection measurementsUrlConnection = openConnection(measurementsUrl);
+            JsonNode measurementsRoot = mapper.readTree(measurementsUrlConnection.getInputStream());
             parseMeasures(build.getMeasurements(), measurementsRoot.path("component").path("measures"));
             return build;
         }
@@ -159,9 +159,9 @@ public class SonarCollectorServlet extends HttpServlet {
         return ZonedDateTime.parse(timestamp, isoZonedDateTimeformatter).toEpochSecond() * 1000;
     }
 
-    private void logWarningIfVersionIsMissing(SonarBuild build) {
+    private void logWarningIfVersionIsMissing(SonarBuild build, URL componentsShowUrl) {
         if ("".equals(build.getVersion())) {
-            logservice.log(LogService.LOG_WARNING, String.format("Maven version is missing from build \"%s\". Remember to add -D%s=$POM_VERSION to the sonar command", build.getProject(), MAVEN_VERSION));
+            logservice.log(LogService.LOG_WARNING, String.format("Maven version is missing from build \"%s\". API URL used to request the version, is: %s", build.getProject(), componentsShowUrl.toString()));
         }
     }
 
@@ -213,7 +213,12 @@ public class SonarCollectorServlet extends HttpServlet {
         return System.getProperty(SONARCOLLECTOR_JDBCURL, applicationProperties.getProperty(SONARCOLLECTOR_JDBCURL));
     }
 
-    public URL createSonarMeasurementsComponentUrl(SonarBuild build, String[] metricKeys) throws UnsupportedEncodingException, MalformedURLException {
+    public URL createSonarComponentsShowUrl(URL serverUrl, String project) throws IOException {
+        String localPath = String.format("/api/components/show?component=%s", URLEncoder.encode(project,"UTF-8"));
+        return new URL(serverUrl, localPath);
+    }
+
+    public URL createSonarMeasurementsComponentUrl(SonarBuild build, String[] metricKeys) throws IOException {
         String localPath = String.format("/api/measures/component?componentKey=%s&metricKeys=%s", URLEncoder.encode(build.getProject(),"UTF-8"), String.join(",", metricKeys));
         return new URL(build.getServerUrl(), localPath);
     }

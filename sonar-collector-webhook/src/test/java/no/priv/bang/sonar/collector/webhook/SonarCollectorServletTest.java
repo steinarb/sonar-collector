@@ -77,10 +77,11 @@ public class SonarCollectorServletTest {
     @Test
     public void testReceiveSonarWebhookCall() throws ServletException, IOException, SQLException {
         URLConnectionFactory factory = mock(URLConnectionFactory.class);
-        InputStream measurementsBody = getClass().getClassLoader().getResourceAsStream("json/sonar/api-measures-component-get-many-metrics.json");
-        HttpURLConnection measurementsConnection = mock(HttpURLConnection.class);
-        when(measurementsConnection.getInputStream()).thenReturn(measurementsBody);
-        when(factory.openConnection(any())).thenReturn(measurementsConnection);
+        HttpURLConnection componentsShowConnection = createConnectionFromResource("json/sonar/api-components-show-version-1.0.0-SNAPSHOT.json");
+        HttpURLConnection measurementsConnection = createConnectionFromResource("json/sonar/api-measures-component-get-many-metrics.json");
+        when(factory.openConnection(any()))
+            .thenReturn(componentsShowConnection)
+            .thenReturn(measurementsConnection);
         HttpServletRequest request = mock(HttpServletRequest.class);
         ServletInputStream value = wrap(getClass().getClassLoader().getResourceAsStream("json/sonar/webhook-post.json"));
         when(request.getInputStream()).thenReturn(value);
@@ -136,44 +137,68 @@ public class SonarCollectorServletTest {
     public void testCallbackToSonarServerToGetMetrics() throws ServletException, IOException {
         MockLogService logservice = new MockLogService();
         URLConnectionFactory factory = mock(URLConnectionFactory.class);
+        HttpURLConnection componentsShowNoMavenVersion = createConnectionFromResource("json/sonar/api-components-show-component-not-found.json");
+        HttpURLConnection componentsShowWithSnapshot = createConnectionFromResource("json/sonar/api-components-show-version-1.0.0-SNAPSHOT.json");
+        HttpURLConnection componentsShow = createConnectionFromResource("json/sonar/api-components-show-version-1.0.0.json");
         HttpURLConnection[] connections = createConnectionFromResource("json/sonar/api-measures-component-get-many-metrics.json", 3);
         when(factory.openConnection(any()))
+            .thenReturn(componentsShowNoMavenVersion)
             .thenReturn(connections[0])
+            .thenReturn(componentsShowWithSnapshot)
             .thenReturn(connections[1])
+            .thenReturn(componentsShow)
             .thenReturn(connections[2]);
         SonarCollectorServlet servlet = new SonarCollectorServlet(factory);
         servlet.setLogservice(logservice);
         ServletRequest request = mock(ServletRequest.class);
-        ServletInputStream webhookPostBody = wrap(getClass().getClassLoader().getResourceAsStream("json/sonar/webhook-post.json"));
-        ServletInputStream webhookPostBodyWithMavenSnapshotVersion = wrap(getClass().getClassLoader().getResourceAsStream("json/sonar/webhook-post-with-snapshot-maven-version.json"));
-        ServletInputStream webhookPostBodyWithMavenVersion = wrap(getClass().getClassLoader().getResourceAsStream("json/sonar/webhook-post-with-maven-version.json"));
+        String resource = "json/sonar/webhook-post.json";
+        ServletInputStream[] webhookPostBody = createServletInputStreamFromResource(resource, 3);
         when(request.getInputStream())
-            .thenReturn(webhookPostBody)
-            .thenReturn(webhookPostBodyWithMavenSnapshotVersion)
-            .thenReturn(webhookPostBodyWithMavenVersion);
+            .thenReturn(webhookPostBody[0])
+            .thenReturn(webhookPostBody[1])
+            .thenReturn(webhookPostBody[2]);
 
-        long expectedTimeInMillisecondsSinceEpoch = ZonedDateTime.parse("2016-11-18T10:46:28+0100", SonarCollectorServlet.isoZonedDateTimeformatter).toEpochSecond() * 1000;
-        SonarBuild build = servlet.callbackToSonarServerToGetMetrics(request);
-        assertEquals("org.sonarqube:example", build.getProject());
-        assertEquals(expectedTimeInMillisecondsSinceEpoch, build.getAnalysedAt());
-        assertEquals("", build.getVersion());
-        assertEquals("http://localhost:9000", build.getServerUrl().toString());
+        long expectedTimeInMillisecondsSinceEpoch = ZonedDateTime.parse("2017-11-19T10:39:24+0100", SonarCollectorServlet.isoZonedDateTimeformatter).toEpochSecond() * 1000;
+        assertEquals("Expected no log messages initially", 0, logservice.getLogmessages().size());
+        SonarBuild buildWithNoMavenVersion = servlet.callbackToSonarServerToGetMetrics(request);
+        assertEquals("no.priv.bang.sonar.sonar-collector:parent", buildWithNoMavenVersion.getProject());
+        assertEquals(expectedTimeInMillisecondsSinceEpoch, buildWithNoMavenVersion.getAnalysedAt());
+        assertEquals("", buildWithNoMavenVersion.getVersion());
+        assertEquals("Expected a single warning log message from missing maven version", 1, logservice.getLogmessages().size());
+        assertEquals("http://localhost:9000", buildWithNoMavenVersion.getServerUrl().toString());
 
         SonarBuild buildWithMavenSnapshotVersion = servlet.callbackToSonarServerToGetMetrics(request);
-        assertEquals("org.sonarqube:example", buildWithMavenSnapshotVersion.getProject());
+        assertEquals("no.priv.bang.sonar.sonar-collector:parent", buildWithMavenSnapshotVersion.getProject());
         assertEquals(expectedTimeInMillisecondsSinceEpoch, buildWithMavenSnapshotVersion.getAnalysedAt());
         assertEquals("1.0.0-SNAPSHOT", buildWithMavenSnapshotVersion.getVersion());
         assertEquals("http://localhost:9000", buildWithMavenSnapshotVersion.getServerUrl().toString());
 
         SonarBuild buildWithMavenVersion = servlet.callbackToSonarServerToGetMetrics(request);
-        assertEquals("org.sonarqube:example", buildWithMavenVersion.getProject());
+        assertEquals("no.priv.bang.sonar.sonar-collector:parent", buildWithMavenVersion.getProject());
         assertEquals(expectedTimeInMillisecondsSinceEpoch, buildWithMavenVersion.getAnalysedAt());
         assertEquals("1.0.0", buildWithMavenVersion.getVersion());
         assertEquals("http://localhost:9000", buildWithMavenVersion.getServerUrl().toString());
     }
 
     @Test
-    public void testCreateGetMetricsUrl() throws ServletException, IOException {
+    public void testCreateSonarComponentsShowUrl() throws ServletException, IOException {
+        URLConnectionFactory factory = mock(URLConnectionFactory.class);
+        SonarCollectorServlet servlet = new SonarCollectorServlet(factory);
+        String[] metricKeys = servlet.getMetricKeys();
+        assertEquals(9, metricKeys.length);
+        String project = "no.priv.bang.ukelonn:parent";
+        URL serverUrl = new URL("http://localhost:9000");
+        URL metricsUrl = servlet.createSonarComponentsShowUrl(serverUrl, project);
+        assertEquals(serverUrl.getProtocol(), metricsUrl.getProtocol());
+        assertEquals(serverUrl.getHost(), metricsUrl.getHost());
+        assertEquals(serverUrl.getPort(), metricsUrl.getPort());
+        assertEquals("/api/components/show", metricsUrl.getPath());
+        String query = URLDecoder.decode(metricsUrl.getQuery(), "UTF-8");
+        assertThat(query, containsString(project));
+    }
+
+    @Test
+    public void testCreateSonarMeasurementsComponentUrl() throws ServletException, IOException {
         URLConnectionFactory factory = mock(URLConnectionFactory.class);
         SonarCollectorServlet servlet = new SonarCollectorServlet(factory);
         String[] metricKeys = servlet.getMetricKeys();
@@ -251,6 +276,15 @@ public class SonarCollectorServletTest {
         assertEquals(19, calendar.get(Calendar.DAY_OF_MONTH));
         assertEquals(10, calendar.get(Calendar.HOUR_OF_DAY));
         assertEquals(39, calendar.get(Calendar.MINUTE));
+    }
+
+    private ServletInputStream[] createServletInputStreamFromResource(String resource, int numberOfCopies) {
+        ServletInputStream[] streams = new ServletInputStream[numberOfCopies];
+        for(int i=0; i<numberOfCopies; ++i) {
+            streams[i] = wrap(getClass().getClassLoader().getResourceAsStream(resource));
+        }
+
+        return streams;
     }
 
     private HttpURLConnection[] createConnectionFromResource(String resource, int numberOfCopies) throws IOException {

@@ -57,6 +57,7 @@ import no.priv.bang.sonar.collector.webhook.SonarCollectorServlet;
 import no.priv.bang.sonar.collector.webhook.URLConnectionFactory;
 import no.priv.bang.sonar.collector.webhook.mocks.MockLogService;
 
+@SuppressWarnings("unchecked")
 public class SonarCollectorServletTest {
     private static DataSourceFactory dataSourceFactory;
 
@@ -72,6 +73,45 @@ public class SonarCollectorServletTest {
         Properties systemProperties = System.getProperties();
         systemProperties.putAll(testProperties);
         System.setProperties(systemProperties);
+    }
+
+    @Test
+    public void testGetExceptionWhenCreatingDatasource() throws IOException, SQLException {
+        MockLogService logservice = new MockLogService();
+        DataSourceFactory factory = mock(DataSourceFactory.class);
+        when(factory.createDataSource(any())).thenThrow(SQLException.class);
+        SonarCollectorServlet servlet = new SonarCollectorServlet();
+        servlet.setLogservice(logservice);
+
+        // Verify that nothing has been logged
+        assertEquals(0, logservice.getLogmessages().size());
+
+        // Get an exception when creating the datasource
+        servlet.setDataSourceFactory(factory);
+
+        // Verify that an two exceptions has been logged
+        // The expected SQLException and a NullPointerException further on
+        assertEquals(2, logservice.getLogmessages().size());
+    }
+
+    @Test
+    public void testGetExceptionWhenCreatingDbSchema() throws IOException, SQLException {
+        MockLogService logservice = new MockLogService();
+        DataSourceFactory factory = mock(DataSourceFactory.class);
+        DataSource datasource = mock(DataSource.class);
+        when(datasource.getConnection()).thenThrow(SQLException.class);
+        when(factory.createDataSource(any())).thenReturn(datasource);
+        SonarCollectorServlet servlet = new SonarCollectorServlet();
+        servlet.setLogservice(logservice);
+
+        // Verify that nothing has been logged
+        assertEquals(0, logservice.getLogmessages().size());
+
+        // Get an exception when connecting liquibase to  a database
+        servlet.setDataSourceFactory(factory);
+
+        // Verify that an exception has been logged
+        assertEquals(1, logservice.getLogmessages().size());
     }
 
     @Test

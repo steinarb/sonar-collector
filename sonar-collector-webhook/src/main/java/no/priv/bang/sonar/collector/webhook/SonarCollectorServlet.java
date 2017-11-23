@@ -87,13 +87,9 @@ public class SonarCollectorServlet extends HttpServlet {
         try {
             return dataSourceFactory.createDataSource(properties);
         } catch (SQLException e) {
-            logError("Sonar Collector servlet unable to connect to the database", e);
+            logservice.log(LogService.LOG_ERROR, "Sonar Collector servlet unable to connect to the database", e);
             return NullDataSource.getInstance(); // Return an object that can be safely used in try-with-resource
         }
-    }
-
-    private void logError(String message, Exception e) {
-        logservice.log(LogService.LOG_ERROR, message, e);
     }
 
     private void createSchemaWithLiquibase(DataSource db) {
@@ -104,7 +100,7 @@ public class SonarCollectorServlet extends HttpServlet {
             liquibase.clearCheckSums();
             liquibase.update("");
         } catch (Exception e) {
-            logError("Sonar Collector servlet unable to create or update the database schema", e);
+            logservice.log(LogService.LOG_ERROR, "Sonar Collector servlet unable to create or update the database schema", e);
         }
     }
 

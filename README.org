@@ -74,7 +74,6 @@ Do the following steps as root
     #+BEGIN_EXAMPLE
       dpkg --install /tmp/karaf-deb-packaging/karaf_4.1.2-1_all.deb
     #+END_EXAMPLE
-
 *** Install the application in karaf
 
 Procedure:
@@ -95,6 +94,34 @@ Procedure:
       feature:repo-add mvn:no.priv.bang.sonar.sonar-collector/sonar-collector-webhook/LATEST/xml/features
       feature:install sonar-collector-webhook
     #+END_EXAMPLE
+
+*** Add a webhook to Sonar
+
+**** Add a webhook to SonarCloud
+
+Procedure:
+ 1. Open your SonarCloud project in a web browser and log in as a user with ownership to the project (I do login as github user)
+ 2. In the project select the menu Administration->General Settings
+ 3. Select the webhooks tab in the tab bar on the left side of the page (you may have to scroll down to see it)
+ 4. In "Name:", write:
+    : sonar-collecttor
+ 5. In "URL", write:
+    : https://mydowmain.com:8181/sonar-collector
+ 6. Click the button "Save"
+
+**** Add a webhook to a hosted SonarQube instance
+
+In a hosted SonarQube the webhook can be set globally across all projects.
+
+Procedure:
+ 1. Open your SonarCloud instance in a web browser, e.g. http://localhost:9000 and log in as an admin user (admin/admin in a test instance)
+ 2. In the top menu, select Administration
+ 3. Select the tab "Webhooks" in the list to the left of the page (you may have to scroll down to see the tab)
+ 4. In "Name", type:
+    : sonar-collector
+ 5. In "URL", type:
+    : http://localhost:8181/sonar-collector
+ 6. Click the button "Save"
 
 ** License
 

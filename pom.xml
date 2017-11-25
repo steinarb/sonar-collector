@@ -21,6 +21,7 @@
     <packaging>pom</packaging>
 
     <name>SonarQube data collector parent project</name>
+    <description>An apache karaf microservice to capture SonarQube/SonarCloud key measures and save statistics to a PostgreSQL database.</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -346,5 +347,40 @@
             <url>ftp://maven.bang.priv.no/repository</url>
         </snapshotRepository>
     </distributionManagement>
+
+    <licenses>
+        <license>
+            <name>Apache License version 2</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Steinar Bang</name>
+            <email>sb@dod.no</email>
+            <url>https://steinar.bang.priv.no/</url>
+            <organization>steinarb-github</organization>
+            <organizationUrl>https://github.com/steinarb</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <url>https://github.com/steinarb/sonar-collector</url>
+        <connection>scm:git:https://github.com/steinarb/sonar-collector.git</connection>
+        <tag>HEAD</tag>
+    </scm>
+
+    <issueManagement>
+        <url>https://github.com/steinarb/sonar-collector/issues</url>
+        <system>Github issue tracker</system>
+    </issueManagement>
+
+    <ciManagement>
+        <url>https://travis-ci.org/steinarb/sonar-collector</url>
+        <system>travis-ci</system>
+    </ciManagement>
+
+    <url>http://steinarb.github.io/sonar-collector/</url>
 
 </project>

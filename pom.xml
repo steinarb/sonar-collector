@@ -21,7 +21,7 @@
     <packaging>pom</packaging>
 
     <name>SonarQube data collector parent project</name>
-    <description>An apache karaf microservice to capture SonarQube/SonarCloud key measures and save statistics to a PostgreSQL database.</description>
+    <description>Apache karaf microservices to capture statistics over SonarQube/SonarCloud key measures.</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

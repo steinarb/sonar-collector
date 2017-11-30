@@ -22,6 +22,7 @@
     <artifactId>sonar-collector-webhook</artifactId>
 
     <name>SonarQube data collector webhook</name>
+    <description>An apache karaf microservice to capture SonarQube/SonarCloud key measures and save statistics to a PostgreSQL database.</description>
 
     <properties>
         <karaf-feature-name>sonar-collector-webhook</karaf-feature-name>

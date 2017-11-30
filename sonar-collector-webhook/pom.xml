@@ -54,6 +54,10 @@
             <artifactId>org.osgi.service.log</artifactId>
         </dependency>
         <dependency>
+            <groupId>no.priv.bang.osgi.service.adapters</groupId>
+            <artifactId>logservice</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.service.jdbc</artifactId>
         </dependency>

@@ -50,6 +50,7 @@ import liquibase.Liquibase;
 import liquibase.database.DatabaseConnection;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.resource.ClassLoaderResourceAccessor;
+import no.priv.bang.osgi.service.adapters.logservice.LogServiceAdapter;
 
 @Component(service={Servlet.class}, property={"alias=/sonar-collector"} )
 public class SonarCollectorServlet extends HttpServlet {
@@ -78,7 +79,7 @@ public class SonarCollectorServlet extends HttpServlet {
 
     @Reference
     public void setLogservice(LogService logservice) {
-        this.logservice.setService(logservice);
+        this.logservice.setLogService(logservice);
     }
 
     private DataSource connectDataSource(DataSourceFactory dataSourceFactory) {

@@ -38,6 +38,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.jdbc.DataSourceFactory;
@@ -52,11 +53,10 @@ import liquibase.database.jvm.JdbcConnection;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import no.priv.bang.osgi.service.adapters.logservice.LogServiceAdapter;
 
-@Component(service={Servlet.class}, property={"alias=/sonar-collector"} )
+@Component(service={Servlet.class}, property={"alias=/sonar-collector", "configurationPid=no.priv.bang.sonar.sonar-collector-webhook"} )
 public class SonarCollectorServlet extends HttpServlet {
     private static final long serialVersionUID = -8421243385012454373L;
     private static final String SONAR_MEASURES_COMPONENTS_METRIC_KEYS = "sonar.measures.components.metricKeys";
-    private static final String SONARCOLLECTOR_JDBCURL = "sonar.collector.jdbcurl";
     // A formatter that's able to parse ISO dates without colons in the time zone spec
     static final DateTimeFormatter isoZonedDateTimeformatter = new DateTimeFormatterBuilder()
         .append(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
@@ -68,13 +68,13 @@ public class SonarCollectorServlet extends HttpServlet {
     private final URLConnectionFactory factory;
     static final ObjectMapper mapper = new ObjectMapper();
     final DataSourceAdapter dataSource = new DataSourceAdapter();
+    private final DataSourceFactoryAdapter dataSourceFactory = new DataSourceFactoryAdapter();
     private final LogServiceAdapter logservice = new LogServiceAdapter();
+    private final SonarCollectorConfiguration configuration = new SonarCollectorConfiguration(logservice);
 
     @Reference
     public void setDataSourceFactory(DataSourceFactory dataSourceFactory) {
-        DataSource db = connectDataSource(dataSourceFactory);
-        createSchemaWithLiquibase(db);
-        dataSource.setDatasource(db);
+        this.dataSourceFactory.setFactory(dataSourceFactory);
     }
 
     @Reference
@@ -82,9 +82,16 @@ public class SonarCollectorServlet extends HttpServlet {
         this.logservice.setLogService(logservice);
     }
 
+    @Activate
+    public void activate(Map<String, Object> config) {
+        configuration.setConfig(config);
+        DataSource db = connectDataSource(dataSourceFactory);
+        createSchemaWithLiquibase(db);
+        dataSource.setDatasource(db);
+    }
+
     private DataSource connectDataSource(DataSourceFactory dataSourceFactory) {
-        Properties properties = new Properties();
-        properties.setProperty(DataSourceFactory.JDBC_URL, getJdbcUrl());
+        Properties properties = configuration.getJdbcConnectionProperties();
         try {
             return dataSourceFactory.createDataSource(properties);
         } catch (SQLException e) {
@@ -204,10 +211,6 @@ public class SonarCollectorServlet extends HttpServlet {
 
     public String[] getMetricKeys() {
         return System.getProperty(SONAR_MEASURES_COMPONENTS_METRIC_KEYS, applicationProperties.getProperty(SONAR_MEASURES_COMPONENTS_METRIC_KEYS)).split(",");
-    }
-
-    public String getJdbcUrl() {
-        return System.getProperty(SONARCOLLECTOR_JDBCURL, applicationProperties.getProperty(SONARCOLLECTOR_JDBCURL));
     }
 
     public URL createSonarComponentsShowUrl(URL serverUrl, String project) throws IOException {

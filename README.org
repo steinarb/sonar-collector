@@ -50,8 +50,11 @@ As root, do the following command:
 Procedure:
  1. Create a PostgreSQL user matching the karaf user:
     #+BEGIN_EXAMPLE
-      /usr/bin/sudo -u postgres createuser karaf
+      /usr/bin/sudo -u postgres createuser --pwprompt karaf
     #+END_EXAMPLE
+    1. At the prompt "Enter password for new role", enter the JDBC password for user "karaf"
+    2. At the prompt "Enter it again", enter the same password again
+    Make a note of this password, since it will be needed later, when [[Using a database running on a different host][setting up a password authenticated connection]]
  2. Create an empty database owned by the karaf user:
     #+BEGIN_EXAMPLE
       /usr/bin/sudo -u postgres createdb -O karaf sonarcollector
@@ -93,6 +96,60 @@ Procedure:
     #+BEGIN_EXAMPLE
       feature:repo-add mvn:no.priv.bang.sonar.sonar-collector/sonar-collector-webhook/LATEST/xml/features
       feature:install sonar-collector-webhook
+    #+END_EXAMPLE
+**** Using a database running on a different host
+
+The above example shows connecting to a PostgreSQL database running on localhost, authenticating with ident authentication (ie. no password).
+
+This example shows how to connect to a PostgreSQL database running on a different host, authenticating using username and password.
+
+Procedure:
+ 1. SSH into karaf
+    #+BEGIN_EXAMPLE
+      ssh -p 8101 karaf@localhost
+    #+END_EXAMPLE
+    The password is "karaf" (without the quotes)
+ 2. In the karaf command shell, create configuration for the JDBC connection:
+    #+BEGIN_EXAMPLE
+      config:edit no.priv.bang.sonar.collector.webhook.SonarCollectorServlet
+      config:property-set sonar.collector.jdbc.url "jdbc:postgresql://lorenzo.hjemme.lan/sonarcollector"
+      config:property-set sonar.collector.jdbc.user "karaf"
+      config:property-set sonar.collector.jdbc.password "karaf"
+      config:update
+    #+END_EXAMPLE
+    (this assumes the username/password combination karaf/karaf, it is recommended to use a different password in a real setting with PostgreSQL accepting network connections)
+
+The "config:update" command will cause the sonar collector to be restarted, it will pick up the new configuration, and connect to the remote server, and if the "sonar-collector" database exists as a blank database, create the schema and be ready to store data there.
+
+Side note: The configuration will be stored in standard .properties file format, in the file /etc/karaf/no.priv.bang.sonar.collector.webhook.SonarCollectorServlet.cfg and be persistent across restarts and reinstallations of the karaf .deb package (the .deb package will only uninstall/reinstall unchanged known files in this directory, and won't touch unknown files at all).
+
+***** Allowing network connections in PostgreSQL on debian
+
+Note that PostgreSQL out of the box on debian only accepts domain connections and localhost connections.
+
+To make PostgreSQL listen on all network connections, two files must be edited and the PostgreSQL daemon must be restarted.
+
+Procedure, do the following, logged in as root on the server:
+ 1. Do "su" to user postgres to get the right ownership on the files
+    #+BEGIN_EXAMPLE
+      su - postgres
+    #+END_EXAMPLE
+ 2. Edit the /etc/postgresql/9.6/main/postgresql.conf file, uncomment the listen_address line and edit it to look like this
+    #+BEGIN_SRC conf
+      listen_addresses = '*'                  # what IP address(es) to listen on;
+    #+END_SRC
+ 3. Edit the /etc/postgresql/9.6/main/pg_hba.conf, add the following lines
+    #+BEGIN_SRC conf
+      # IPv4 network connection allow password authentication
+      host    all             all             0.0.0.0/0               md5
+    #+END_SRC
+ 4. Log out from user postgres (only root can restart the daemon):
+    #+BEGIN_EXAMPLE
+      exit
+    #+END_EXAMPLE
+ 5. Restart the postgresql daemon
+    #+BEGIN_EXAMPLE
+      systemctl restart postgresql
     #+END_EXAMPLE
 
 *** Add a webhook to Sonar

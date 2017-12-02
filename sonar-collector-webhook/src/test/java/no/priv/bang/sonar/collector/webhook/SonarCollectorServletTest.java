@@ -30,8 +30,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.TimeZone;
 
@@ -86,8 +88,12 @@ public class SonarCollectorServletTest {
         // Verify that nothing has been logged
         assertEquals(0, logservice.getLogmessages().size());
 
-        // Get an exception when creating the datasource
+        // Get no exception when creating the datasource
         servlet.setDataSourceFactory(factory);
+        assertEquals(0, logservice.getLogmessages().size());
+
+        // Activation of the component will cause the exception
+        servlet.activate(null);
 
         // Verify that an two exceptions has been logged
         // The expected SQLException and a NullPointerException further on
@@ -107,8 +113,12 @@ public class SonarCollectorServletTest {
         // Verify that nothing has been logged
         assertEquals(0, logservice.getLogmessages().size());
 
-        // Get an exception when connecting liquibase to  a database
+        // Get no exception when setting the connection factory
         servlet.setDataSourceFactory(factory);
+        assertEquals(0, logservice.getLogmessages().size());
+
+        // Get an exception when the activate method tries connecting liquibase to a database
+        servlet.activate(null);
 
         // Verify that an exception has been logged
         assertEquals(1, logservice.getLogmessages().size());
@@ -131,6 +141,7 @@ public class SonarCollectorServletTest {
         SonarCollectorServlet servlet = new SonarCollectorServlet(factory);
         servlet.setDataSourceFactory(dataSourceFactory);
         servlet.setLogservice(logservice);
+        servlet.activate(null);
 
         // Check preconditions
         assertEquals(0, countRowsOfTableMeasures(servlet.dataSource));
@@ -289,10 +300,10 @@ public class SonarCollectorServletTest {
     }
 
     @Test
-    public void testGetJdbcUrl() throws IOException {
+    public void testInjectConfigFromKaraf() throws IOException {
         SonarCollectorServlet servlet = new SonarCollectorServlet();
-        String jdbcurl = servlet.getJdbcUrl();
-        assertEquals("jdbc:derby:memory:ukelonn;create=true", jdbcurl);
+        Map<String, Object> configFromKaraf = Collections.emptyMap();
+        servlet.activate(configFromKaraf);
     }
 
     @Test

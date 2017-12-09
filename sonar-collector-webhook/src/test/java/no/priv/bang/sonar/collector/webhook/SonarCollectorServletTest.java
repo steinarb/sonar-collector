@@ -45,6 +45,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -62,19 +63,32 @@ import no.priv.bang.sonar.collector.webhook.mocks.MockLogService;
 @SuppressWarnings("unchecked")
 public class SonarCollectorServletTest {
     private static DataSourceFactory dataSourceFactory;
+    private static Properties originalSystemProperties;
 
     @BeforeClass
     public static void beforeClass() throws IOException {
-        addTestPropertiesToSystemProperties();
+        originalSystemProperties = addTestPropertiesToSystemProperties();
         dataSourceFactory = new DerbyDataSourceFactory();
     }
 
-    private static void addTestPropertiesToSystemProperties() throws IOException {
+    private static Properties addTestPropertiesToSystemProperties() throws IOException {
+        Properties originalSystemProperties = (Properties) System.getProperties().clone();
         Properties testProperties = new Properties();
         testProperties.load(SonarCollectorServletTest.class.getClassLoader().getResourceAsStream("application-test.properties"));
         Properties systemProperties = System.getProperties();
         systemProperties.putAll(testProperties);
         System.setProperties(systemProperties);
+
+        return originalSystemProperties;
+    }
+
+    @AfterClass
+    public static void afterClass() {
+        restoreSystemPropertiesToOriginalState();
+    }
+
+    private static void restoreSystemPropertiesToOriginalState() {
+        System.setProperties(originalSystemProperties);
     }
 
     @Test

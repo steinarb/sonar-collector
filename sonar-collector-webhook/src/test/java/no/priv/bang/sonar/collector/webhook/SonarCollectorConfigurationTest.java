@@ -45,6 +45,7 @@ public class SonarCollectorConfigurationTest {
         assertEquals("jdbc:postgresql:///sonarcollector", jdbcConnectionProperties.getProperty(DataSourceFactory.JDBC_URL));
         assertNull(jdbcConnectionProperties.getProperty(DataSourceFactory.JDBC_USER));
         assertNull(jdbcConnectionProperties.getProperty(DataSourceFactory.JDBC_PASSWORD));
+        assertEquals(9, configuration.getMetricKeys().length);
     }
 
     /**
@@ -64,6 +65,7 @@ public class SonarCollectorConfigurationTest {
         assertEquals("jdbc:postgresql:///sonarcollector", jdbcConnectionProperties.getProperty(DataSourceFactory.JDBC_URL));
         assertNull(jdbcConnectionProperties.getProperty(DataSourceFactory.JDBC_USER));
         assertNull(jdbcConnectionProperties.getProperty(DataSourceFactory.JDBC_PASSWORD));
+        assertEquals(9, configuration.getMetricKeys().length);
     }
 
     /**
@@ -82,6 +84,7 @@ public class SonarCollectorConfigurationTest {
             injectedConfig.put(SonarCollectorConfiguration.SONARCOLLECTOR_JDBC_URL, "jdbc:postgresql://lorenzo.hjemme.lan/sonarcollector");
             injectedConfig.put(SonarCollectorConfiguration.SONARCOLLECTOR_JDBC_USER, "karaf");
             injectedConfig.put(SonarCollectorConfiguration.SONARCOLLECTOR_JDBC_PASS, "kafar");
+            injectedConfig.put(SonarCollectorConfiguration.SONAR_MEASURES_COMPONENTS_METRIC_KEYS, "lines,bugs,new_bugs,vulnerabilities,new_vulnerabilities,code_smells");
 
             // Set a system property that should not be picked up, since the injected config is picked first
             System.setProperty(SonarCollectorConfiguration.SONARCOLLECTOR_JDBC_USER, "notausername");
@@ -92,6 +95,7 @@ public class SonarCollectorConfigurationTest {
             assertEquals("jdbc:postgresql://lorenzo.hjemme.lan/sonarcollector", jdbcConnectionProperties.getProperty(DataSourceFactory.JDBC_URL));
             assertEquals("karaf", jdbcConnectionProperties.getProperty(DataSourceFactory.JDBC_USER));
             assertEquals("kafar", jdbcConnectionProperties.getProperty(DataSourceFactory.JDBC_PASSWORD));
+            assertEquals(6, configuration.getMetricKeys().length);
         } finally {
             // Restore the original system properties
             System.setProperties(originalProperties);
@@ -116,12 +120,14 @@ public class SonarCollectorConfigurationTest {
             System.setProperty(SonarCollectorConfiguration.SONARCOLLECTOR_JDBC_URL, "jdbc:postgresql://lorenzo.hjemme.lan/sonarcollector");
             System.setProperty(SonarCollectorConfiguration.SONARCOLLECTOR_JDBC_USER, "karaf");
             System.setProperty(SonarCollectorConfiguration.SONARCOLLECTOR_JDBC_PASS, "kafar");
+            System.setProperty(SonarCollectorConfiguration.SONAR_MEASURES_COMPONENTS_METRIC_KEYS, "lines,bugs,new_bugs,vulnerabilities,new_vulnerabilities,code_smells,new_code_smells,coverage");
 
             Properties jdbcConnectionProperties = configuration.getJdbcConnectionProperties();
 
             assertEquals("jdbc:postgresql://lorenzo.hjemme.lan/sonarcollector", jdbcConnectionProperties.getProperty(DataSourceFactory.JDBC_URL));
             assertEquals("karaf", jdbcConnectionProperties.getProperty(DataSourceFactory.JDBC_USER));
             assertEquals("kafar", jdbcConnectionProperties.getProperty(DataSourceFactory.JDBC_PASSWORD));
+            assertEquals(8, configuration.getMetricKeys().length);
         } finally {
             // Restore the original system properties
             System.setProperties(originalProperties);

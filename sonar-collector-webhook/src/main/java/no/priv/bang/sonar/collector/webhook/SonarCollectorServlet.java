@@ -56,7 +56,6 @@ import no.priv.bang.osgi.service.adapters.logservice.LogServiceAdapter;
 @Component(service={Servlet.class}, property={"alias=/sonar-collector", "configurationPid=no.priv.bang.sonar.sonar-collector-webhook"} )
 public class SonarCollectorServlet extends HttpServlet {
     private static final long serialVersionUID = -8421243385012454373L;
-    private static final String SONAR_MEASURES_COMPONENTS_METRIC_KEYS = "sonar.measures.components.metricKeys";
     // A formatter that's able to parse ISO dates without colons in the time zone spec
     static final DateTimeFormatter isoZonedDateTimeformatter = new DateTimeFormatterBuilder()
         .append(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
@@ -151,7 +150,7 @@ public class SonarCollectorServlet extends HttpServlet {
             String version = componentsShowRoot.path("component").path("version").asText();
             SonarBuild build = new SonarBuild(analysedAt, project, version, serverUrl);
             logWarningIfVersionIsMissing(build, componentsShowUrl);
-            URL measurementsUrl = createSonarMeasurementsComponentUrl(build, getMetricKeys());
+            URL measurementsUrl = createSonarMeasurementsComponentUrl(build, configuration.getMetricKeys());
             HttpURLConnection measurementsUrlConnection = openConnection(measurementsUrl);
             JsonNode measurementsRoot = mapper.readTree(measurementsUrlConnection.getInputStream());
             parseMeasures(build.getMeasurements(), measurementsRoot.path("component").path("measures"));
@@ -209,10 +208,6 @@ public class SonarCollectorServlet extends HttpServlet {
         return measuresResults;
     }
 
-    public String[] getMetricKeys() {
-        return System.getProperty(SONAR_MEASURES_COMPONENTS_METRIC_KEYS, applicationProperties.getProperty(SONAR_MEASURES_COMPONENTS_METRIC_KEYS)).split(",");
-    }
-
     public URL createSonarComponentsShowUrl(URL serverUrl, String project) throws IOException {
         String localPath = String.format("/api/components/show?component=%s", URLEncoder.encode(project,"UTF-8"));
         return new URL(serverUrl, localPath);
@@ -225,6 +220,10 @@ public class SonarCollectorServlet extends HttpServlet {
 
     HttpURLConnection openConnection(URL url) throws IOException {
         return factory.openConnection(url);
+    }
+
+    public SonarCollectorConfiguration getConfiguration() {
+        return configuration;
     }
 
 }

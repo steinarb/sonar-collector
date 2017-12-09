@@ -249,7 +249,7 @@ public class SonarCollectorServletTest {
     public void testCreateSonarComponentsShowUrl() throws ServletException, IOException {
         URLConnectionFactory factory = mock(URLConnectionFactory.class);
         SonarCollectorServlet servlet = new SonarCollectorServlet(factory);
-        String[] metricKeys = servlet.getMetricKeys();
+        String[] metricKeys = servlet.getConfiguration().getMetricKeys();
         assertEquals(9, metricKeys.length);
         String project = "no.priv.bang.ukelonn:parent";
         URL serverUrl = new URL("http://localhost:9000");
@@ -266,7 +266,7 @@ public class SonarCollectorServletTest {
     public void testCreateSonarMeasurementsComponentUrl() throws ServletException, IOException {
         URLConnectionFactory factory = mock(URLConnectionFactory.class);
         SonarCollectorServlet servlet = new SonarCollectorServlet(factory);
-        String[] metricKeys = servlet.getMetricKeys();
+        String[] metricKeys = servlet.getConfiguration().getMetricKeys();
         assertEquals(9, metricKeys.length);
         String project = "no.priv.bang.ukelonn:parent";
         URL serverUrl = new URL("http://localhost:9000");
@@ -286,7 +286,7 @@ public class SonarCollectorServletTest {
         JsonNode measuresNode = root.path("component").path("measures");
         SonarCollectorServlet servlet = new SonarCollectorServlet();
 
-        String[] metricKeys = servlet.getMetricKeys();
+        String[] metricKeys = servlet.getConfiguration().getMetricKeys();
         HashMap<String, String> measures = new HashMap<>();
         servlet.parseMeasures(measures, measuresNode);
         assertEquals(metricKeys.length, measures.size());

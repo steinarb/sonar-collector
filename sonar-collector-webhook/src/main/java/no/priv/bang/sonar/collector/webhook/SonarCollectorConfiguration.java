@@ -35,6 +35,7 @@ public class SonarCollectorConfiguration {
     static final String SONARCOLLECTOR_JDBC_URL = "sonar.collector.jdbc.url";
     static final String SONARCOLLECTOR_JDBC_USER = "sonar.collector.jdbc.user";
     static final String SONARCOLLECTOR_JDBC_PASS = "sonar.collector.jdbc.password";
+    static final String SONAR_MEASURES_COMPONENTS_METRIC_KEYS = "sonar.measures.components.metricKeys";
     private final Properties applicationProperties = new Properties();
     private Map<String, Object> injectedconfig = Collections.emptyMap();
 
@@ -73,6 +74,24 @@ public class SonarCollectorConfiguration {
         setPropertyIfNotNull(properties, DataSourceFactory.JDBC_USER, SonarCollectorConfiguration.SONARCOLLECTOR_JDBC_USER);
         setPropertyIfNotNull(properties, DataSourceFactory.JDBC_PASSWORD, SonarCollectorConfiguration.SONARCOLLECTOR_JDBC_PASS);
         return properties;
+    }
+
+    /**
+     * Retrieve the list of metrics that should be retrieved from Sonar
+     * First the injected config is used to find the values, and if nothing
+     * is there, the fallback is to the system property and the final
+     * fallback is the built-in application.properties.
+     *
+     * @return a list of the metrics that will be retrieved from Sonar
+     */
+    public String[] getMetricKeys() {
+        // Settings made in karaf configuration takes precedence
+        Object metricKeysFromKarafConfig = injectedconfig.get(SONAR_MEASURES_COMPONENTS_METRIC_KEYS);
+        if (metricKeysFromKarafConfig != null) {
+            return ((String) metricKeysFromKarafConfig).split(",");
+        }
+
+        return System.getProperty(SONAR_MEASURES_COMPONENTS_METRIC_KEYS, applicationProperties.getProperty(SONAR_MEASURES_COMPONENTS_METRIC_KEYS)).split(",");
     }
 
     public String getJdbcUrl() {

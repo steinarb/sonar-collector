@@ -37,7 +37,7 @@
         <liquibase.version>3.5.3</liquibase.version>
         <liquibase-slf4j.version>2.0.0</liquibase-slf4j.version>
         <jackson.version>2.8.7</jackson.version>
-        <osgi-service-adaptors.version>1.0.0</osgi-service-adaptors.version>
+        <osgi-service-adaptors.version>1.0.1-SNAPSHOT</osgi-service-adaptors.version>
     </properties>
 
     <modules>
@@ -85,6 +85,12 @@
             <dependency>
                 <groupId>no.priv.bang.osgi.service.adapters</groupId>
                 <artifactId>logservice</artifactId>
+                <version>${osgi-service-adaptors.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>no.priv.bang.osgi.service.adapters</groupId>
+                <artifactId>jdbc</artifactId>
                 <version>${osgi-service-adaptors.version}</version>
                 <scope>provided</scope>
             </dependency>

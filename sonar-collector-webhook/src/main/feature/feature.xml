@@ -5,10 +5,10 @@
     <feature name="${karaf-feature-name}">
         <capability>osgi.service;effective:=active;objectClass=org.osgi.service.jdbc.DataSourceFactory</capability>
         <feature>adapter-for-osgi-logservice</feature>
+        <feature>adapters-for-osgi-jdbc-services</feature>
         <feature>pax-http-whiteboard</feature>
         <feature>jackson-core</feature>
         <feature>jackson-databind</feature>
-        <feature>pax-jdbc-spec</feature>
         <feature>liquibase-core</feature>
     </feature>
 </features>

@@ -51,6 +51,8 @@ import liquibase.Liquibase;
 import liquibase.database.DatabaseConnection;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.resource.ClassLoaderResourceAccessor;
+import no.priv.bang.osgi.service.adapters.jdbc.DataSourceAdapter;
+import no.priv.bang.osgi.service.adapters.jdbc.DataSourceFactoryAdapter;
 import no.priv.bang.osgi.service.adapters.logservice.LogServiceAdapter;
 
 @Component(service={Servlet.class}, property={"alias=/sonar-collector", "configurationPid=no.priv.bang.sonar.sonar-collector-webhook"} )

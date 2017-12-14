@@ -8,7 +8,7 @@
         "measures": [
             {
                 "metric": "vulnerabilities",
-                "value": "3",
+                "value": "0",
                 "periods": [
                     {
                         "index": 1,
@@ -21,16 +21,7 @@
                 "periods": [
                     {
                         "index": 1,
-                        "value": "1"
-                    }
-                ]
-            },
-            {
-                "metric": "new_coverage",
-                "periods": [
-                    {
-                        "index": 1,
-                        "value": "92.9824561403509"
+                        "value": "0"
                     }
                 ]
             },
@@ -46,7 +37,7 @@
             },
             {
                 "metric": "code_smells",
-                "value": "3",
+                "value": "0",
                 "periods": [
                     {
                         "index": 1,
@@ -56,7 +47,7 @@
             },
             {
                 "metric": "bugs",
-                "value": "5",
+                "value": "0",
                 "periods": [
                     {
                         "index": 1,
@@ -69,7 +60,7 @@
                 "periods": [
                     {
                         "index": 1,
-                        "value": "2"
+                        "value": "0"
                     }
                 ]
             },
@@ -88,13 +79,13 @@
                 "periods": [
                     {
                         "index": 1,
-                        "value": "1"
+                        "value": "0"
                     }
                 ]
             },
             {
                 "metric": "coverage",
-                "value": "100.0",
+                "value": "0.0",
                 "periods": [
                     {
                         "index": 1,

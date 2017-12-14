@@ -173,7 +173,7 @@ public class SonarCollectorServlet extends HttpServlet {
     private int saveMeasuresInDatabase(SonarBuild build) throws SQLException {
         boolean isRelease = versionIsReleaseVersion(build.getVersion());
         try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement statement = connection.prepareStatement("insert into measures (project_key, version, version_is_release, analysis_time, lines, bugs, new_bugs, vulnerabilities, new_vulnerabilities, code_smells, new_code_smells, coverage, new_coverage) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+            try (PreparedStatement statement = connection.prepareStatement("insert into measures (project_key, version, version_is_release, analysis_time, lines, bugs, new_bugs, vulnerabilities, new_vulnerabilities, code_smells, new_code_smells, coverage, new_coverage, complexity) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
                 statement.setString(1, build.getProject());
                 statement.setString(2, build.getVersion());
                 statement.setBoolean(3, isRelease);
@@ -187,6 +187,7 @@ public class SonarCollectorServlet extends HttpServlet {
                 statement.setLong(11, Long.valueOf(build.getMeasurements().get("new_code_smells")));
                 statement.setDouble(12, Double.valueOf(build.getMeasurements().get("coverage")));
                 statement.setDouble(13, Double.valueOf(build.getMeasurements().get("new_coverage")));
+                statement.setLong(14, Long.valueOf(build.getMeasurements().get("complexity")));
 
                 return statement.executeUpdate();
             }

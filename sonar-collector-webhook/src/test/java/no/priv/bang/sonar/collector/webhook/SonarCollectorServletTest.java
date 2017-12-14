@@ -17,6 +17,7 @@ package no.priv.bang.sonar.collector.webhook;
 
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
@@ -27,12 +28,15 @@ import java.net.URLDecoder;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TimeZone;
@@ -158,6 +162,7 @@ public class SonarCollectorServletTest {
         servlet.activate(null);
 
         // Check preconditions
+        truncateMeasuresTable(servlet.dataSource);
         assertEquals(0, countRowsOfTableMeasures(servlet.dataSource));
 
         // Run the code under test
@@ -165,6 +170,76 @@ public class SonarCollectorServletTest {
 
         // Check that a measurement has been stored
         assertEquals(1, countRowsOfTableMeasures(servlet.dataSource));
+
+        // Check the contents of the measurement row
+        List<Map<String, Object>> measuresRows = getRowsOfTableMeasures(servlet.dataSource);
+        Map<String, Object> measuresRow = measuresRows.get(0);
+        assertEquals(15, measuresRow.size());
+        assertEquals("no.priv.bang.sonar.sonar-collector:parent", measuresRow.get("PROJECT_KEY"));
+        assertEquals("1.0.0-SNAPSHOT", measuresRow.get("VERSION"));
+        assertEquals(false, measuresRow.get("VERSION_IS_RELEASE"));
+        assertEquals(1086L, measuresRow.get("LINES"));
+        assertEquals(5L, measuresRow.get("BUGS"));
+        assertEquals(2L, measuresRow.get("NEW_BUGS"));
+        assertEquals(3L, measuresRow.get("VULNERABILITIES"));
+        assertEquals(1L, measuresRow.get("NEW_VULNERABILITIES"));
+        assertEquals(3L, measuresRow.get("CODE_SMELLS"));
+        assertEquals(1L, measuresRow.get("NEW_CODE_SMELLS"));
+        assertEquals(100.0, measuresRow.get("COVERAGE"));
+        assertEquals(92.98, ((Double)measuresRow.get("NEW_COVERAGE")).doubleValue(), 0.01);
+        assertEquals(56L, measuresRow.get("COMPLEXITY"));
+    }
+
+    /**
+     * Corner case test: check what happens when "new_coverage" is missing from the returned
+     * data (this happens when there is no new code to cover).
+     *
+     * @throws ServletException
+     * @throws IOException
+     * @throws SQLException
+     */
+    @Test
+    public void testReceiveSonarWebhookCallNoNewCoverage() throws ServletException, IOException, SQLException {
+        URLConnectionFactory factory = mock(URLConnectionFactory.class);
+        HttpURLConnection componentsShowConnection = createConnectionFromResource("json/sonar/api-components-show-version-1.0.0-SNAPSHOT.json");
+        HttpURLConnection measurementsConnection = createConnectionFromResource("json/sonar/api-measures-component-get-many-metrics-no-new_coverage.json");
+        when(factory.openConnection(any()))
+            .thenReturn(componentsShowConnection)
+            .thenReturn(measurementsConnection);
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        ServletInputStream value = wrap(getClass().getClassLoader().getResourceAsStream("json/sonar/webhook-post.json"));
+        when(request.getInputStream()).thenReturn(value);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        MockLogService logservice = new MockLogService();
+
+        SonarCollectorServlet servlet = new SonarCollectorServlet(factory);
+        servlet.setDataSourceFactory(dataSourceFactory);
+        servlet.setLogservice(logservice);
+        servlet.activate(null);
+
+        // Check preconditions
+        truncateMeasuresTable(servlet.dataSource);
+        assertEquals(0, countRowsOfTableMeasures(servlet.dataSource));
+
+        // Run the code under test
+        servlet.doPost(request, response);
+
+        // Check that a measurement has been stored
+        assertEquals(1, countRowsOfTableMeasures(servlet.dataSource));
+
+        // Check the contents of the measurement row
+        List<Map<String, Object>> measuresRows = getRowsOfTableMeasures(servlet.dataSource);
+        Map<String, Object> measuresRow = measuresRows.get(0);
+        assertEquals(15, measuresRow.size());
+        assertEquals(0.0, ((Double)measuresRow.get("NEW_COVERAGE")).doubleValue(), 0.01);
+    }
+
+    private void truncateMeasuresTable(DataSource dataSource) throws SQLException {
+        try(Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement("truncate table measures")) {
+                statement.executeUpdate();
+            }
+        }
     }
 
     private int countRowsOfTableMeasures(DataSource dataSource) throws SQLException {
@@ -179,6 +254,39 @@ public class SonarCollectorServletTest {
         }
 
         return 0;
+    }
+
+    private List<Map<String, Object>> getRowsOfTableMeasures(DataSource dataSource) throws SQLException {
+        List<Map<String, Object>> rows = new ArrayList<>();
+
+        try(Connection connection = dataSource.getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement("select * from measures")) {
+                try (ResultSet resultset = statement.executeQuery()) {
+                    List<String> columnnames = getColumnNames(resultset);
+                    while (resultset.next()) {
+                        Map<String, Object> row = new HashMap<>();
+                        for (String columnname : columnnames) {
+                            row.put(columnname, resultset.getObject(columnname));
+                        }
+
+                        rows.add(row);
+                    }
+                }
+            }
+        }
+
+        return rows;
+    }
+
+    private List<String> getColumnNames(ResultSet resultset) throws SQLException {
+        ResultSetMetaData metadata = resultset.getMetaData();
+        int columnCount = metadata.getColumnCount();
+        List<String> columnnames = new ArrayList<>(columnCount);
+        for(int i=1; i<=columnCount; ++i) {
+            columnnames.add(metadata.getColumnName(i));
+        }
+
+        return columnnames;
     }
 
     @Test
@@ -250,7 +358,7 @@ public class SonarCollectorServletTest {
         URLConnectionFactory factory = mock(URLConnectionFactory.class);
         SonarCollectorServlet servlet = new SonarCollectorServlet(factory);
         String[] metricKeys = servlet.getConfiguration().getMetricKeys();
-        assertEquals(9, metricKeys.length);
+        assertEquals(10, metricKeys.length);
         String project = "no.priv.bang.ukelonn:parent";
         URL serverUrl = new URL("http://localhost:9000");
         URL metricsUrl = servlet.createSonarComponentsShowUrl(serverUrl, project);
@@ -267,7 +375,7 @@ public class SonarCollectorServletTest {
         URLConnectionFactory factory = mock(URLConnectionFactory.class);
         SonarCollectorServlet servlet = new SonarCollectorServlet(factory);
         String[] metricKeys = servlet.getConfiguration().getMetricKeys();
-        assertEquals(9, metricKeys.length);
+        assertEquals(10, metricKeys.length);
         String project = "no.priv.bang.ukelonn:parent";
         URL serverUrl = new URL("http://localhost:9000");
         SonarBuild build = new SonarBuild(0, project, null, serverUrl);
@@ -290,7 +398,7 @@ public class SonarCollectorServletTest {
         HashMap<String, String> measures = new HashMap<>();
         servlet.parseMeasures(measures, measuresNode);
         assertEquals(metricKeys.length, measures.size());
-        assertEquals("0", measures.get("new_bugs"));
+        assertEquals("2", measures.get("new_bugs"));
     }
 
     /**

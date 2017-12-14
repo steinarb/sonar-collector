@@ -45,7 +45,7 @@ public class SonarCollectorConfigurationTest {
         assertEquals("jdbc:postgresql:///sonarcollector", jdbcConnectionProperties.getProperty(DataSourceFactory.JDBC_URL));
         assertNull(jdbcConnectionProperties.getProperty(DataSourceFactory.JDBC_USER));
         assertNull(jdbcConnectionProperties.getProperty(DataSourceFactory.JDBC_PASSWORD));
-        assertEquals(9, configuration.getMetricKeys().length);
+        assertEquals(10, configuration.getMetricKeys().length);
     }
 
     /**
@@ -65,7 +65,7 @@ public class SonarCollectorConfigurationTest {
         assertEquals("jdbc:postgresql:///sonarcollector", jdbcConnectionProperties.getProperty(DataSourceFactory.JDBC_URL));
         assertNull(jdbcConnectionProperties.getProperty(DataSourceFactory.JDBC_USER));
         assertNull(jdbcConnectionProperties.getProperty(DataSourceFactory.JDBC_PASSWORD));
-        assertEquals(9, configuration.getMetricKeys().length);
+        assertEquals(10, configuration.getMetricKeys().length);
     }
 
     /**

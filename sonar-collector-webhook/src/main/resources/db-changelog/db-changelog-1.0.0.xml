@@ -68,4 +68,11 @@
             <column name="version_is_release" />
         </createIndex>
     </changeSet>
+
+    <changeSet author="sb" id="measures-add-complexity">
+        <addColumn tableName="measures" >
+            <column name="complexity" type="BIGINT" defaultValueNumeric="0"/>
+        </addColumn>
+        <addNotNullConstraint tableName="measures" columnName="complexity" />
+    </changeSet>
 </databaseChangeLog>

@@ -654,11 +654,11 @@ createTable =
 start |= createView
 createView =
   element createView {
-    attribute catalogName { xsd:string },
-    attribute schemaName { xsd:string },
+    text,
+    attribute catalogName { xsd:string }?,
+    attribute schemaName { xsd:string }?,
     attribute viewName { xsd:string },
-    attribute replaceIfExists { booleanExp },
-    attribute fullDefinition { booleanExp }
+    attribute replaceIfExists { booleanExp }?
   }
 # Children for insert
 start |= insert

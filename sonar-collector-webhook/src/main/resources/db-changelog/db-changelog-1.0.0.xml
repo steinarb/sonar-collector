@@ -75,4 +75,8 @@
         </addColumn>
         <addNotNullConstraint tableName="measures" columnName="complexity" />
     </changeSet>
+
+    <changeSet author="sb" id="create-measures_view">
+        <createView viewName="measures_view">select id,project_key,version,version_is_release,analysis_time,lines,bugs,new_bugs,vulnerabilities,new_vulnerabilities,code_smells,new_code_smells,coverage,new_coverage,complexity, (bugs + vulnerabilities + code_smells) as issues from measures </createView>
+    </changeSet>
 </databaseChangeLog>

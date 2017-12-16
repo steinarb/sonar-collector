@@ -234,6 +234,51 @@ public class SonarCollectorServletTest {
         assertEquals(0.0, ((Double)measuresRow.get("NEW_COVERAGE")).doubleValue(), 0.01);
     }
 
+    /**
+     * Test that the view measures_view has an "issues" column with the expected value
+     * that is the sum of the number of bugs, the number of vulnerabilities and the number
+     * of code_smells.
+     *
+     * @throws ServletException
+     * @throws IOException
+     * @throws SQLException
+     */
+    @Test
+    public void testMeasuresView() throws ServletException, IOException, SQLException {
+        URLConnectionFactory factory = mock(URLConnectionFactory.class);
+        HttpURLConnection componentsShowConnection = createConnectionFromResource("json/sonar/api-components-show-version-1.0.0-SNAPSHOT.json");
+        HttpURLConnection measurementsConnection = createConnectionFromResource("json/sonar/api-measures-component-get-many-metrics.json");
+        when(factory.openConnection(any()))
+            .thenReturn(componentsShowConnection)
+            .thenReturn(measurementsConnection);
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        ServletInputStream value = wrap(getClass().getClassLoader().getResourceAsStream("json/sonar/webhook-post.json"));
+        when(request.getInputStream()).thenReturn(value);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        MockLogService logservice = new MockLogService();
+
+        SonarCollectorServlet servlet = new SonarCollectorServlet(factory);
+        servlet.setDataSourceFactory(dataSourceFactory);
+        servlet.setLogservice(logservice);
+        servlet.activate(null);
+
+        // Check preconditions
+        truncateMeasuresTable(servlet.dataSource);
+        assertEquals(0, countRowsOfTableMeasures(servlet.dataSource));
+
+        // Run the code under test
+        servlet.doPost(request, response);
+
+        // Check that a measurement has been stored
+        assertEquals(1, countRowsOfTableMeasures(servlet.dataSource));
+
+        // Check the contents of the measurement row
+        List<Map<String, Object>> measuresRows = doSqlQuery(servlet.dataSource, "select * from measures_view");
+        Map<String, Object> measuresRow = measuresRows.get(0);
+        assertEquals(16, measuresRow.size());
+        assertEquals(11L, measuresRow.get("ISSUES")); // This goes to 11!
+    }
+
     private void truncateMeasuresTable(DataSource dataSource) throws SQLException {
         try(Connection connection = dataSource.getConnection()) {
             try (PreparedStatement statement = connection.prepareStatement("truncate table measures")) {
@@ -257,10 +302,14 @@ public class SonarCollectorServletTest {
     }
 
     private List<Map<String, Object>> getRowsOfTableMeasures(DataSource dataSource) throws SQLException {
+        return doSqlQuery(dataSource, "select * from measures");
+    }
+
+    private List<Map<String, Object>> doSqlQuery(DataSource dataSource, String query) throws SQLException {
         List<Map<String, Object>> rows = new ArrayList<>();
 
         try(Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement statement = connection.prepareStatement("select * from measures")) {
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
                 try (ResultSet resultset = statement.executeQuery()) {
                     List<String> columnnames = getColumnNames(resultset);
                     while (resultset.next()) {

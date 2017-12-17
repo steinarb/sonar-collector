@@ -1,12 +1,16 @@
 * SonarQube metrics collector
 
-This is a utility to collect some key numbers for each SonarQube analysis triggered by maven builds.
+[[https://www.sonarqube.org][SonarQube]] is a code analysis tool that shows key numbers about code quality, e.g. code coverage, code complexity and various code practices.
 
-The purpose of this is to log statistics that shows the improvement of the code quality of the projects over time.
+SonarQube has a web GUI that allows exploring the analysis results.
+
+However, SonarQube has no storage of build quality history.  To keep statistics about code quality one either have to manually type the key numbers of each analysed application into a spreadsheet, or use something like this tool.
 
 This utility consists of a servlet that serves as a [[https://docs.sonarqube.org/display/SONAR/Webhooks][webhook that is called by Sonar when completing an analysis]].  The webhook POST data doesn't have the necessary information (which are some key metrics of the build).
 
 So when receiving a POST, the servlet will do a callback to the SonarQube REST API to retrieve the metrics, which will then be stored in a PostgreSQL database.
+
+The servlet has been written as a microservice that can be installed into an [[http://karaf.apache.org][apache karaf]] instance.
 
 ** Status of the project
 

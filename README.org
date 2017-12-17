@@ -187,7 +187,6 @@ Procedure:
 ** License
 
 This utility is licensend under the Apache license v. 2.  See the LICENSE file for details.
-
 ** List of things left to do
 
 This is my current TODO list for this project.  The list is dynamically added to and checked off, as I do things.  Things that are already done and committed will be removed.
@@ -211,3 +210,41 @@ Here's the list [9/9]:
    - <2017-12-16 lør. 21:30> "complexity" was added as a measure together with the others
    - <2017-12-16 lør. 21:37> "issues" isn't an actual measure om Sonar, it's the sum of the number of bugs, the number of vulnerabilities and the number of code_smells
    - <2017-12-16 lør. 21:39> Created a view, measures_views, which adds an "issues column" which is the sum of the existing three columns
+
+** Development stuff
+*** Testing and debugging
+
+To run the servlet locally and debug into the servlet, the following software is required:
+ 1. A locally installed [[https://karaf.apache.org/][apache karaf]] (see the [[https://karaf.apache.org/manual/latest/quick-start.html][apache karaf quick start guide]] )
+ 2. A locally installed [[https://www.sonarqube.org][SonarQube]] (see [[https://docs.sonarqube.org/display/SONAR/Webhooks][SonarQube Get Started in Two Minutes]] )
+ 3. A locally installed (or at least reachable, see [[Using a database running on a different host]] ) [[https://www.postgresql.org][PostgreSQL database]]
+ 4. An IDE that can do remote debugging
+
+Preparation for debugging
+ 1. [[Create the database][create user and empty database in PostgreSQL]]
+ 2. Add http://localhost:8181/sonar-collector as a [[Add a webhook to SonarCloud][webhook in SonarQube]]
+ 3. Clone and build the sonar-collector
+    #+BEGIN_EXAMPLE
+      mkdir -p ~/git
+      cd ~/git/
+      git clone https://github.com/steinarb/sonar-collector.git
+      cd ~/git/sonar-collector/
+      mvn clean install
+    #+END_EXAMPLE
+ 4. Start karaf with setup for remote debugging (cd to an unpacked downloaded karaf installation, start karaf as the user you used to do "mvn clean install")
+    #+BEGIN_EXAMPLE
+      cd ~/Downloads/apache-karaf-4.1.4/
+      bin/karaf debug
+    #+END_EXAMPLE
+ 5. Install the sonar-collector in karaf, with the following commands in the karaf console:
+    #+BEGIN_EXAMPLE
+      feature:repo-add mvn:no.priv.bang.sonar.sonar-collector/sonar-collector-webhook/LATEST/xml/features
+      feature:install sonar-collector-webhook
+    #+END_EXAMPLE
+ 6. Connect the IDE to a debugging connection on localhost port 5005 (see your IDE's documentation for this) and set the breakpoint at the desired code
+
+Then just trigger an analysis in the locally installed SonarQube and debug when the breakpoint is triggered:
+#+BEGIN_EXAMPLE
+   mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar -Dsonar.host.url=http://localhost:9000 -Dsonar.login=a51f2ab9a8790abd91773f0a7d2f6d2dc9d97975
+#+END_EXAMPLE
+(as the sonar.login argument, use the token that SonarQube returns when using the setup wizard of the quick start)

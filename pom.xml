@@ -351,14 +351,14 @@
     </build>
 
     <distributionManagement>
-        <repository>
-            <id>ftp-maven-travis</id>
-            <url>ftp://maven.bang.priv.no/repository</url>
-        </repository>
         <snapshotRepository>
-            <id>ftp-maven-travis</id>
-            <url>ftp://maven.bang.priv.no/repository</url>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
     </distributionManagement>
 
     <licenses>

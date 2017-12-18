@@ -14,7 +14,7 @@ The servlet has been written as a microservice that can be installed into an [[h
 
 ** Status of the project
 
-[[https://travis-ci.org/steinarb/sonar-collector][file:https://travis-ci.org/steinarb/sonar-collector.svg?branch=master]] [[https://coveralls.io/r/steinarb/sonar-collector][file:https://coveralls.io/repos/steinarb/sonar-collector/badge.svg]]
+[[https://travis-ci.org/steinarb/sonar-collector][file:https://travis-ci.org/steinarb/sonar-collector.svg?branch=master]] [[https://coveralls.io/r/steinarb/sonar-collector][file:https://coveralls.io/repos/steinarb/sonar-collector/badge.svg]] [[https://maven-badges.herokuapp.com/maven-central/no.priv.bang.sonar.sonar-collector/parent][file:https://maven-badges.herokuapp.com/maven-central/no.priv.bang.sonar.sonar-collector/parent/badge.svg]]
 
 
 *** SonarCloud

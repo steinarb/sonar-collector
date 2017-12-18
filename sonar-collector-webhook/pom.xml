@@ -100,7 +100,6 @@
         <dependency>
             <groupId>no.priv.bang.karaf</groupId>
             <artifactId>liquibase-core-karaf</artifactId>
-            <version>LATEST</version>
             <type>xml</type>
             <classifier>features</classifier>
         </dependency>

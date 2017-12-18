@@ -16,11 +16,9 @@ The servlet has been written as a microservice that can be installed into an [[h
 
 [[https://travis-ci.org/steinarb/sonar-collector][file:https://travis-ci.org/steinarb/sonar-collector.svg?branch=master]] [[https://coveralls.io/r/steinarb/sonar-collector][file:https://coveralls.io/repos/steinarb/sonar-collector/badge.svg]] [[https://maven-badges.herokuapp.com/maven-central/no.priv.bang.sonar.sonar-collector/parent][file:https://maven-badges.herokuapp.com/maven-central/no.priv.bang.sonar.sonar-collector/parent/badge.svg]]
 
-
 *** SonarCloud
 
 [[https://sonarcloud.io/dashboard/index/no.priv.bang.sonar.sonar-collector%3Aparent][file:https://sonarcloud.io/api/badges/measure?key=no.priv.bang.sonar.sonar-collector%3Aparent&metric=lines#.svg]] [[https://sonarcloud.io/dashboard/index/no.priv.bang.sonar.sonar-collector%3Aparent][file:https://sonarcloud.io/api/badges/measure?key=no.priv.bang.sonar.sonar-collector%3Aparent&metric=bugs#.svg]] [[https://sonarcloud.io/dashboard/index/no.priv.bang.sonar.sonar-collector%3Aparent][file:https://sonarcloud.io/api/badges/measure?key=no.priv.bang.sonar.sonar-collector%3Aparent&metric=new_bugs#.svg]] [[https://sonarcloud.io/dashboard/index/no.priv.bang.sonar.sonar-collector%3Aparent][file:https://sonarcloud.io/api/badges/measure?key=no.priv.bang.sonar.sonar-collector%3Aparent&metric=vulnerabilities#.svg]] [[https://sonarcloud.io/dashboard/index/no.priv.bang.sonar.sonar-collector%3Aparent][file:https://sonarcloud.io/api/badges/measure?key=no.priv.bang.sonar.sonar-collector%3Aparent&metric=new_vulnerabilities#.svg]] [[https://sonarcloud.io/dashboard/index/no.priv.bang.sonar.sonar-collector%3Aparent][file:https://sonarcloud.io/api/badges/measure?key=no.priv.bang.sonar.sonar-collector%3Aparent&metric=code_smells#.svg]] [[https://sonarcloud.io/dashboard/index/no.priv.bang.sonar.sonar-collector%3Aparent][file:https://sonarcloud.io/api/badges/measure?key=no.priv.bang.sonar.sonar-collector%3Aparent&metric=new_code_smells#.svg]] [[https://sonarcloud.io/dashboard/index/no.priv.bang.sonar.sonar-collector%3Aparent][file:https://sonarcloud.io/api/badges/measure?key=no.priv.bang.sonar.sonar-collector%3Aparent&metric=coverage#.svg]] [[https://sonarcloud.io/dashboard/index/no.priv.bang.sonar.sonar-collector%3Aparent][file:https://sonarcloud.io/api/badges/measure?key=no.priv.bang.sonar.sonar-collector%3Aparent&metric=new_coverage#.svg]]
-
 
 ** How to build the application
 
@@ -89,18 +87,13 @@ Procedure:
       ssh -p 8101 karaf@localhost
     #+END_EXAMPLE
     The password is "karaf" (without the quotes)
- 2. In the karaf command shell, add a maven-repo snapshot repo that contains sonarcollector, built by travis CI:
-    #+BEGIN_EXAMPLE
-      config:edit org.ops4j.pax.url.mvn
-      config:property-append org.ops4j.pax.url.mvn.repositories ", https://maven.bang.priv.no/repository/@id=sonar-collector@snapshots, http://maven.vaadin.com/vaadin-addons@id=vaadin"
-      config:property-set org.ops4j.pax.url.mvn.globalUpdatePolicy always
-      config:update
-    #+END_EXAMPLE
- 3. Install the application
+ 2. Install the application
     #+BEGIN_EXAMPLE
       feature:repo-add mvn:no.priv.bang.sonar.sonar-collector/sonar-collector-webhook/LATEST/xml/features
       feature:install sonar-collector-webhook
     #+END_EXAMPLE
+
+(the application has been installed into maven central, which is a repository that is builtin to karaf)
 **** Using a database running on a different host
 
 The above example shows connecting to a PostgreSQL database running on localhost, authenticating with ident authentication (ie. no password).

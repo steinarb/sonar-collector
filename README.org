@@ -22,7 +22,7 @@ The servlet has been written as a microservice that can be installed into an [[h
 
 ** How to build the application
 
-(this assumes that you have an [[https://karaf.apache.org/manual/latest/quick-start.html#_quick_start][apache karaf already installed]] on your development computer)
+(this assumes that you have an [[https://karaf.apache.org/manual/latest/quick-start.html#_quick_start][apache karaf already installed]] on your development computer, as well as git, maven, and a Java development kit)
 
 Procedure:
  1. Clone the project

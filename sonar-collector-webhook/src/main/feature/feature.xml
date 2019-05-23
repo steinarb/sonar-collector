@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <features>
     <repository>mvn:no.priv.bang.osgi.service.adapters/service-adapters-karaf/${osgi-service-adaptors.version}/xml/features</repository>
-    <repository>mvn:org.code-house.jackson/features/${jackson.version}/xml/features</repository>
     <feature name="${karaf-feature-name}">
         <capability>osgi.service;effective:=active;objectClass=org.osgi.service.jdbc.DataSourceFactory</capability>
         <feature>adapter-for-osgi-logservice</feature>
         <feature>adapters-for-osgi-jdbc-services</feature>
         <feature>pax-http-whiteboard</feature>
-        <feature>jackson-core</feature>
-        <feature>jackson-databind</feature>
         <feature>liquibase-core</feature>
     </feature>
 </features>

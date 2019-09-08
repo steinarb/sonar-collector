@@ -55,7 +55,7 @@ This describes how to install and run the program on a debian GNU/linux system.
 As root, do the following command:
 #+BEGIN_EXAMPLE
   apt-get update
-  apt-get postgresql install git maven openjdk-8-jdk postgresql
+  apt-get install postgresql
 #+END_EXAMPLE
 
 *** Create the database

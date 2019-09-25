@@ -36,8 +36,8 @@
         <pax.jdbc.version>1.0.1</pax.jdbc.version>
         <liquibase.version>3.5.3</liquibase.version>
         <liquibase-slf4j.version>2.0.0</liquibase-slf4j.version>
-        <jackson.version>2.9.9</jackson.version>
-        <jackson.databind.version>2.9.9</jackson.databind.version>
+        <jackson.version>2.9.10</jackson.version>
+        <jackson.databind.version>2.9.10</jackson.databind.version>
         <osgi-service-adaptors.version>1.0.1</osgi-service-adaptors.version>
     </properties>
 

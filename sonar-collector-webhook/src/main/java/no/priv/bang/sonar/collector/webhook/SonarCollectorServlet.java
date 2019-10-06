@@ -71,7 +71,7 @@ public class SonarCollectorServlet extends HttpServlet {
     final DataSourceAdapter dataSource = new DataSourceAdapter();
     private final DataSourceFactoryAdapter dataSourceFactory = new DataSourceFactoryAdapter();
     private final LogServiceAdapter logservice = new LogServiceAdapter();
-    private final SonarCollectorConfiguration configuration = new SonarCollectorConfiguration(logservice);
+    final SonarCollectorConfiguration configuration = new SonarCollectorConfiguration(logservice);
 
     @Reference
     public void setDataSourceFactory(DataSourceFactory dataSourceFactory) {

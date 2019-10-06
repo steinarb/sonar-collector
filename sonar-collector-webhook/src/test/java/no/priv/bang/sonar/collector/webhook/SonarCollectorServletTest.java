@@ -473,8 +473,14 @@ public class SonarCollectorServletTest {
     @Test
     public void testInjectConfigFromKaraf() throws IOException {
         SonarCollectorServlet servlet = new SonarCollectorServlet();
-        Map<String, Object> configFromKaraf = Collections.emptyMap();
+        Map<String, Object> configFromKaraf = new HashMap<>();
+        configFromKaraf.put(SonarCollectorConfiguration.SONARCOLLECTOR_JDBC_USER, "karaf");
+        configFromKaraf.put(SonarCollectorConfiguration.SONARCOLLECTOR_JDBC_PASS, "farak");
         servlet.activate(configFromKaraf);
+        SonarCollectorConfiguration configuration = servlet.configuration;
+        Properties jdbcConnectionProperties = configuration.getJdbcConnectionProperties();
+        assertEquals("karaf", jdbcConnectionProperties.get(DataSourceFactory.JDBC_USER));
+        assertEquals("farak", jdbcConnectionProperties.get(DataSourceFactory.JDBC_PASSWORD));
     }
 
     @Test

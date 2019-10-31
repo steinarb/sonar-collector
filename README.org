@@ -101,7 +101,7 @@ Procedure:
  2. Install the application
     #+BEGIN_EXAMPLE
       feature:repo-add mvn:no.priv.bang.sonar.sonar-collector/sonar-collector-webhook/LATEST/xml/features
-      feature:install sonar-collector-webhook
+      feature:install sonar-collector-webhook-with-postgresql
     #+END_EXAMPLE
 
 (the application has been installed into maven central, which is a repository that is builtin to karaf)
@@ -119,10 +119,13 @@ Procedure:
     The password is "karaf" (without the quotes)
  2. In the karaf command shell, create configuration for the JDBC connection:
     #+BEGIN_EXAMPLE
-      config:edit no.priv.bang.sonar.collector.webhook.SonarCollectorServlet
-      config:property-set sonar.collector.jdbc.url "jdbc:postgresql://lorenzo.hjemme.lan/sonarcollector"
-      config:property-set sonar.collector.jdbc.user "karaf"
-      config:property-set sonar.collector.jdbc.password "karaf"
+      config:edit org.ops4j.datasource-sonar-collector
+      config:property-set osgi.jdbc.driver.name "PostgreSQL JDBC Driver"
+      config:property-set dataSourceName "jdbc/sonar-collector"
+      config:property-set url "jdbc:postgresql://lorenzo.hjemme.lan/sonarcollector"
+      config:property-set user "karaf"
+      config:property-set password "karaf"
+      config:property-set org.apache.karaf.features.configKey "org.ops4j.datasource-sonar-collector"
       config:update
     #+END_EXAMPLE
     (this assumes the username/password combination karaf/karaf, it is recommended to use a different password in a real setting with PostgreSQL accepting network connections)
@@ -158,6 +161,30 @@ Procedure, do the following, logged in as root on the server:
  5. Restart the postgresql daemon
     #+BEGIN_EXAMPLE
       systemctl restart postgresql
+    #+END_EXAMPLE
+**** Using a different database than PostgreSQL
+
+/WARNING/! This is not regularily tested (i.e. won't be tested before releases) and I don't plan to actually use sonar-collector with anything except PostgreSQL myself.
+
+To use JDBC against a RDBMS other than PostgreSQL, do the following from the karaf console command line (derby in-memory database used in the examples):
+ 1. Load the component providing the DataSourceFactory OSGi service:
+    #+BEGIN_EXAMPLE
+      feature:install pax-jdbc-derby
+    #+END_EXAMPLE
+ 2. Add karaf configuration selecting the correct DataSourceFactory and JDBC connection info (url, user and password):
+    #+BEGIN_EXAMPLE
+      config:edit org.ops4j.datasource-sonar-collector
+      config:property-set osgi.jdbc.driver.name "PostgreSQL JDBC Driver"
+      config:property-set dataSourceName "jdbc/sonar-collector"
+      config:property-set url "jdbc:derby:data/example/derby;create=true"
+      config:property-set osgi.jdbc.driver.name derby
+      config:property-set org.apache.karaf.features.configKey "org.ops4j.datasource-sonar-collector"
+      config:update
+    #+END_EXAMPLE
+ 3. Load sonar-collector using a feature that doesn't unnecessarily pull in the PostgreSQL DataSourceFactory:
+    #+BEGIN_EXAMPLE
+      feature:repo-add mvn:no.priv.bang.sonar.sonar-collector/sonar-collector-webhook/LATEST/xml/features
+      feature:install sonar-collector-webhook-with-jdbc
     #+END_EXAMPLE
 
 *** Add a webhook to Sonar

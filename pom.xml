@@ -36,6 +36,7 @@
         <pax.jdbc.version>1.0.1</pax.jdbc.version>
         <liquibase.version>3.5.3</liquibase.version>
         <liquibase-slf4j.version>2.0.0</liquibase-slf4j.version>
+        <postgresql.version>42.2.8</postgresql.version>
         <jackson.version>2.9.10</jackson.version>
         <jackson.databind.version>2.9.10.1</jackson.databind.version>
         <osgi-service-adaptors.version>1.0.1</osgi-service-adaptors.version>
@@ -183,7 +184,7 @@
             <dependency>
                 <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
-                <version>42.2.8</version>
+                <version>${postgresql.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.liquibase</groupId>

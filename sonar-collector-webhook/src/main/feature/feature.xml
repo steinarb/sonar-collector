@@ -1,11 +1,35 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<features>
+<features xmlns="http://karaf.apache.org/xmlns/features/v1.5.0">
+    <repository>mvn:org.postgresql/postgresql/${postgresql.version}/xml/features</repository>
     <repository>mvn:no.priv.bang.osgi.service.adapters/service-adapters-karaf/${osgi-service-adaptors.version}/xml/features</repository>
+    <feature name="sonar-collector-postgresql-jdbc-provider" version="${project.version}">
+        <config name="org.ops4j.datasource-sonar-collector">
+            osgi.jdbc.driver.name=PostgreSQL JDBC Driver
+            dataSourceName=jdbc/sonar-collector
+            url=jdbc:postgresql:///sonar-collector
+            user=karaf
+            password=karaf
+        </config>
+        <capability>
+            osgi.service;objectClass=javax.sql.DataSource;effective:=active;osgi.jndi.service.name=jdbc/sonar-collector
+        </capability>
+        <feature>jdbc</feature>
+    </feature>
     <feature name="${karaf-feature-name}">
         <capability>osgi.service;effective:=active;objectClass=org.osgi.service.jdbc.DataSourceFactory</capability>
         <feature>adapter-for-osgi-logservice</feature>
         <feature>adapters-for-osgi-jdbc-services</feature>
         <feature>pax-http-whiteboard</feature>
         <feature>liquibase-core</feature>
+    </feature>
+
+    <feature name="${karaf-feature-name}-with-jdbc">
+        <feature>sonar-collector-postgresql-jdbc-provider</feature>
+        <feature>${karaf-feature-name}</feature>
+    </feature>
+
+    <feature name="${karaf-feature-name}-with-postgresql">
+        <feature>postgresql</feature>
+        <feature>${karaf-feature-name}-with-jdbc</feature>
     </feature>
 </features>

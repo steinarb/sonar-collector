@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.junit.Test;
-import org.osgi.service.jdbc.DataSourceFactory;
 import org.osgi.service.log.LogService;
 
 import no.priv.bang.sonar.collector.webhook.mocks.MockLogService;
@@ -37,14 +36,10 @@ public class SonarCollectorConfigurationTest {
      * (localhost PostgreSQL uses the username of the connecting process to grant access).
      */
     @Test
-    public void testGetJdbcConnectionProperties() {
+    public void testGetMetricKeys() {
         MockLogService logservice = new MockLogService();
         SonarCollectorConfiguration configuration = new SonarCollectorConfiguration(logservice);
 
-        Properties jdbcConnectionProperties = configuration.getJdbcConnectionProperties();
-        assertEquals("jdbc:postgresql:///sonarcollector", jdbcConnectionProperties.getProperty(DataSourceFactory.JDBC_URL));
-        assertNull(jdbcConnectionProperties.getProperty(DataSourceFactory.JDBC_USER));
-        assertNull(jdbcConnectionProperties.getProperty(DataSourceFactory.JDBC_PASSWORD));
         assertEquals(10, configuration.getMetricKeys().length);
     }
 
@@ -55,16 +50,12 @@ public class SonarCollectorConfigurationTest {
      * be no exceptions thrown.
      */
     @Test
-    public void testGetJdbcConnectionPropertiesNullConfig() {
+    public void testGetMetricKeysNullConfig() {
         MockLogService logservice = new MockLogService();
         SonarCollectorConfiguration configuration = new SonarCollectorConfiguration(logservice);
 
         configuration.setConfig(null);
 
-        Properties jdbcConnectionProperties = configuration.getJdbcConnectionProperties();
-        assertEquals("jdbc:postgresql:///sonarcollector", jdbcConnectionProperties.getProperty(DataSourceFactory.JDBC_URL));
-        assertNull(jdbcConnectionProperties.getProperty(DataSourceFactory.JDBC_USER));
-        assertNull(jdbcConnectionProperties.getProperty(DataSourceFactory.JDBC_PASSWORD));
         assertEquals(10, configuration.getMetricKeys().length);
     }
 
@@ -75,26 +66,19 @@ public class SonarCollectorConfigurationTest {
      * be no exceptions thrown.
      */
     @Test
-    public void testGetJdbcConnectionPropertiesInjectedConfig() {
+    public void testGetMetricKeysInjectedConfig() {
         Properties originalProperties = (Properties) System.getProperties().clone();
         try {
             MockLogService logservice = new MockLogService();
             SonarCollectorConfiguration configuration = new SonarCollectorConfiguration(logservice);
             Map<String, Object> injectedConfig = new HashMap<>();
-            injectedConfig.put(SonarCollectorConfiguration.SONARCOLLECTOR_JDBC_URL, "jdbc:postgresql://lorenzo.hjemme.lan/sonarcollector");
-            injectedConfig.put(SonarCollectorConfiguration.SONARCOLLECTOR_JDBC_USER, "karaf");
-            injectedConfig.put(SonarCollectorConfiguration.SONARCOLLECTOR_JDBC_PASS, "kafar");
             injectedConfig.put(SonarCollectorConfiguration.SONAR_MEASURES_COMPONENTS_METRIC_KEYS, "lines,bugs,new_bugs,vulnerabilities,new_vulnerabilities,code_smells");
 
             // Set a system property that should not be picked up, since the injected config is picked first
-            System.setProperty(SonarCollectorConfiguration.SONARCOLLECTOR_JDBC_USER, "notausername");
+            System.setProperty(SonarCollectorConfiguration.SONAR_MEASURES_COMPONENTS_METRIC_KEYS, "notametric");
 
             configuration.setConfig(injectedConfig);
 
-            Properties jdbcConnectionProperties = configuration.getJdbcConnectionProperties();
-            assertEquals("jdbc:postgresql://lorenzo.hjemme.lan/sonarcollector", jdbcConnectionProperties.getProperty(DataSourceFactory.JDBC_URL));
-            assertEquals("karaf", jdbcConnectionProperties.getProperty(DataSourceFactory.JDBC_USER));
-            assertEquals("kafar", jdbcConnectionProperties.getProperty(DataSourceFactory.JDBC_PASSWORD));
             assertEquals(6, configuration.getMetricKeys().length);
         } finally {
             // Restore the original system properties
@@ -109,7 +93,7 @@ public class SonarCollectorConfigurationTest {
      * be no exceptions thrown.
      */
     @Test
-    public void testGetJdbcConnectionPropertiesFromSystemProperties() {
+    public void testGetMetricKeysFromSystemProperties() {
         Properties originalProperties = (Properties) System.getProperties().clone();
         try {
             MockLogService logservice = new MockLogService();
@@ -117,16 +101,8 @@ public class SonarCollectorConfigurationTest {
             Map<String, Object> injectedConfig = new HashMap<>();
             configuration.setConfig(injectedConfig);
 
-            System.setProperty(SonarCollectorConfiguration.SONARCOLLECTOR_JDBC_URL, "jdbc:postgresql://lorenzo.hjemme.lan/sonarcollector");
-            System.setProperty(SonarCollectorConfiguration.SONARCOLLECTOR_JDBC_USER, "karaf");
-            System.setProperty(SonarCollectorConfiguration.SONARCOLLECTOR_JDBC_PASS, "kafar");
             System.setProperty(SonarCollectorConfiguration.SONAR_MEASURES_COMPONENTS_METRIC_KEYS, "lines,bugs,new_bugs,vulnerabilities,new_vulnerabilities,code_smells,new_code_smells,coverage");
 
-            Properties jdbcConnectionProperties = configuration.getJdbcConnectionProperties();
-
-            assertEquals("jdbc:postgresql://lorenzo.hjemme.lan/sonarcollector", jdbcConnectionProperties.getProperty(DataSourceFactory.JDBC_URL));
-            assertEquals("karaf", jdbcConnectionProperties.getProperty(DataSourceFactory.JDBC_USER));
-            assertEquals("kafar", jdbcConnectionProperties.getProperty(DataSourceFactory.JDBC_PASSWORD));
             assertEquals(8, configuration.getMetricKeys().length);
         } finally {
             // Restore the original system properties
@@ -161,7 +137,7 @@ public class SonarCollectorConfigurationTest {
      * @throws IOException
      */
     @Test
-    public void testGetJdbcConnectionPropertiesApplicationPropertiesThrowsIOException() throws IOException {
+    public void testGetApplicationPropertiesThrowsIOException() throws IOException {
         MockLogService logservice = new MockLogService();
 
         // Verify that there are no log messages before the configuration property class is created
@@ -172,11 +148,9 @@ public class SonarCollectorConfigurationTest {
         // Verify that a single log message had been logged
         assertEquals(1, logservice.getLogmessages().size());
 
-        // All connection properties will be null
-        Properties jdbcConnectionProperties = configuration.getJdbcConnectionProperties();
-        assertNull(jdbcConnectionProperties.getProperty(DataSourceFactory.JDBC_URL));
-        assertNull(jdbcConnectionProperties.getProperty(DataSourceFactory.JDBC_USER));
-        assertNull(jdbcConnectionProperties.getProperty(DataSourceFactory.JDBC_PASSWORD));
+        // All properties will be null
+        String[] metrickeys = configuration.getMetricKeys();
+        assertEquals(0, metrickeys.length);
     }
 
 }

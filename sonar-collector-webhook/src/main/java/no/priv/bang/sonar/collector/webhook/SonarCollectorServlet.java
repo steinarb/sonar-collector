@@ -41,7 +41,6 @@ import javax.sql.DataSource;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.jdbc.DataSourceFactory;
 import org.osgi.service.log.LogService;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -52,7 +51,6 @@ import liquibase.database.DatabaseConnection;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import no.priv.bang.osgi.service.adapters.jdbc.DataSourceAdapter;
-import no.priv.bang.osgi.service.adapters.jdbc.DataSourceFactoryAdapter;
 import no.priv.bang.osgi.service.adapters.logservice.LogServiceAdapter;
 
 @Component(service={Servlet.class}, property={"alias=/sonar-collector", "configurationPid=no.priv.bang.sonar.sonar-collector-webhook"} )
@@ -69,13 +67,12 @@ public class SonarCollectorServlet extends HttpServlet {
     private final URLConnectionFactory factory;
     static final ObjectMapper mapper = new ObjectMapper();
     final DataSourceAdapter dataSource = new DataSourceAdapter();
-    private final DataSourceFactoryAdapter dataSourceFactory = new DataSourceFactoryAdapter();
     private final LogServiceAdapter logservice = new LogServiceAdapter();
     final SonarCollectorConfiguration configuration = new SonarCollectorConfiguration(logservice);
 
-    @Reference
-    public void setDataSourceFactory(DataSourceFactory dataSourceFactory) {
-        this.dataSourceFactory.setFactory(dataSourceFactory);
+    @Reference(target = "(osgi.jndi.service.name=jdbc/sonar-collector)")
+    public void setDataSource(DataSource ds) {
+        this.dataSource.setDatasource(ds);
     }
 
     @Reference
@@ -86,19 +83,7 @@ public class SonarCollectorServlet extends HttpServlet {
     @Activate
     public void activate(Map<String, Object> config) {
         configuration.setConfig(config);
-        DataSource db = connectDataSource(dataSourceFactory);
-        createSchemaWithLiquibase(db);
-        dataSource.setDatasource(db);
-    }
-
-    private DataSource connectDataSource(DataSourceFactory dataSourceFactory) {
-        Properties properties = configuration.getJdbcConnectionProperties();
-        try {
-            return dataSourceFactory.createDataSource(properties);
-        } catch (SQLException e) {
-            logservice.log(LogService.LOG_ERROR, "Sonar Collector servlet unable to connect to the database", e);
-            return NullDataSource.getInstance(); // Return an object that can be safely used in try-with-resource
-        }
+        createSchemaWithLiquibase(dataSource);
     }
 
     private void createSchemaWithLiquibase(DataSource db) {

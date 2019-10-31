@@ -33,7 +33,6 @@ import java.sql.SQLException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -68,11 +67,14 @@ import no.priv.bang.sonar.collector.webhook.mocks.MockLogService;
 public class SonarCollectorServletTest {
     private static DataSourceFactory dataSourceFactory;
     private static Properties originalSystemProperties;
+    private static Properties connectionproperties;
 
     @BeforeClass
     public static void beforeClass() throws IOException {
         originalSystemProperties = addTestPropertiesToSystemProperties();
         dataSourceFactory = new DerbyDataSourceFactory();
+        connectionproperties = new Properties();
+        connectionproperties.setProperty(DataSourceFactory.JDBC_URL, "jdbc:derby:memory:ukelonn;create=true");
     }
 
     private static Properties addTestPropertiesToSystemProperties() throws IOException {
@@ -96,35 +98,10 @@ public class SonarCollectorServletTest {
     }
 
     @Test
-    public void testGetExceptionWhenCreatingDatasource() throws IOException, SQLException {
-        MockLogService logservice = new MockLogService();
-        DataSourceFactory factory = mock(DataSourceFactory.class);
-        when(factory.createDataSource(any())).thenThrow(SQLException.class);
-        SonarCollectorServlet servlet = new SonarCollectorServlet();
-        servlet.setLogservice(logservice);
-
-        // Verify that nothing has been logged
-        assertEquals(0, logservice.getLogmessages().size());
-
-        // Get no exception when creating the datasource
-        servlet.setDataSourceFactory(factory);
-        assertEquals(0, logservice.getLogmessages().size());
-
-        // Activation of the component will cause the exception
-        servlet.activate(null);
-
-        // Verify that an two exceptions has been logged
-        // The expected SQLException and a NullPointerException further on
-        assertEquals(2, logservice.getLogmessages().size());
-    }
-
-    @Test
     public void testGetExceptionWhenCreatingDbSchema() throws IOException, SQLException {
         MockLogService logservice = new MockLogService();
-        DataSourceFactory factory = mock(DataSourceFactory.class);
         DataSource datasource = mock(DataSource.class);
         when(datasource.getConnection()).thenThrow(SQLException.class);
-        when(factory.createDataSource(any())).thenReturn(datasource);
         SonarCollectorServlet servlet = new SonarCollectorServlet();
         servlet.setLogservice(logservice);
 
@@ -132,7 +109,7 @@ public class SonarCollectorServletTest {
         assertEquals(0, logservice.getLogmessages().size());
 
         // Get no exception when setting the connection factory
-        servlet.setDataSourceFactory(factory);
+        servlet.setDataSource(datasource);
         assertEquals(0, logservice.getLogmessages().size());
 
         // Get an exception when the activate method tries connecting liquibase to a database
@@ -157,7 +134,7 @@ public class SonarCollectorServletTest {
         MockLogService logservice = new MockLogService();
 
         SonarCollectorServlet servlet = new SonarCollectorServlet(factory);
-        servlet.setDataSourceFactory(dataSourceFactory);
+        servlet.setDataSource(dataSourceFactory.createDataSource(connectionproperties));
         servlet.setLogservice(logservice);
         servlet.activate(null);
 
@@ -213,7 +190,7 @@ public class SonarCollectorServletTest {
         MockLogService logservice = new MockLogService();
 
         SonarCollectorServlet servlet = new SonarCollectorServlet(factory);
-        servlet.setDataSourceFactory(dataSourceFactory);
+        servlet.setDataSource(dataSourceFactory.createDataSource(connectionproperties));
         servlet.setLogservice(logservice);
         servlet.activate(null);
 
@@ -258,7 +235,7 @@ public class SonarCollectorServletTest {
         MockLogService logservice = new MockLogService();
 
         SonarCollectorServlet servlet = new SonarCollectorServlet(factory);
-        servlet.setDataSourceFactory(dataSourceFactory);
+        servlet.setDataSource(dataSourceFactory.createDataSource(connectionproperties));
         servlet.setLogservice(logservice);
         servlet.activate(null);
 
@@ -474,13 +451,11 @@ public class SonarCollectorServletTest {
     public void testInjectConfigFromKaraf() throws IOException {
         SonarCollectorServlet servlet = new SonarCollectorServlet();
         Map<String, Object> configFromKaraf = new HashMap<>();
-        configFromKaraf.put(SonarCollectorConfiguration.SONARCOLLECTOR_JDBC_USER, "karaf");
-        configFromKaraf.put(SonarCollectorConfiguration.SONARCOLLECTOR_JDBC_PASS, "farak");
+        configFromKaraf.put(SonarCollectorConfiguration.SONAR_MEASURES_COMPONENTS_METRIC_KEYS, "lines,bugs,new_bugs");
         servlet.activate(configFromKaraf);
         SonarCollectorConfiguration configuration = servlet.configuration;
-        Properties jdbcConnectionProperties = configuration.getJdbcConnectionProperties();
-        assertEquals("karaf", jdbcConnectionProperties.get(DataSourceFactory.JDBC_USER));
-        assertEquals("farak", jdbcConnectionProperties.get(DataSourceFactory.JDBC_PASSWORD));
+        String[] metricKeys = configuration.getMetricKeys();
+        assertEquals(3, metricKeys.length);
     }
 
     @Test

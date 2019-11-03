@@ -91,7 +91,6 @@ public class SonarCollectorServlet extends HttpServlet {
             DatabaseConnection databaseConnection = new JdbcConnection(connection);
             ClassLoaderResourceAccessor classLoaderResourceAccessor = new ClassLoaderResourceAccessor(getClass().getClassLoader());
             Liquibase liquibase = new Liquibase("db-changelog/db-changelog-1.0.0.xml", classLoaderResourceAccessor, databaseConnection);
-            liquibase.clearCheckSums();
             liquibase.update("");
         } catch (Exception e) {
             logservice.log(LogService.LOG_ERROR, "Sonar Collector servlet unable to create or update the database schema", e);

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright 2017 Steinar Bang                                                     -->
+<!-- Copyright 2017-2019 Steinar Bang                                                -->
 <!--                                                                                 -->
 <!-- Licensed under the Apache License, Version 2.0 (the "License");                 -->
 <!-- you may not use this file except in compliance with the License.                -->
@@ -15,12 +15,12 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>no.priv.bang.sonar.sonar-collector</groupId>
-    <artifactId>parent</artifactId>
+    <artifactId>sonar-collector</artifactId>
     <version>1.0.1-SNAPSHOT</version>
 
     <packaging>pom</packaging>
 
-    <name>SonarQube data collector parent project</name>
+    <name>SonarQube data collector</name>
     <description>Apache karaf microservices to capture statistics over SonarQube/SonarCloud key measures.</description>
 
     <properties>

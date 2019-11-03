@@ -20,6 +20,12 @@ The servlet has been written as a microservice that can be installed into an [[h
 
 [[https://sonarcloud.io/dashboard/index/no.priv.bang.sonar.sonar-collector%3Asonar-collector][file:https://sonarcloud.io/api/project_badges/measure?project=no.priv.bang.sonar.sonar-collector%3Asonar-collector&metric=ncloc#.svg]] [[https://sonarcloud.io/dashboard/index/no.priv.bang.sonar.sonar-collector%3Asonar-collector][file:https://sonarcloud.io/api/project_badges/measure?project=no.priv.bang.sonar.sonar-collector%3Asonar-collector&metric=bugs#.svg]] [[https://sonarcloud.io/dashboard/index/no.priv.bang.sonar.sonar-collector%3Asonar-collector][file:https://sonarcloud.io/api/project_badges/measure?project=no.priv.bang.sonar.sonar-collector%3Asonar-collector&metric=vulnerabilities#.svg]] [[https://sonarcloud.io/dashboard/index/no.priv.bang.sonar.sonar-collector%3Asonar-collector][file:https://sonarcloud.io/api/project_badges/measure?project=no.priv.bang.sonar.sonar-collector%3Asonar-collector&metric=code_smells#.svg]] [[https://sonarcloud.io/dashboard/index/no.priv.bang.sonar.sonar-collector%3Asonar-collector][file:https://sonarcloud.io/api/project_badges/measure?project=no.priv.bang.sonar.sonar-collector%3Asonar-collector&metric=coverage#.svg]]
 
+*** Release history
+
+| Version | Date             | Description   |
+|---------+------------------+---------------|
+|   1.0.0 | <2017-12-18 Mon> | First release |
+
 ** How to build the application
 
 (this assumes that you have an [[https://karaf.apache.org/manual/latest/quick-start.html#_quick_start][apache karaf already installed]] on your development computer, as well as git, maven, and a Java development kit)

@@ -218,30 +218,6 @@ Procedure:
 ** License
 
 This utility is licensend under the Apache license v. 2.  See the LICENSE file for details.
-** List of things left to do
-
-This is my current TODO list for this project.  The list is dynamically added to and checked off, as I do things.  Things that are already done and committed will be removed.
-
-Here's the list [9/9]:
- - [X] Try to remove jackson annotations and figure out if things still work, must be removed from both build dependencies and the karaf feature
-   - <2017-11-17 fr 22:46> The code worked fine without jackson annotations
- - [X] Do logging for PostgreSQL connection errors
-   - <2017-11-17 fr 21:04> Fixed, the problem was that the order of the injections isn't defined, so the PostgreSQL datasource was injected before the logservice
- - [X] Add database setup to the README
- - [X] Add travis CI build setup
- - [X] Make the database column values be numeric
- - [X] Fix the timestamp
-   - <2017-11-19 sø 12:55> The parsed time was in seconds since epoch and not milliseconds since epoch, multipled the value with 1000
- - [X] Index the columns project_key version_is_release of the measures table
-   - <2017-11-19 sø 13:24> The reason for this, is to make the SQL queries stay fast when the number of rows grow large
-   - <2017-11-19 sø 13:39> Added a Liquibase changeSet to add the indexes
- - [X] Add ftp deploy to the travis build setup
-   - <2017-11-19 sø 13:48> Added a deploy script to .travis.yml
- - [X] Add missing fields "issues" and "complexity"
-   - <2017-12-16 lør. 21:30> "complexity" was added as a measure together with the others
-   - <2017-12-16 lør. 21:37> "issues" isn't an actual measure om Sonar, it's the sum of the number of bugs, the number of vulnerabilities and the number of code_smells
-   - <2017-12-16 lør. 21:39> Created a view, measures_views, which adds an "issues column" which is the sum of the existing three columns
-
 ** Development stuff
 *** Testing and debugging
 

@@ -22,9 +22,10 @@ The servlet has been written as a microservice that can be installed into an [[h
 
 *** Release history
 
-| Version | Date             | Description   |
-|---------+------------------+---------------|
-|   1.0.0 | <2017-12-18 Mon> | First release |
+| Version | Date             | Description                                                                                 |
+|---------+------------------+---------------------------------------------------------------------------------------------|
+|   1.1.0 | <2019-11-14 Thu> | Use pax-jdbc-config to set up the database, build with openjdk 11, jackson security upgrade |
+|   1.0.0 | <2017-12-18 Mon> | First release                                                                               |
 
 ** How to build the application
 

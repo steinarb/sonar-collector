@@ -40,10 +40,12 @@
         <jackson.version>2.9.10</jackson.version>
         <jackson.databind.version>2.9.10.3</jackson.databind.version>
         <osgi-service-adaptors.version>1.0.1</osgi-service-adaptors.version>
+        <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/../jacoco-coverage-report/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
     </properties>
 
     <modules>
         <module>sonar-collector-webhook</module>
+        <module>jacoco-coverage-report</module>
     </modules>
 
     <dependencyManagement>

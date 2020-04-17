@@ -263,3 +263,23 @@ Then just trigger an analysis in the locally installed SonarQube and debug when 
    mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent package sonar:sonar -Dsonar.host.url=http://localhost:9000 -Dsonar.login=a51f2ab9a8790abd91773f0a7d2f6d2dc9d97975
 #+END_EXAMPLE
 (as the sonar.login argument, use the token that SonarQube returns when using the setup wizard of the quick start)
+*** Building the docker image
+
+Precondition: docker running on the build server
+
+Procedure:
+ 1. Move to the build directory:
+    #+begin_example
+      cd docker/
+    #+end_example
+ 2. Build the image:
+    #+begin_example
+      mvn clean package docker:build
+    #+end_example
+ 3. Verify with "docker images" that the image has been rebuilt (if the CREATED column shows an old time the image probably hasn't been rebuilt):
+    #+begin_example
+      sb@lorenzo:~/workspaces/ws02/sonar-collector/docker$ docker images
+      REPOSITORY                 TAG                 IMAGE ID            CREATED             SIZE
+      steinarb/sonar-collector   latest              6c578e16f6e0        3 seconds ago       291MB
+      sb@lorenzo:~/workspaces/ws02/sonar-collector/docker$
+    #+end_example

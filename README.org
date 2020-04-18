@@ -52,6 +52,57 @@ Procedure:
 
 /Note/: You will need to have a suitable PostgreSQL database to write to for this servlet to be meaningful.  See the sections [[Create the database]] and [[Using a database running on a different host]] for more detail.  The database just have to be a blank, freshly created database, that the servlet can write to, either on localhost with the curent user, or using JDBC credentials configured from the karaf console (this is what's covered in [[Using a database running on a different host]]).
 
+** Run the Sonar metrics collector in docker
+
+[[https://hub.docker.com/repository/docker/steinarb/sonar-collector][The latest version of the sonar-collector is available from docker hub]].
+
+/Note/: The docker image is actually provisioned at startup time by the latest sonar-collector release to maven central, so don't be mislead by the creation date of the image. The most recent relase to maven central is what will be run.
+
+To run the sonar-collector in the container:
+ 1. get hold of an RDBMS (preferrably [[create an RDBMS ][PostgreSQL]] but any RDMS that has its driver deployed to maven central (i.e. /not/ Oracle) can probably be made to work)
+    1. The database could be an AWS MicroDB (preferraby PostgreSQL)
+    2. The database could potentially be an aurora instance (however, this heas not been tried, since AWS aurora instances costs money from day one)
+ 2. add a user to the RDBMS (e.g. "myuser" with password "sosecret")
+ 3. add a blank database to the RDBMS, e.g. named "sonar-collector", with the user created above as owner
+ 4. In the docker container, get the image from docker hub:
+    #+begin_example
+      pull steinarb/sonar-collector:latest
+    #+end_example
+ 5. Start a container with the image, setting the JDBC credentials as environment variables:
+    #+begin_example
+      docker run -p 8101:8101 -p 8181:8181  -e "JDBC_URL=jdbc:postgresql://somehost.com/sonar-collector"  -e "JDBC_USER=myuser" -e "JDBC_USER=sosecret" -d steinarb/sonar-collector:latest
+    #+end_example
+ 6. [[https://docs.sonarqube.org/latest/project-administration/webhooks/][Add the URL of the sonar-collector running inside the container as a webhook to sonar]] (e.g. http://somecontainer.somecompany.com:8181/sonar-collector)
+ 7. After this the key measurements from each sonar run will be stored as a row in the measures table with the time of the run
+ 8. There is no UI, use a database explorer tool to run queries on the measures table to get the desired number
+
+*** JDBC config that can be set with environment variables
+
+The values that can be overridden by setting environment variables on container start, are:
+| Variable            | Default value                      | Description                                                   |
+|---------------------+------------------------------------+---------------------------------------------------------------|
+| JDBC_DRIVER_FEATURE | postgresql                         | Karaf feature to load the driver                              |
+| JDBC_DRIVER_NAME    | PostgreSQL JDBC Driver             | Identify correct driver for OSGi service dependency injection |
+| JDBC_URL            | jdbc:postgresql:///sonar-collector |                                                               |
+| JDBC_USER           | <none>                             | No default to make it possible to have no username            |
+| JDBC_PASSWORD       | <none>                             | No default to make it possible to have no password            |
+
+Example docker run command for using a h2 database instead of postgresl
+#+begin_example
+  docker run -p 8101:8101 -p 8181:8181 -e 'JDBC_DRIVER_FEATURE=pax-jdbc-h2' -e 'JDBC_DRIVER_NAME=H2 JDBC Driver' -e 'JDBC_URL=jdbc:h2:tcp://somehost.company.com/~/sonar-collector' -e 'JDBC_USER=sa' -e JDBC_PASSWORD='' -d steinarb/sonar-collector:latest
+#+end_example
+
+*** Example values for some RDBMSes
+
+| RDBMS type          | Karaf feature    | JDBC_DRIVER_NAME                     | example JDBC_URL                                                        | Default port |
+|---------------------+------------------+--------------------------------------+-------------------------------------------------------------------------+--------------|
+| PostgreSQL          | postgresql       | PostgreSQL JDBC Driver               | jdbc:postgresql://somehost.company.com/sonar-collector                  |         5432 |
+| Derby (aka. JavaDB) | pax-jdbc-derby   | derby                                | jdbc:derby://somehost.company.com:1527/sonar-collector                  |         1527 |
+| H2                  | pax-jdbc-h2      | H2 JDBC Driver                       | jdbc:h2:tcp://somehost.company.com/~/sonar-collector                    |         9092 |
+| MSSQL               | pax-jdbc-mssql   | Microsoft JDBC Driver for SQL Server | jdbc:sqlserver://somehost.company.com:1433;databaseName=sonar-collector |         1433 |
+| mariadb             | pax-jdbc-mariadb | mariadb                              | jdbc:mariadb://somehost.company.com:3306/sonar-collector                |         3306 |
+| mysql               | pax-jdbc-mysql   | mysql                                | jdbc:mysql://somehost.company.com:3306/sonar-collector                  |         3306 |
+
 ** How to install and run the application on a debian server
 
 (This procedure doesn't require development tools or building the project yourself.  The servlet, and its attached karaf feature has been deployed to maven central)

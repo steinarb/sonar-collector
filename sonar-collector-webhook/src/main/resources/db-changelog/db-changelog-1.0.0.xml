@@ -73,7 +73,7 @@
         <addColumn tableName="measures" >
             <column name="complexity" type="BIGINT" defaultValueNumeric="0"/>
         </addColumn>
-        <addNotNullConstraint tableName="measures" columnName="complexity" />
+        <addNotNullConstraint tableName="measures" columnName="complexity" columnDataType="BIGINT"/>
     </changeSet>
 
     <changeSet author="sb" id="create-measures_view">

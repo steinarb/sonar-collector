@@ -70,6 +70,7 @@
     </changeSet>
 
     <changeSet author="sb" id="measures-add-complexity">
+        <validCheckSum>ANY</validCheckSum>
         <addColumn tableName="measures" >
             <column name="complexity" type="BIGINT" defaultValueNumeric="0"/>
         </addColumn>

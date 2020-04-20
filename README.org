@@ -46,7 +46,7 @@ Procedure:
  3. Give the following commands from the karaf console to install the REST service:
     #+BEGIN_EXAMPLE
       feature:repo-add mvn:no.priv.bang.sonar.sonar-collector/sonar-collector-webhook/LATEST/xml/features
-      feature:install sonar-collector-webhook
+      feature:install sonar-collector-webhook-with-postgresql
     #+END_EXAMPLE
 
 /Note/: You will need to have a suitable PostgreSQL database to write to for this servlet to be meaningful.  See the sections [[Create the database]] and [[Using a database running on a different host]] for more detail.  The database just have to be a blank, freshly created database, that the servlet can write to, either on localhost with the curent user, or using JDBC credentials configured from the karaf console (this is what's covered in [[Using a database running on a different host]]).

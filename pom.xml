@@ -37,8 +37,8 @@
         <liquibase.version>3.5.3</liquibase.version>
         <liquibase-slf4j.version>2.0.0</liquibase-slf4j.version>
         <postgresql.version>42.2.8</postgresql.version>
-        <jackson.version>2.9.10</jackson.version>
-        <jackson.databind.version>2.9.10.3</jackson.databind.version>
+        <jackson.version>2.10.3</jackson.version>
+        <jackson.databind.version>${jackson.version}</jackson.databind.version>
         <osgi-service-adaptors.version>1.0.1</osgi-service-adaptors.version>
         <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/../jacoco-coverage-report/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
     </properties>

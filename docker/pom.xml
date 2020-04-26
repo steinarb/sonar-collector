@@ -23,6 +23,10 @@
 
     <name>sonar-collector docker image</name>
 
+    <properties>
+        <skip.docker>true</skip.docker>
+    </properties>
+
     <build>
         <plugins>
             <plugin>
@@ -30,6 +34,7 @@
                 <artifactId>docker-maven-plugin</artifactId>
                 <version>1.2.2</version>
                 <configuration>
+                    <skipDocker>${skip.docker}</skipDocker>
                     <imageName>steinarb/sonar-collector</imageName>
                     <baseImage>apache/karaf:4.2.8</baseImage>
                     <dockerDirectory>docker</dockerDirectory>
@@ -46,4 +51,19 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>enable-docker-on-linux</id>
+            <properties>
+                <skip.docker>false</skip.docker>
+            </properties>
+            <activation>
+                <file>
+                    <exists>/var/run/docker.pid</exists>
+                </file>
+            </activation>
+        </profile>
+    </profiles>
+
 </project>

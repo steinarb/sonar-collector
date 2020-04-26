@@ -325,7 +325,7 @@ Procedure:
     #+end_example
  2. Build the image:
     #+begin_example
-      mvn clean package docker:build
+      mvn clean install
     #+end_example
  3. Verify with "docker images" that the image has been rebuilt (if the CREATED column shows an old time the image probably hasn't been rebuilt):
     #+begin_example

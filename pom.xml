@@ -343,9 +343,9 @@
                 <artifactId>coveralls-maven-plugin</artifactId>
                 <version>4.3.0</version>
                 <configuration>
-                    <coberturaReports>
-                        <coberturaReport>${basedir}/target/coverage.xml</coberturaReport>
-                    </coberturaReports>
+                    <jacocoReports>
+                        <jacocoReport>${project.basedir}/jacoco-coverage-report/target/site/jacoco-aggregate/jacoco.xml</jacocoReport>
+                    </jacocoReports>
                 </configuration>
             </plugin>
             <plugin>

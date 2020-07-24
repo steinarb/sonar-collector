@@ -163,7 +163,7 @@ Procedure:
       feature:install sonar-collector-webhook-with-postgresql
     #+END_EXAMPLE
 
-(the application has been installed into maven central, which is a repository that is builtin to karaf)
+(sonar-collector has been deployed to maven central, which is a repository that is builtin to karaf)
 **** Using a database running on a different host
 
 The above example shows connecting to a PostgreSQL database running on localhost, authenticating with ident authentication (ie. no password).

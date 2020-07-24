@@ -34,7 +34,7 @@
         <pax.exam.version>4.10.0</pax.exam.version>
         <pax.jdbc.version>1.0.1</pax.jdbc.version>
         <pax.jdbc.version>1.0.1</pax.jdbc.version>
-        <liquibase.version>3.5.3</liquibase.version>
+        <liquibase.version>3.8.0</liquibase.version>
         <liquibase-slf4j.version>2.0.0</liquibase-slf4j.version>
         <postgresql.version>42.2.8</postgresql.version>
         <jackson.version>2.10.3</jackson.version>

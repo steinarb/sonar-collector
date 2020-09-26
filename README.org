@@ -24,6 +24,7 @@ The servlet has been written as a microservice that can be installed into an [[h
 
 | Version | Date             | Description                                                                                 |
 |---------+------------------+---------------------------------------------------------------------------------------------|
+|   1.3.1 | <2020-09-26 Sat> | Use PostgreSQL JDBC driver 42.2.12                                                          |
 |   1.3.0 | <2020-07-24 Fri> | Remove use of cobertura, upgrade liquibase from 3.5.3 to 3.8.0                              |
 |   1.2.0 | <2020-04-20 Mon> | Use jackson-databind 2.9.10.3, make liquibase script work with h2                           |
 |   1.1.0 | <2019-11-14 Thu> | Use pax-jdbc-config to set up the database, build with openjdk 11, jackson security upgrade |

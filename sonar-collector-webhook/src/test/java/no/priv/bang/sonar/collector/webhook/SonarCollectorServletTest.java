@@ -59,10 +59,10 @@ import org.osgi.service.jdbc.DataSourceFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
+import no.priv.bang.osgi.service.mocks.logservice.MockLogService;
 import no.priv.bang.sonar.collector.webhook.SonarBuild;
 import no.priv.bang.sonar.collector.webhook.SonarCollectorServlet;
 import no.priv.bang.sonar.collector.webhook.URLConnectionFactory;
-import no.priv.bang.sonar.collector.webhook.mocks.MockLogService;
 
 @SuppressWarnings("unchecked")
 class SonarCollectorServletTest {

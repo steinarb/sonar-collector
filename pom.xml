@@ -74,6 +74,12 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
+                <groupId>no.priv.bang.osgi.service.adapters</groupId>
+                <artifactId>service-mocks</artifactId>
+                <version>${osgi-service-adaptors.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
                 <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.core</artifactId>
                 <version>${osgi.version}</version>

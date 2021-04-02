@@ -27,7 +27,7 @@ import java.util.Properties;
 import org.junit.jupiter.api.Test;
 import org.osgi.service.log.LogService;
 
-import no.priv.bang.sonar.collector.webhook.mocks.MockLogService;
+import no.priv.bang.osgi.service.mocks.logservice.MockLogService;
 
 class SonarCollectorConfigurationTest {
 

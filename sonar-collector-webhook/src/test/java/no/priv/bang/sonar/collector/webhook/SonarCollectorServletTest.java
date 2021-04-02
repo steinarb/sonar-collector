@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Steinar Bang
+ * Copyright 2017-2021 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,9 @@
  */
 package no.priv.bang.sonar.collector.webhook;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
@@ -48,9 +49,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.ops4j.pax.jdbc.derby.impl.DerbyDataSourceFactory;
 import org.osgi.service.jdbc.DataSourceFactory;
@@ -64,13 +65,13 @@ import no.priv.bang.sonar.collector.webhook.URLConnectionFactory;
 import no.priv.bang.sonar.collector.webhook.mocks.MockLogService;
 
 @SuppressWarnings("unchecked")
-public class SonarCollectorServletTest {
+class SonarCollectorServletTest {
     private static DataSourceFactory dataSourceFactory;
     private static Properties originalSystemProperties;
     private static Properties connectionproperties;
 
-    @BeforeClass
-    public static void beforeClass() throws IOException {
+    @BeforeAll
+    static void beforeClass() throws IOException {
         originalSystemProperties = addTestPropertiesToSystemProperties();
         dataSourceFactory = new DerbyDataSourceFactory();
         connectionproperties = new Properties();
@@ -88,8 +89,8 @@ public class SonarCollectorServletTest {
         return originalSystemProperties;
     }
 
-    @AfterClass
-    public static void afterClass() {
+    @AfterAll
+    static void afterClass() {
         restoreSystemPropertiesToOriginalState();
     }
 
@@ -98,7 +99,7 @@ public class SonarCollectorServletTest {
     }
 
     @Test
-    public void testGetExceptionWhenCreatingDbSchema() throws IOException, SQLException {
+    void testGetExceptionWhenCreatingDbSchema() throws IOException, SQLException {
         MockLogService logservice = new MockLogService();
         DataSource datasource = mock(DataSource.class);
         when(datasource.getConnection()).thenThrow(SQLException.class);
@@ -120,7 +121,7 @@ public class SonarCollectorServletTest {
     }
 
     @Test
-    public void testReceiveSonarWebhookCall() throws ServletException, IOException, SQLException {
+    void testReceiveSonarWebhookCall() throws ServletException, IOException, SQLException {
         URLConnectionFactory factory = mock(URLConnectionFactory.class);
         HttpURLConnection componentsShowConnection = createConnectionFromResource("json/sonar/api-components-show-version-1.0.0-SNAPSHOT.json");
         HttpURLConnection measurementsConnection = createConnectionFromResource("json/sonar/api-measures-component-get-many-metrics.json");
@@ -176,7 +177,7 @@ public class SonarCollectorServletTest {
      * @throws SQLException
      */
     @Test
-    public void testReceiveSonarWebhookCallNoNewCoverage() throws ServletException, IOException, SQLException {
+    void testReceiveSonarWebhookCallNoNewCoverage() throws ServletException, IOException, SQLException {
         URLConnectionFactory factory = mock(URLConnectionFactory.class);
         HttpURLConnection componentsShowConnection = createConnectionFromResource("json/sonar/api-components-show-version-1.0.0-SNAPSHOT.json");
         HttpURLConnection measurementsConnection = createConnectionFromResource("json/sonar/api-measures-component-get-many-metrics-no-new_coverage.json");
@@ -221,7 +222,7 @@ public class SonarCollectorServletTest {
      * @throws SQLException
      */
     @Test
-    public void testMeasuresView() throws ServletException, IOException, SQLException {
+    void testMeasuresView() throws ServletException, IOException, SQLException {
         URLConnectionFactory factory = mock(URLConnectionFactory.class);
         HttpURLConnection componentsShowConnection = createConnectionFromResource("json/sonar/api-components-show-version-1.0.0-SNAPSHOT.json");
         HttpURLConnection measurementsConnection = createConnectionFromResource("json/sonar/api-measures-component-get-many-metrics.json");
@@ -316,7 +317,7 @@ public class SonarCollectorServletTest {
     }
 
     @Test
-    public void testUseNoArgumentConstructorAndReceiveSonarWebhookCall() throws ServletException, IOException {
+    void testUseNoArgumentConstructorAndReceiveSonarWebhookCall() throws ServletException, IOException {
         MockLogService logservice = new MockLogService();
         SonarCollectorServlet servlet = new SonarCollectorServlet();
         servlet.setLogservice(logservice);
@@ -329,11 +330,11 @@ public class SonarCollectorServletTest {
 
         ArgumentCaptor<Integer> status = ArgumentCaptor.forClass(Integer.class);
         verify(response).setStatus(status.capture());
-        assertEquals("Expected HTTP internal server error code", 500, status.getValue().intValue());
+        assertEquals(500, status.getValue().intValue(), "Expected HTTP internal server error code");
     }
 
     @Test
-    public void testCallbackToSonarServerToGetMetrics() throws ServletException, IOException {
+    void testCallbackToSonarServerToGetMetrics() throws ServletException, IOException {
         MockLogService logservice = new MockLogService();
         URLConnectionFactory factory = mock(URLConnectionFactory.class);
         HttpURLConnection componentsShowNoMavenVersion = createConnectionFromResource("json/sonar/api-components-show-component-not-found.json");
@@ -358,12 +359,12 @@ public class SonarCollectorServletTest {
             .thenReturn(webhookPostBody[2]);
 
         long expectedTimeInMillisecondsSinceEpoch = ZonedDateTime.parse("2017-11-19T10:39:24+0100", SonarCollectorServlet.isoZonedDateTimeformatter).toEpochSecond() * 1000;
-        assertEquals("Expected no log messages initially", 0, logservice.getLogmessages().size());
+        assertEquals(0, logservice.getLogmessages().size(), "Expected no log messages initially");
         SonarBuild buildWithNoMavenVersion = servlet.callbackToSonarServerToGetMetrics(request);
         assertEquals("no.priv.bang.sonar.sonar-collector:parent", buildWithNoMavenVersion.getProject());
         assertEquals(expectedTimeInMillisecondsSinceEpoch, buildWithNoMavenVersion.getAnalysedAt());
         assertEquals("", buildWithNoMavenVersion.getVersion());
-        assertEquals("Expected a single warning log message from missing maven version", 1, logservice.getLogmessages().size());
+        assertEquals(1, logservice.getLogmessages().size(), "Expected a single warning log message from missing maven version");
         assertEquals("http://localhost:9000", buildWithNoMavenVersion.getServerUrl().toString());
 
         SonarBuild buildWithMavenSnapshotVersion = servlet.callbackToSonarServerToGetMetrics(request);
@@ -380,7 +381,7 @@ public class SonarCollectorServletTest {
     }
 
     @Test
-    public void testCreateSonarComponentsShowUrl() throws ServletException, IOException {
+    void testCreateSonarComponentsShowUrl() throws ServletException, IOException {
         URLConnectionFactory factory = mock(URLConnectionFactory.class);
         SonarCollectorServlet servlet = new SonarCollectorServlet(factory);
         String[] metricKeys = servlet.getConfiguration().getMetricKeys();
@@ -397,7 +398,7 @@ public class SonarCollectorServletTest {
     }
 
     @Test
-    public void testCreateSonarMeasurementsComponentUrl() throws ServletException, IOException {
+    void testCreateSonarMeasurementsComponentUrl() throws ServletException, IOException {
         URLConnectionFactory factory = mock(URLConnectionFactory.class);
         SonarCollectorServlet servlet = new SonarCollectorServlet(factory);
         String[] metricKeys = servlet.getConfiguration().getMetricKeys();
@@ -415,7 +416,7 @@ public class SonarCollectorServletTest {
     }
 
     @Test
-    public void testParseMeasures() throws JsonProcessingException, IOException {
+    void testParseMeasures() throws JsonProcessingException, IOException {
         JsonNode root = SonarCollectorServlet.mapper.readTree(getClass().getClassLoader().getResourceAsStream("json/sonar/api-measures-component-get-many-metrics.json"));
         JsonNode measuresNode = root.path("component").path("measures");
         SonarCollectorServlet servlet = new SonarCollectorServlet();
@@ -437,18 +438,18 @@ public class SonarCollectorServletTest {
      * @throws IOException
      */
     @Test
-    public void testParseMeasuresEmptyDocument() throws JsonProcessingException, IOException {
+    void testParseMeasuresEmptyDocument() throws JsonProcessingException, IOException {
         JsonNode root = SonarCollectorServlet.mapper.readTree("{}");
         JsonNode measuresNode = root.path("component").path("measures");
         SonarCollectorServlet servlet = new SonarCollectorServlet();
 
         HashMap<String, String> measures = new HashMap<>();
         servlet.parseMeasures(measures, measuresNode);
-        assertEquals("Parse results weren't empty", 0, measures.size());
+        assertEquals(0, measures.size(), "Parse results weren't empty");
     }
 
     @Test
-    public void testInjectConfigFromKaraf() throws IOException {
+    void testInjectConfigFromKaraf() throws IOException {
         SonarCollectorServlet servlet = new SonarCollectorServlet();
         Map<String, Object> configFromKaraf = new HashMap<>();
         configFromKaraf.put(SonarCollectorConfiguration.SONAR_MEASURES_COMPONENTS_METRIC_KEYS, "lines,bugs,new_bugs");
@@ -459,7 +460,7 @@ public class SonarCollectorServletTest {
     }
 
     @Test
-    public void testVersionIsReleaseVersion() throws IOException {
+    void testVersionIsReleaseVersion() throws IOException {
         SonarCollectorServlet servlet = new SonarCollectorServlet();
         assertFalse(servlet.versionIsReleaseVersion(""));
         assertFalse(servlet.versionIsReleaseVersion("1.0.0-SNAPSHOT"));
@@ -467,7 +468,7 @@ public class SonarCollectorServletTest {
     }
 
     @Test
-    public void testParseTimestamp() throws IOException {
+    void testParseTimestamp() throws IOException {
         SonarCollectorServlet servlet = new SonarCollectorServlet();
         long timestamp = servlet.parseTimestamp("2017-11-19T10:39:24+0100");
         Date date = new Date(timestamp);

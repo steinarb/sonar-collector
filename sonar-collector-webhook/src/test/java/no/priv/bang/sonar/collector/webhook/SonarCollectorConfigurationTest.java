@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Steinar Bang
+ * Copyright 2017-2021 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 package no.priv.bang.sonar.collector.webhook;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
@@ -24,19 +24,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.osgi.service.log.LogService;
 
 import no.priv.bang.sonar.collector.webhook.mocks.MockLogService;
 
-public class SonarCollectorConfigurationTest {
+class SonarCollectorConfigurationTest {
 
     /**
      * Test the default value for the JDBC connection: PostgreSQL on localhost, no username or password.
      * (localhost PostgreSQL uses the username of the connecting process to grant access).
      */
     @Test
-    public void testGetMetricKeys() {
+    void testGetMetricKeys() {
         MockLogService logservice = new MockLogService();
         SonarCollectorConfiguration configuration = new SonarCollectorConfiguration(logservice);
 
@@ -50,7 +50,7 @@ public class SonarCollectorConfigurationTest {
      * be no exceptions thrown.
      */
     @Test
-    public void testGetMetricKeysNullConfig() {
+    void testGetMetricKeysNullConfig() {
         MockLogService logservice = new MockLogService();
         SonarCollectorConfiguration configuration = new SonarCollectorConfiguration(logservice);
 
@@ -66,7 +66,7 @@ public class SonarCollectorConfigurationTest {
      * be no exceptions thrown.
      */
     @Test
-    public void testGetMetricKeysInjectedConfig() {
+    void testGetMetricKeysInjectedConfig() {
         Properties originalProperties = (Properties) System.getProperties().clone();
         try {
             MockLogService logservice = new MockLogService();
@@ -93,7 +93,7 @@ public class SonarCollectorConfigurationTest {
      * be no exceptions thrown.
      */
     @Test
-    public void testGetMetricKeysFromSystemProperties() {
+    void testGetMetricKeysFromSystemProperties() {
         Properties originalProperties = (Properties) System.getProperties().clone();
         try {
             MockLogService logservice = new MockLogService();
@@ -137,7 +137,7 @@ public class SonarCollectorConfigurationTest {
      * @throws IOException
      */
     @Test
-    public void testGetApplicationPropertiesThrowsIOException() throws IOException {
+    void testGetApplicationPropertiesThrowsIOException() throws IOException {
         MockLogService logservice = new MockLogService();
 
         // Verify that there are no log messages before the configuration property class is created

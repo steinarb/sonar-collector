@@ -35,7 +35,7 @@
         <postgresql.version>42.2.17</postgresql.version>
         <jackson.version>2.10.3</jackson.version>
         <jackson.databind.version>${jackson.version}</jackson.databind.version>
-        <osgi-service-adaptors.version>1.0.1</osgi-service-adaptors.version>
+        <osgi-service-adapters.version>1.1.0</osgi-service-adapters.version>
         <junit.jupiter.version>5.7.1</junit.jupiter.version>
         <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/../jacoco-coverage-report/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
     </properties>
@@ -76,7 +76,7 @@
             <dependency>
                 <groupId>no.priv.bang.osgi.service.adapters</groupId>
                 <artifactId>service-mocks</artifactId>
-                <version>${osgi-service-adaptors.version}</version>
+                <version>${osgi-service-adapters.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -99,14 +99,14 @@
             </dependency>
             <dependency>
                 <groupId>no.priv.bang.osgi.service.adapters</groupId>
-                <artifactId>logservice</artifactId>
-                <version>${osgi-service-adaptors.version}</version>
+                <artifactId>adapters.logservice</artifactId>
+                <version>${osgi-service-adapters.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>no.priv.bang.osgi.service.adapters</groupId>
-                <artifactId>jdbc</artifactId>
-                <version>${osgi-service-adaptors.version}</version>
+                <artifactId>adapters.jdbc</artifactId>
+                <version>${osgi-service-adapters.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>

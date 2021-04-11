@@ -66,7 +66,7 @@
         </dependency>
         <dependency>
             <groupId>no.priv.bang.osgi.service.adapters</groupId>
-            <artifactId>logservice</artifactId>
+            <artifactId>adapters.logservice</artifactId>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -74,7 +74,7 @@
         </dependency>
         <dependency>
             <groupId>no.priv.bang.osgi.service.adapters</groupId>
-            <artifactId>jdbc</artifactId>
+            <artifactId>adapters.jdbc</artifactId>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.web</groupId>

@@ -14,6 +14,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xml:space="preserve">
 
     <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>no.priv.bang.pom</groupId>
+        <artifactId>bang-pom</artifactId>
+        <version>1.0.0</version>
+    </parent>
     <groupId>no.priv.bang.sonar.sonar-collector</groupId>
     <artifactId>sonar-collector</artifactId>
     <version>1.5.0-SNAPSHOT</version>
@@ -24,19 +29,9 @@
     <description>Apache karaf microservices to capture statistics over SonarQube/SonarCloud key measures.</description>
 
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.bundle.plugin.version>5.1.1</maven.bundle.plugin.version>
-        <karaf.version>4.3.0</karaf.version>
-        <osgi.version>7.0.0</osgi.version>
-        <osgi.service>1.4.0</osgi.service>
-        <pax.jdbc.version>1.0.1</pax.jdbc.version>
-        <liquibase.version>3.8.0</liquibase.version>
-        <liquibase-slf4j.version>2.0.0</liquibase-slf4j.version>
-        <postgresql.version>42.2.17</postgresql.version>
         <jackson.version>2.10.3</jackson.version>
         <jackson.databind.version>${jackson.version}</jackson.databind.version>
-        <osgi-service-adapters.version>1.1.0</osgi-service-adapters.version>
-        <junit.jupiter.version>5.7.1</junit.jupiter.version>
+        <osgi-service-adapters.version>1.1.1</osgi-service-adapters.version>
         <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/../jacoco-coverage-report/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
     </properties>
 
@@ -68,36 +63,6 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>org.mockito</groupId>
-                <artifactId>mockito-core</artifactId>
-                <version>3.8.0</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>no.priv.bang.osgi.service.adapters</groupId>
-                <artifactId>service-mocks</artifactId>
-                <version>${osgi-service-adapters.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.osgi</groupId>
-                <artifactId>osgi.core</artifactId>
-                <version>${osgi.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.osgi</groupId>
-                <artifactId>org.osgi.service.component.annotations</artifactId>
-                <version>${osgi.service}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.osgi</groupId>
-                <artifactId>org.osgi.service.log</artifactId>
-                <version>${osgi.service}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
                 <groupId>no.priv.bang.osgi.service.adapters</groupId>
                 <artifactId>adapters.logservice</artifactId>
                 <version>${osgi-service-adapters.version}</version>
@@ -108,6 +73,12 @@
                 <artifactId>adapters.jdbc</artifactId>
                 <version>${osgi-service-adapters.version}</version>
                 <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>no.priv.bang.osgi.service.adapters</groupId>
+                <artifactId>service-mocks</artifactId>
+                <version>${osgi-service-adapters.version}</version>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
@@ -121,121 +92,10 @@
                 <version>${jackson.databind.version}</version>
                 <scope>provided</scope>
             </dependency>
-            <dependency>
-                <groupId>org.ops4j.pax.jdbc</groupId>
-                <artifactId>pax-jdbc-derby</artifactId>
-                <version>${pax.jdbc.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.postgresql</groupId>
-                <artifactId>postgresql</artifactId>
-                <version>${postgresql.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.liquibase</groupId>
-                <artifactId>liquibase-core</artifactId>
-                <version>${liquibase.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>no.priv.bang.karaf</groupId>
-                <artifactId>liquibase-core-karaf</artifactId>
-                <version>${liquibase.version}</version>
-                <type>xml</type>
-                <classifier>features</classifier>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
     <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.5.1</version>
-                    <configuration>
-                        <source>1.8</source>
-                        <target>1.8</target>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-source-plugin</artifactId>
-                    <version>2.4</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>2.10.2</version>
-                    <configuration>
-                        <source>8</source>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.22.2</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.felix</groupId>
-                    <artifactId>maven-bundle-plugin</artifactId>
-                    <version>${maven.bundle.plugin.version}</version>
-                    <configuration>
-                        <supportedProjectTypes>
-                            <supportedProjectType>jar</supportedProjectType>
-                            <supportedProjectType>bundle</supportedProjectType>
-                            <supportedProjectType>war</supportedProjectType>
-                        </supportedProjectTypes>
-                        <instructions>
-                            <Bundle-SymbolicName>${Bundle-SymbolicName}</Bundle-SymbolicName>
-                            <Import-Package>*</Import-Package>
-                            <Export-Package>!*</Export-Package>
-                            <_removeheaders>
-                                Private-Package,
-                                Include-Resource,
-                                Embed-Dependency,
-                                Embed-Transitive
-                            </_removeheaders>
-                            <!-- Enable processing of OSGI DS component annotations -->
-                            <_dsannotations>*</_dsannotations>
-                            <!-- Enable processing of OSGI metatype annotations -->
-                            <_metatypeannotations>*</_metatypeannotations>
-                        </instructions>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <id>bundle</id>
-                            <goals>
-                                <goal>bundle</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.karaf.tooling</groupId>
-                    <artifactId>karaf-maven-plugin</artifactId>
-                    <version>${karaf.version}</version>
-                    <extensions>true</extensions>
-                    <configuration>
-                        <startLevel>80</startLevel>
-                        <includeTransitiveDependency>false</includeTransitiveDependency>
-                        <aggregateFeatures>false</aggregateFeatures>
-                        <includeProjectArtifact>true</includeProjectArtifact>
-                        <primaryFeatureName>${karaf-feature-name}</primaryFeatureName>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <id>generate-features-file</id>
-                            <phase>package</phase>
-                            <goals>
-                                <goal>features-generate-descriptor</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-            </plugins>
-        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

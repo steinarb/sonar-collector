@@ -31,7 +31,7 @@
     <properties>
         <jackson.version>2.10.3</jackson.version>
         <jackson.databind.version>${jackson.version}</jackson.databind.version>
-        <osgi-service-adapters.version>1.1.1</osgi-service-adapters.version>
+        <osgi-service-adapters.version>1.1.2</osgi-service-adapters.version>
         <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/../jacoco-coverage-report/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
     </properties>
 
@@ -57,27 +57,16 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
+                <groupId>no.priv.bang.osgi.service.adapters</groupId>
+                <artifactId>adapters-bom</artifactId>
+                <version>${osgi-service-adapters.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
                 <groupId>org.hamcrest</groupId>
                 <artifactId>hamcrest</artifactId>
                 <version>2.2</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>no.priv.bang.osgi.service.adapters</groupId>
-                <artifactId>adapters.logservice</artifactId>
-                <version>${osgi-service-adapters.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>no.priv.bang.osgi.service.adapters</groupId>
-                <artifactId>adapters.jdbc</artifactId>
-                <version>${osgi-service-adapters.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>no.priv.bang.osgi.service.adapters</groupId>
-                <artifactId>service-mocks</artifactId>
-                <version>${osgi-service-adapters.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>

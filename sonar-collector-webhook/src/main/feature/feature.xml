@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <features xmlns="http://karaf.apache.org/xmlns/features/v1.5.0">
     <repository>mvn:org.postgresql/postgresql/${postgresql.version}/xml/features</repository>
-    <repository>mvn:no.priv.bang.osgi.service.adapters/karaf/${osgi-service-adapters.version}/xml/features</repository>
     <feature name="sonar-collector-postgresql-jdbc-provider" version="${project.version}">
         <config name="org.ops4j.datasource-sonar-collector">
             osgi.jdbc.driver.name=PostgreSQL JDBC Driver
@@ -17,8 +16,6 @@
     </feature>
     <feature name="${karaf-feature-name}">
         <capability>osgi.service;effective:=active;objectClass=org.osgi.service.jdbc.DataSourceFactory</capability>
-        <feature>adapter-for-osgi-logservice</feature>
-        <feature>adapters-for-osgi-jdbc-services</feature>
         <feature>pax-http-whiteboard</feature>
         <feature>liquibase-core</feature>
     </feature>

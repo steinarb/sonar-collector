@@ -24,6 +24,7 @@ The servlet has been written as a microservice that can be installed into an [[h
 
 | Version | Date             | Description                                                                                 |
 |---------+------------------+---------------------------------------------------------------------------------------------|
+|   1.4.2 | <2021-04-19 Mon> | Get OSGi adapters dependency from a BoM                                                     |
 |   1.4.1 | <2021-04-17 Sat> | Get maven dependency versions and maven plugin config from a parent POM                     |
 |   1.4.0 | <2021-04-12 Mon> | Built with karaf 4.3.0 and OSGi 7                                                           |
 |   1.3.4 | <2021-03-21 Sun> | Bugfix: avoid loading junit and hamcrest in karaf                                           |

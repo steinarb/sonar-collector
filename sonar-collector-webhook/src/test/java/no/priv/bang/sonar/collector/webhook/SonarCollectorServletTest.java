@@ -64,7 +64,6 @@ import no.priv.bang.sonar.collector.webhook.SonarBuild;
 import no.priv.bang.sonar.collector.webhook.SonarCollectorServlet;
 import no.priv.bang.sonar.collector.webhook.URLConnectionFactory;
 
-@SuppressWarnings("unchecked")
 class SonarCollectorServletTest {
     private static DataSourceFactory dataSourceFactory;
     private static Properties originalSystemProperties;

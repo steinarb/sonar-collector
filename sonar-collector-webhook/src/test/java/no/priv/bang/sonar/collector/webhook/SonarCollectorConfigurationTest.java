@@ -116,7 +116,6 @@ class SonarCollectorConfigurationTest {
             super(logservice);
         }
 
-        @SuppressWarnings("unchecked")
         @Override
         protected InputStream getApplicationProperties() {
             InputStream inputstream = mock(InputStream.class);

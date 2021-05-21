@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Steinar Bang
+ * Copyright 2017-2021 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,6 +52,7 @@ import liquibase.database.jvm.JdbcConnection;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import no.priv.bang.osgi.service.adapters.jdbc.DataSourceAdapter;
 import no.priv.bang.osgi.service.adapters.logservice.LogServiceAdapter;
+import no.priv.bang.osgi.service.adapters.logservice.LoggerAdapter;
 
 @Component(service={Servlet.class}, property={"alias=/sonar-collector", "configurationPid=no.priv.bang.sonar.sonar-collector-webhook"} )
 public class SonarCollectorServlet extends HttpServlet {
@@ -68,7 +69,8 @@ public class SonarCollectorServlet extends HttpServlet {
     static final ObjectMapper mapper = new ObjectMapper();
     final DataSourceAdapter dataSource = new DataSourceAdapter();
     private final LogServiceAdapter logservice = new LogServiceAdapter();
-    final SonarCollectorConfiguration configuration = new SonarCollectorConfiguration(logservice);
+    private final LoggerAdapter logger = new LoggerAdapter(getClass());
+    final SonarCollectorConfiguration configuration = new SonarCollectorConfiguration();
 
     @Reference(target = "(osgi.jndi.service.name=jdbc/sonar-collector)")
     public void setDataSource(DataSource ds) {
@@ -78,10 +80,12 @@ public class SonarCollectorServlet extends HttpServlet {
     @Reference
     public void setLogservice(LogService logservice) {
         this.logservice.setLogService(logservice);
+        this.logger.setLogService(logservice);
     }
 
     @Activate
     public void activate(Map<String, Object> config) {
+        configuration.loadProperties(logservice);
         configuration.setConfig(config);
         createSchemaWithLiquibase(dataSource);
     }
@@ -93,7 +97,7 @@ public class SonarCollectorServlet extends HttpServlet {
             Liquibase liquibase = new Liquibase("db-changelog/db-changelog-1.0.0.xml", classLoaderResourceAccessor, databaseConnection);
             liquibase.update("");
         } catch (Exception e) {
-            logservice.log(LogService.LOG_ERROR, "Sonar Collector servlet unable to create or update the database schema", e);
+            logger.error("Sonar Collector servlet unable to create or update the database schema", e);
         }
     }
 
@@ -119,7 +123,7 @@ public class SonarCollectorServlet extends HttpServlet {
             SonarBuild build = callbackToSonarServerToGetMetrics(request);
             saveMeasuresInDatabase(build);
         } catch (Exception e) {
-            logservice.log(LogService.LOG_ERROR, "Sonar Collector caught exception ", e);
+            logger.error("Sonar Collector caught exception ", e);
             response.setStatus(500); // Report internal server error
         }
     }
@@ -150,7 +154,7 @@ public class SonarCollectorServlet extends HttpServlet {
 
     private void logWarningIfVersionIsMissing(SonarBuild build, URL componentsShowUrl) {
         if ("".equals(build.getVersion())) {
-            logservice.log(LogService.LOG_WARNING, String.format("Maven version is missing from build \"%s\". API URL used to request the version, is: %s", build.getProject(), componentsShowUrl.toString()));
+            logger.warn(String.format("Maven version is missing from build \"%s\". API URL used to request the version, is: %s", build.getProject(), componentsShowUrl.toString()));
         }
     }
 

@@ -38,7 +38,8 @@ class SonarCollectorConfigurationTest {
     @Test
     void testGetMetricKeys() {
         MockLogService logservice = new MockLogService();
-        SonarCollectorConfiguration configuration = new SonarCollectorConfiguration(logservice);
+        SonarCollectorConfiguration configuration = new SonarCollectorConfiguration();
+        configuration.loadProperties(logservice);
 
         assertEquals(10, configuration.getMetricKeys().length);
     }
@@ -52,7 +53,8 @@ class SonarCollectorConfigurationTest {
     @Test
     void testGetMetricKeysNullConfig() {
         MockLogService logservice = new MockLogService();
-        SonarCollectorConfiguration configuration = new SonarCollectorConfiguration(logservice);
+        SonarCollectorConfiguration configuration = new SonarCollectorConfiguration();
+        configuration.loadProperties(logservice);
 
         configuration.setConfig(null);
 
@@ -70,7 +72,8 @@ class SonarCollectorConfigurationTest {
         Properties originalProperties = (Properties) System.getProperties().clone();
         try {
             MockLogService logservice = new MockLogService();
-            SonarCollectorConfiguration configuration = new SonarCollectorConfiguration(logservice);
+            SonarCollectorConfiguration configuration = new SonarCollectorConfiguration();
+            configuration.loadProperties(logservice);
             Map<String, Object> injectedConfig = new HashMap<>();
             injectedConfig.put(SonarCollectorConfiguration.SONAR_MEASURES_COMPONENTS_METRIC_KEYS, "lines,bugs,new_bugs,vulnerabilities,new_vulnerabilities,code_smells");
 
@@ -97,7 +100,8 @@ class SonarCollectorConfigurationTest {
         Properties originalProperties = (Properties) System.getProperties().clone();
         try {
             MockLogService logservice = new MockLogService();
-            SonarCollectorConfiguration configuration = new SonarCollectorConfiguration(logservice);
+            SonarCollectorConfiguration configuration = new SonarCollectorConfiguration();
+            configuration.loadProperties(logservice);
             Map<String, Object> injectedConfig = new HashMap<>();
             configuration.setConfig(injectedConfig);
 
@@ -113,7 +117,7 @@ class SonarCollectorConfigurationTest {
     static class SonarCollectorConfigurationWithApplicationPropertiesThrowingIOException extends SonarCollectorConfiguration {
 
         SonarCollectorConfigurationWithApplicationPropertiesThrowingIOException(LogService logservice) {
-            super(logservice);
+            super();
         }
 
         @Override
@@ -143,6 +147,7 @@ class SonarCollectorConfigurationTest {
         assertEquals(0, logservice.getLogmessages().size());
 
         SonarCollectorConfiguration configuration = new SonarCollectorConfigurationWithApplicationPropertiesThrowingIOException(logservice);
+        configuration.loadProperties(logservice);
 
         // Verify that a single log message had been logged
         assertEquals(1, logservice.getLogmessages().size());

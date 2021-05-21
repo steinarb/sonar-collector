@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Steinar Bang
+ * Copyright 2017-2021 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.osgi.service.log.LogService;
+import org.osgi.service.log.Logger;
 
 /***
  * A class that encapsulates finding configuration settings
@@ -35,12 +36,12 @@ public class SonarCollectorConfiguration {
     private final Properties applicationProperties = new Properties();
     private Map<String, Object> injectedconfig = Collections.emptyMap();
 
-
-    SonarCollectorConfiguration(LogService logservice) {
+    void loadProperties(LogService logservice) {
         try(InputStream propertiesFile = getApplicationProperties()) {
             applicationProperties.load(propertiesFile);
         } catch (IOException e) {
-            logservice.log(LogService.LOG_ERROR, "SonarCollectorConfiguration failed to load the application.properties", e);
+            Logger logger = logservice.getLogger(getClass());
+            logger.error("SonarCollectorConfiguration failed to load the application.properties", e);
         }
     }
 

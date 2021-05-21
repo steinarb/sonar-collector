@@ -34,6 +34,7 @@ import java.sql.SQLException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -383,6 +384,9 @@ class SonarCollectorServletTest {
     void testCreateSonarComponentsShowUrl() throws ServletException, IOException {
         URLConnectionFactory factory = mock(URLConnectionFactory.class);
         SonarCollectorServlet servlet = new SonarCollectorServlet(factory);
+        MockLogService logservice = new MockLogService();
+        servlet.setLogservice(logservice);
+        servlet.activate(Collections.emptyMap());
         String[] metricKeys = servlet.getConfiguration().getMetricKeys();
         assertEquals(10, metricKeys.length);
         String project = "no.priv.bang.ukelonn:parent";
@@ -400,6 +404,9 @@ class SonarCollectorServletTest {
     void testCreateSonarMeasurementsComponentUrl() throws ServletException, IOException {
         URLConnectionFactory factory = mock(URLConnectionFactory.class);
         SonarCollectorServlet servlet = new SonarCollectorServlet(factory);
+        MockLogService logservice = new MockLogService();
+        servlet.setLogservice(logservice);
+        servlet.activate(Collections.emptyMap());
         String[] metricKeys = servlet.getConfiguration().getMetricKeys();
         assertEquals(10, metricKeys.length);
         String project = "no.priv.bang.ukelonn:parent";
@@ -419,6 +426,9 @@ class SonarCollectorServletTest {
         JsonNode root = SonarCollectorServlet.mapper.readTree(getClass().getClassLoader().getResourceAsStream("json/sonar/api-measures-component-get-many-metrics.json"));
         JsonNode measuresNode = root.path("component").path("measures");
         SonarCollectorServlet servlet = new SonarCollectorServlet();
+        MockLogService logservice = new MockLogService();
+        servlet.setLogservice(logservice);
+        servlet.activate(Collections.emptyMap());
 
         String[] metricKeys = servlet.getConfiguration().getMetricKeys();
         HashMap<String, String> measures = new HashMap<>();
@@ -450,6 +460,8 @@ class SonarCollectorServletTest {
     @Test
     void testInjectConfigFromKaraf() throws IOException {
         SonarCollectorServlet servlet = new SonarCollectorServlet();
+        MockLogService logservice = new MockLogService();
+        servlet.setLogservice(logservice);
         Map<String, Object> configFromKaraf = new HashMap<>();
         configFromKaraf.put(SonarCollectorConfiguration.SONAR_MEASURES_COMPONENTS_METRIC_KEYS, "lines,bugs,new_bugs");
         servlet.activate(configFromKaraf);

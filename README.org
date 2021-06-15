@@ -24,7 +24,8 @@ The servlet has been written as a microservice that can be installed into an [[h
 
 | Version | Date             | Description                                                                                 |
 |---------+------------------+---------------------------------------------------------------------------------------------|
-|   1.4.4 | <2021-06-13 Sun> | Align dependency versions with other applications                                   |
+|   1.4.5 | <2021-06-15 Tue> | Use jackson 12.3                                                                            |
+|   1.4.4 | <2021-06-13 Sun> | Align dependency versions with other applications                                           |
 |   1.4.3 | <2021-06-01 Tue> | Get versions for the OSGi 7 framework and the OSGi compendium from the karaf BoM            |
 |   1.4.2 | <2021-04-19 Mon> | Get OSGi adapters dependency from a BoM                                                     |
 |   1.4.1 | <2021-04-17 Sat> | Get maven dependency versions and maven plugin config from a parent POM                     |

@@ -18,7 +18,6 @@ package no.priv.bang.sonar.collector.webhook;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;

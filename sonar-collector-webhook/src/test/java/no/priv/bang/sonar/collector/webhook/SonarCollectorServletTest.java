@@ -17,7 +17,7 @@ package no.priv.bang.sonar.collector.webhook;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
@@ -396,7 +396,7 @@ class SonarCollectorServletTest {
         assertEquals(serverUrl.getPort(), metricsUrl.getPort());
         assertEquals("/api/components/show", metricsUrl.getPath());
         String query = URLDecoder.decode(metricsUrl.getQuery(), "UTF-8");
-        assertThat(query, containsString(project));
+        assertThat(query).contains(project);
     }
 
     @Test
@@ -417,7 +417,7 @@ class SonarCollectorServletTest {
         assertEquals(build.getServerUrl().getPort(), metricsUrl.getPort());
         assertEquals("/api/measures/component", metricsUrl.getPath());
         String query = URLDecoder.decode(metricsUrl.getQuery(), "UTF-8");
-        assertThat(query, containsString(build.getProject()));
+        assertThat(query).contains(build.getProject());
     }
 
     @Test

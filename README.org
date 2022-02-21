@@ -24,6 +24,7 @@ The servlet has been written as a microservice that can be installed into an [[h
 
 | Version | Date             | Description                                                                                 |
 |---------+------------------+---------------------------------------------------------------------------------------------|
+|   1.4.8 | <2022-02-21 Mon> | Use Java 11, karaf 4.3.6, junit 5.8.2, assertj 3.22.0 and mockito 4.3.1                     |
 |   1.4.7 | <2021-10-14 Thu> | Use karaf 4.3.3 and postgresql JDBC 4.2.24                                                  |
 |   1.4.6 | <2021-07-25 Sun> | Use PostgreSQL JDBC driver 42.2.23                                                          |
 |   1.4.5 | <2021-06-15 Tue> | Use jackson 12.3                                                                            |

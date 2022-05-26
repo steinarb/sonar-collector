@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Copyright 2017-2021 Steinar Bang                                                -->
+<!-- Copyright 2017-2022 Steinar Bang                                                -->
 <!--                                                                                 -->
 <!-- Licensed under the Apache License, Version 2.0 (the "License");                 -->
 <!-- you may not use this file except in compliance with the License.                -->
@@ -67,7 +67,12 @@
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>osgi.cmpn</artifactId>
+            <artifactId>org.osgi.service.component.annotations</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.service.log</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -152,8 +157,10 @@
                 <artifactId>maven-bundle-plugin</artifactId>
                 <configuration>
                     <instructions>
+                        <Export-Package>no.priv.bang.sonar.collector.webhook;uses:="com.fasterxml.jackson.databind,javax.servlet,javax.servlet.http,javax.sql,org.osgi.service.log";version="1.4.0"</Export-Package>
                         <Import-Package>
                             com.fasterxml.jackson.core,
+                            org.osgi.service.log;version="[1.4,2)",
                             *
                         </Import-Package>
                     </instructions>

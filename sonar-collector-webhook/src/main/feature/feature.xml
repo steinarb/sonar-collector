@@ -16,7 +16,8 @@
     </feature>
     <feature name="${karaf-feature-name}">
         <capability>osgi.service;effective:=active;objectClass=org.osgi.service.jdbc.DataSourceFactory</capability>
-        <feature>pax-http-whiteboard</feature>
+        <feature>scr</feature>
+        <feature>http-whiteboard</feature>
         <feature>liquibase-core</feature>
     </feature>
 

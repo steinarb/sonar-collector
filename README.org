@@ -14,11 +14,23 @@ The servlet has been written as a microservice that can be installed into an [[h
 
 ** Status of the project
 
-[[https://travis-ci.org/steinarb/sonar-collector][file:https://travis-ci.org/steinarb/sonar-collector.svg?branch=master]] [[https://coveralls.io/r/steinarb/sonar-collector][file:https://coveralls.io/repos/steinarb/sonar-collector/badge.svg]] [[https://sonarcloud.io/dashboard/index/no.priv.bang.sonar.sonar-collector%3Asonar-collector][file:https://sonarcloud.io/api/project_badges/measure?project=no.priv.bang.sonar.sonar-collector%3Asonar-collector&metric=alert_status#.svg]] [[https://maven-badges.herokuapp.com/maven-central/no.priv.bang.sonar.sonar-collector/sonar-collector][file:https://maven-badges.herokuapp.com/maven-central/no.priv.bang.sonar.sonar-collector/sonar-collector/badge.svg]]
+[[https://github.com/steinarb/sonar-collector/actions/workflows/sonar-collector-maven-ci-build.yml][file:https://github.com/steinarb/sonar-collector/actions/workflows/sonar-collector-maven-ci-build.yml/badge.svg]]
+[[https://coveralls.io/github/badges/shields?branch=master][file:https://coveralls.io/repos/github/badges/shields/badge.svg?branch=master]]
+[[https://sonarcloud.io/summary/new_code?id=steinarb_sonar-collector][file:https://sonarcloud.io/api/project_badges/measure?project=steinarb_sonar-collector&metric=alert_status#.svg]]
+[[https://maven-badges.herokuapp.com/maven-central/no.priv.bang.sonar.sonar-collector/sonar-collector][file:https://maven-badges.herokuapp.com/maven-central/no.priv.bang.sonar.sonar-collector/sonar-collector/badge.svg]]
 
-*** SonarCloud
+[[https://sonarcloud.io/summary/new_code?id=steinarb_sonar-collector][file:https://sonarcloud.io/images/project_badges/sonarcloud-white.svg]]
 
-[[https://sonarcloud.io/dashboard/index/no.priv.bang.sonar.sonar-collector%3Asonar-collector][file:https://sonarcloud.io/api/project_badges/measure?project=no.priv.bang.sonar.sonar-collector%3Asonar-collector&metric=ncloc#.svg]] [[https://sonarcloud.io/dashboard/index/no.priv.bang.sonar.sonar-collector%3Asonar-collector][file:https://sonarcloud.io/api/project_badges/measure?project=no.priv.bang.sonar.sonar-collector%3Asonar-collector&metric=bugs#.svg]] [[https://sonarcloud.io/dashboard/index/no.priv.bang.sonar.sonar-collector%3Asonar-collector][file:https://sonarcloud.io/api/project_badges/measure?project=no.priv.bang.sonar.sonar-collector%3Asonar-collector&metric=vulnerabilities#.svg]] [[https://sonarcloud.io/dashboard/index/no.priv.bang.sonar.sonar-collector%3Asonar-collector][file:https://sonarcloud.io/api/project_badges/measure?project=no.priv.bang.sonar.sonar-collector%3Asonar-collector&metric=code_smells#.svg]] [[https://sonarcloud.io/dashboard/index/no.priv.bang.sonar.sonar-collector%3Asonar-collector][file:https://sonarcloud.io/api/project_badges/measure?project=no.priv.bang.sonar.sonar-collector%3Asonar-collector&metric=coverage#.svg]]
+[[https://sonarcloud.io/summary/new_code?id=steinarb_sonar-collector][file:https://sonarcloud.io/api/project_badges/measure?project=steinarb_sonar-collector&metric=sqale_index#.svg]]
+[[https://sonarcloud.io/summary/new_code?id=steinarb_sonar-collector][file:https://sonarcloud.io/api/project_badges/measure?project=steinarb_sonar-collector&metric=coverage#.svg]]
+[[https://sonarcloud.io/summary/new_code?id=steinarb_sonar-collector][file:https://sonarcloud.io/api/project_badges/measure?project=steinarb_sonar-collector&metric=ncloc#.svg]]
+[[https://sonarcloud.io/summary/new_code?id=steinarb_sonar-collector][file:https://sonarcloud.io/api/project_badges/measure?project=steinarb_sonar-collector&metric=code_smells#.svg]]
+[[https://sonarcloud.io/summary/new_code?id=steinarb_sonar-collector][file:https://sonarcloud.io/api/project_badges/measure?project=steinarb_sonar-collector&metric=sqale_rating#.svg]]
+[[https://sonarcloud.io/summary/new_code?id=steinarb_sonar-collector][file:https://sonarcloud.io/api/project_badges/measure?project=steinarb_sonar-collector&metric=security_rating#.svg]]
+[[https://sonarcloud.io/summary/new_code?id=steinarb_sonar-collector][file:https://sonarcloud.io/api/project_badges/measure?project=steinarb_sonar-collector&metric=bugs#.svg]]
+[[https://sonarcloud.io/summary/new_code?id=steinarb_sonar-collector][file:https://sonarcloud.io/api/project_badges/measure?project=steinarb_sonar-collector&metric=vulnerabilities#.svg]]
+[[https://sonarcloud.io/summary/new_code?id=steinarb_sonar-collector][file:https://sonarcloud.io/api/project_badges/measure?project=steinarb_sonar-collector&metric=duplicated_lines_density#.svg]]
+[[https://sonarcloud.io/summary/new_code?id=steinarb_sonar-collector][file:https://sonarcloud.io/api/project_badges/measure?project=steinarb_sonar-collector&metric=reliability_rating#.svg]]
 
 *** Release history
 

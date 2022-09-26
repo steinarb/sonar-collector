@@ -36,6 +36,7 @@ The servlet has been written as a microservice that can be installed into an [[h
 
 | Version | Date             | Description                                                                                 |
 |---------+------------------+---------------------------------------------------------------------------------------------|
+|   1.5.4 | <2022-08-10 Wed> | Use maven-bundle-plugin 5.1.8, junit jupiter 5.9.0, mockito 4.6.1, and assertj 2.23.1       |
 |   1.5.3 | <2022-08-10 Wed> | Use postgresql jdbc driver 42.4.1                                                           |
 |   1.5.2 | <2022-07-25 Mon> | Use karaf 4.4.1                                                                             |
 |   1.5.1 | <2022-05-31 Tue> | Use jackson jackson 2.13.3 to fix security issue                                            |

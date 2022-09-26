@@ -93,9 +93,11 @@ public class SonarCollectorServlet extends HttpServlet {
     private void createSchemaWithLiquibase(DataSource db) {
         try (Connection connection = db.getConnection()) {
             DatabaseConnection databaseConnection = new JdbcConnection(connection);
-            ClassLoaderResourceAccessor classLoaderResourceAccessor = new ClassLoaderResourceAccessor(getClass().getClassLoader());
-            Liquibase liquibase = new Liquibase("db-changelog/db-changelog-1.0.0.xml", classLoaderResourceAccessor, databaseConnection);
-            liquibase.update("");
+            try(var classLoaderResourceAccessor = new ClassLoaderResourceAccessor(getClass().getClassLoader())) {
+                try(var liquibase = new Liquibase("db-changelog/db-changelog-1.0.0.xml", classLoaderResourceAccessor, databaseConnection)) {
+                    liquibase.update("");
+                }
+            }
         } catch (Exception e) {
             logger.error("Sonar Collector servlet unable to create or update the database schema", e);
         }

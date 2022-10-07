@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 Steinar Bang
+ * Copyright 2017-2022 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 package no.priv.bang.sonar.collector.webhook;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.hamcrest.CoreMatchers.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -60,9 +59,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import no.priv.bang.osgi.service.mocks.logservice.MockLogService;
-import no.priv.bang.sonar.collector.webhook.SonarBuild;
-import no.priv.bang.sonar.collector.webhook.SonarCollectorServlet;
-import no.priv.bang.sonar.collector.webhook.URLConnectionFactory;
 
 class SonarCollectorServletTest {
     private static DataSourceFactory dataSourceFactory;

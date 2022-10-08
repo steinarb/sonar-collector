@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 Steinar Bang
+ * Copyright 2017-2022 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -112,6 +112,23 @@ class SonarCollectorConfigurationTest {
             // Restore the original system properties
             System.setProperties(originalProperties);
         }
+    }
+
+    @Test
+    void testSonarApiUserTokenConfigNotSet() {
+        SonarCollectorConfiguration configuration = new SonarCollectorConfiguration();
+        assertFalse(configuration.hasSonarApiUserToken());
+    }
+
+    @Test
+    void testHasSonarApiUserToken() {
+        SonarCollectorConfiguration configuration = new SonarCollectorConfiguration();
+        String usertoken = "squ_3869fbac07cc388306804e35fb72ca7c4baff275";
+        var config = new HashMap<String, Object>();
+        config.put(SonarCollectorConfiguration.SONAR_USER_TOKEN, usertoken);
+        configuration.setConfig(config);
+        assertTrue(configuration.hasSonarApiUserToken());
+        assertEquals(usertoken, configuration.getSonarApiUserToken());
     }
 
     static class SonarCollectorConfigurationWithApplicationPropertiesThrowingIOException extends SonarCollectorConfiguration {

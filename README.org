@@ -306,6 +306,17 @@ Procedure:
     : http://localhost:8181/sonar-collector
  6. Click the button "Save"
 
+*** Set a user token
+If you get 401 when sonar-collector is doing web api callbacks to sonar to get numbers that aren't in the webhook call, then you can add a sonar user token to use with the sonar web api.
+
+Procedure:
+ 1. In Sonar, go to My Account->Security, and create and retrieve a user token (/Note/: you only get one chance to copy the token after creating it)
+ 2. Add the user token to the sonar-collector config. replace "squ_3869fbac07cc388306804e35fb72ca7c4baff275" with the token retrieved from sonar:
+    #+begin_example
+      config:edit no.priv.bang.sonar.collector.webhook.SonarCollectorServlet
+      config:property-set sonar_user_token squ_3869fbac07cc388306804e35fb72ca7c4baff275
+      config:update
+    #+end_example
 ** License
 
 This utility is licensend under the Apache license v. 2.  See the LICENSE file for details.

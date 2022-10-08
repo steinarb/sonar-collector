@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 Steinar Bang
+ * Copyright 2017-2022 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
-
 import org.osgi.service.log.LogService;
 import org.osgi.service.log.Logger;
 
@@ -33,6 +32,7 @@ import org.osgi.service.log.Logger;
  */
 public class SonarCollectorConfiguration {
     static final String SONAR_MEASURES_COMPONENTS_METRIC_KEYS = "sonar.measures.components.metricKeys";
+    public static final String SONAR_USER_TOKEN = "sonar_user_token";
     private final Properties applicationProperties = new Properties();
     private Map<String, Object> injectedconfig = Collections.emptyMap();
 
@@ -78,5 +78,13 @@ public class SonarCollectorConfiguration {
         }
 
         return new String[0];
+    }
+
+    public boolean hasSonarApiUserToken() {
+        return injectedconfig.containsKey(SONAR_USER_TOKEN);
+    }
+
+    public String getSonarApiUserToken() {
+        return (String) injectedconfig.get(SONAR_USER_TOKEN);
     }
 }

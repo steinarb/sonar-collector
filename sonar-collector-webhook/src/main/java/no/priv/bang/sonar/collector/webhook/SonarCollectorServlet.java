@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 Steinar Bang
+ * Copyright 2017-2022 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package no.priv.bang.sonar.collector.webhook;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.sql.Connection;
@@ -133,31 +134,35 @@ public class SonarCollectorServlet extends HttpServlet {
     SonarBuild callbackToSonarServerToGetMetrics(ServletRequest request) throws IOException {
         try(InputStream postbody = request.getInputStream()) {
             JsonNode root = mapper.readTree(postbody);
-            long analysedAt = parseTimestamp(root.path("analysedAt").asText());
-            String project = root.path("project").path("key").asText();
-            URL serverUrl = new URL(root.path("serverUrl").asText());
-            URL componentsShowUrl = createSonarComponentsShowUrl(serverUrl, project);
-            HttpURLConnection componentsShowUrlConnection = openConnection(componentsShowUrl);
-            JsonNode componentsShowRoot = mapper.readTree(componentsShowUrlConnection.getInputStream());
-            String version = componentsShowRoot.path("component").path("version").asText();
-            SonarBuild build = new SonarBuild(analysedAt, project, version, serverUrl);
-            logWarningIfVersionIsMissing(build, componentsShowUrl);
-            URL measurementsUrl = createSonarMeasurementsComponentUrl(build, configuration.getMetricKeys());
-            HttpURLConnection measurementsUrlConnection = openConnection(measurementsUrl);
-            JsonNode measurementsRoot = mapper.readTree(measurementsUrlConnection.getInputStream());
-            parseMeasures(build.getMeasurements(), measurementsRoot.path("component").path("measures"));
-            return build;
+            long analysedAt = findAnalysisTimeAsMillisecondsFromEpoch(root);
+            String project = findProjectKey(root);
+            URL serverUrl = findSonarServerUrl(root);
+
+            String version = getAnalyzedProjectMavenVersionFromSonarServer(project, serverUrl);
+
+            return getAnalyzedProjectMetricsFromSonarServer(serverUrl, project, version, analysedAt);
         }
     }
 
-    long parseTimestamp(String timestamp) {
-        return ZonedDateTime.parse(timestamp, isoZonedDateTimeformatter).toEpochSecond() * 1000;
+    private String getAnalyzedProjectMavenVersionFromSonarServer(String project, URL serverUrl) throws IOException {
+        URL componentsShowUrl = createSonarComponentsShowUrl(serverUrl, project);
+        HttpURLConnection componentsShowUrlConnection = openConnection(componentsShowUrl);
+        JsonNode componentsShowRoot = mapper.readTree(componentsShowUrlConnection.getInputStream());
+        String version = componentsShowRoot.path("component").path("version").asText();
+        if ("".equals(version)) {
+            logger.warn(String.format("Maven version is missing from build \"%s\". API URL used to request the version, is: %s", project, componentsShowUrl.toString()));
+        }
+
+        return version;
     }
 
-    private void logWarningIfVersionIsMissing(SonarBuild build, URL componentsShowUrl) {
-        if ("".equals(build.getVersion())) {
-            logger.warn(String.format("Maven version is missing from build \"%s\". API URL used to request the version, is: %s", build.getProject(), componentsShowUrl.toString()));
-        }
+    private SonarBuild getAnalyzedProjectMetricsFromSonarServer(URL serverUrl, String project, String version, long analysedAt) throws IOException {
+        SonarBuild build = new SonarBuild(analysedAt, project, version, serverUrl);
+        URL measurementsUrl = createSonarMeasurementsComponentUrl(build, configuration.getMetricKeys());
+        HttpURLConnection measurementsUrlConnection = openConnection(measurementsUrl);
+        JsonNode measurementsRoot = mapper.readTree(measurementsUrlConnection.getInputStream());
+        parseMeasures(build.getMeasurements(), measurementsRoot.path("component").path("measures"));
+        return build;
     }
 
     private int saveMeasuresInDatabase(SonarBuild build) throws SQLException {
@@ -209,6 +214,22 @@ public class SonarCollectorServlet extends HttpServlet {
     public URL createSonarMeasurementsComponentUrl(SonarBuild build, String[] metricKeys) throws IOException {
         String localPath = String.format("/api/measures/component?componentKey=%s&metricKeys=%s", URLEncoder.encode(build.getProject(),"UTF-8"), String.join(",", metricKeys));
         return new URL(build.getServerUrl(), localPath);
+    }
+
+    private long findAnalysisTimeAsMillisecondsFromEpoch(JsonNode root) {
+        return parseTimestamp(root.path("analysedAt").asText());
+    }
+
+    private String findProjectKey(JsonNode root) {
+        return root.path("project").path("key").asText();
+    }
+
+    private URL findSonarServerUrl(JsonNode root) throws MalformedURLException {
+        return new URL(root.path("serverUrl").asText());
+    }
+
+    long parseTimestamp(String timestamp) {
+        return ZonedDateTime.parse(timestamp, isoZonedDateTimeformatter).toEpochSecond() * 1000;
     }
 
     HttpURLConnection openConnection(URL url) throws IOException {

@@ -138,6 +138,7 @@ public class SonarCollectorServlet extends HttpServlet {
             long analysedAt = findAnalysisTimeAsMillisecondsFromEpoch(root);
             String project = findProjectKey(root);
             URL serverUrl = findSonarServerUrl(root);
+            logger.info("sonar-collector webhook called for project {} from server {}", project, serverUrl);
 
             String version = getAnalyzedProjectMavenVersionFromSonarServer(project, serverUrl);
 

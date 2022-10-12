@@ -214,7 +214,7 @@ public class SonarCollectorServlet extends HttpServlet {
     }
 
     public URL createSonarMeasurementsComponentUrl(SonarBuild build, String[] metricKeys) throws IOException {
-        String localPath = String.format("/api/measures/component?componentKey=%s&metricKeys=%s", URLEncoder.encode(build.getProject(),"UTF-8"), String.join(",", metricKeys));
+        String localPath = String.format("/api/measures/component?component=%s&metricKeys=%s", URLEncoder.encode(build.getProject(),"UTF-8"), String.join(",", metricKeys));
         return new URL(build.getServerUrl(), localPath);
     }
 

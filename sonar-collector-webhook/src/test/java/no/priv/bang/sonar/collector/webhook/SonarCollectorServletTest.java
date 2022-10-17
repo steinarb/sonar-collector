@@ -208,6 +208,54 @@ class SonarCollectorServletTest {
         assertEquals(0.0, ((Double)measuresRow.get("NEW_COVERAGE")).doubleValue(), 0.01);
     }
 
+    @Test
+    void testReceiveSonarCloudWebhookCall() throws ServletException, IOException, SQLException {
+        URLConnectionFactory factory = mock(URLConnectionFactory.class);
+        HttpURLConnection componentsShowConnection = createConnectionFromResource("json/sonar/api-components-show-version-1.0.0-SNAPSHOT.json");
+        HttpURLConnection measurementsConnection = createConnectionFromResource("json/sonar/api-measures-component-get-many-metrics-sonarcloud.json");
+        when(factory.openConnection(any()))
+            .thenReturn(componentsShowConnection)
+            .thenReturn(measurementsConnection);
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        ServletInputStream value = wrap(getClass().getClassLoader().getResourceAsStream("json/sonar/webhook-post.json"));
+        when(request.getInputStream()).thenReturn(value);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        MockLogService logservice = new MockLogService();
+
+        SonarCollectorServlet servlet = new SonarCollectorServlet(factory);
+        servlet.setDataSource(dataSourceFactory.createDataSource(connectionproperties));
+        servlet.setLogservice(logservice);
+        servlet.activate(null);
+
+        // Check preconditions
+        truncateMeasuresTable(servlet.dataSource);
+        assertEquals(0, countRowsOfTableMeasures(servlet.dataSource));
+
+        // Run the code under test
+        servlet.doPost(request, response);
+
+        // Check that a measurement has been stored
+        assertEquals(1, countRowsOfTableMeasures(servlet.dataSource));
+
+        // Check the contents of the measurement row
+        List<Map<String, Object>> measuresRows = getRowsOfTableMeasures(servlet.dataSource);
+        Map<String, Object> measuresRow = measuresRows.get(0);
+        assertEquals(15, measuresRow.size());
+        assertEquals("no.priv.bang.sonar.sonar-collector:parent", measuresRow.get("PROJECT_KEY"));
+        assertEquals("1.0.0-SNAPSHOT", measuresRow.get("VERSION"));
+        assertEquals(false, measuresRow.get("VERSION_IS_RELEASE"));
+        assertEquals(971L, measuresRow.get("LINES"));
+        assertEquals(5L, measuresRow.get("BUGS"));
+        assertEquals(2L, measuresRow.get("NEW_BUGS"));
+        assertEquals(3L, measuresRow.get("VULNERABILITIES"));
+        assertEquals(1L, measuresRow.get("NEW_VULNERABILITIES"));
+        assertEquals(3L, measuresRow.get("CODE_SMELLS"));
+        assertEquals(1L, measuresRow.get("NEW_CODE_SMELLS"));
+        assertEquals(100.0, measuresRow.get("COVERAGE"));
+        assertEquals(92.98, ((Double)measuresRow.get("NEW_COVERAGE")).doubleValue(), 0.01);
+        assertEquals(44L, measuresRow.get("COMPLEXITY"));
+    }
+
     /**
      * Test that the view measures_view has an "issues" column with the expected value
      * that is the sum of the number of bugs, the number of vulnerabilities and the number

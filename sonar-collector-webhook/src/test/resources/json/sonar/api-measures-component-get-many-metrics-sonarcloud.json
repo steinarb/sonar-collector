@@ -1,0 +1,69 @@
+{
+    "component": {
+        "id": "AYN0Oh1e1ZwmMcTmqnsN",
+        "key": "steinarb_sonar-collector",
+        "name": "SonarQube data collector",
+        "description": "Apache karaf microservices to capture statistics over SonarQube/SonarCloud key measures.",
+        "qualifier": "TRK",
+        "measures": [
+            {
+                "metric": "coverage",
+                "value": "100.0",
+                "bestValue": true
+            },
+            {
+                "metric": "complexity",
+                "value": "44"
+            },
+            {
+                "metric": "bugs",
+                "value": "0",
+                "bestValue": true
+            },
+            {
+                "metric": "code_smells",
+                "value": "0",
+                "bestValue": true
+            },
+            {
+                "metric": "new_vulnerabilities",
+                "periods": [
+                    {
+                        "index": 1,
+                        "value": "0",
+                        "bestValue": true
+                    }
+                ]
+            },
+            {
+                "metric": "vulnerabilities",
+                "value": "0",
+                "bestValue": true
+            },
+            {
+                "metric": "lines",
+                "value": "971"
+            },
+            {
+                "metric": "new_bugs",
+                "periods": [
+                    {
+                        "index": 1,
+                        "value": "0",
+                        "bestValue": true
+                    }
+                ]
+            },
+            {
+                "metric": "new_code_smells",
+                "periods": [
+                    {
+                        "index": 1,
+                        "value": "0",
+                        "bestValue": true
+                    }
+                ]
+            }
+        ]
+    }
+}

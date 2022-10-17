@@ -12,33 +12,38 @@
                 "bestValue": true
             },
             {
+                "metric": "new_coverage",
+                "periods": [
+                    {
+                        "index": 1,
+                        "value": "92.9824561403509"
+                    }
+                ]
+            },
+            {
                 "metric": "complexity",
                 "value": "44"
             },
             {
                 "metric": "bugs",
-                "value": "0",
-                "bestValue": true
+                "value": "5"
             },
             {
                 "metric": "code_smells",
-                "value": "0",
-                "bestValue": true
+                "value": "3"
             },
             {
                 "metric": "new_vulnerabilities",
                 "periods": [
                     {
                         "index": 1,
-                        "value": "0",
-                        "bestValue": true
+                        "value": "1"
                     }
                 ]
             },
             {
                 "metric": "vulnerabilities",
-                "value": "0",
-                "bestValue": true
+                "value": "3"
             },
             {
                 "metric": "lines",
@@ -49,8 +54,7 @@
                 "periods": [
                     {
                         "index": 1,
-                        "value": "0",
-                        "bestValue": true
+                        "value": "2"
                     }
                 ]
             },
@@ -59,8 +63,7 @@
                 "periods": [
                     {
                         "index": 1,
-                        "value": "0",
-                        "bestValue": true
+                        "value": "1"
                     }
                 ]
             }

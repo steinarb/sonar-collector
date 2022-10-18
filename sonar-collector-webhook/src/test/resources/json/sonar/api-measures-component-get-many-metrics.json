@@ -1,106 +1,97 @@
 {
     "component": {
-        "id": "AWBQ-4wiY3iJ19W_7yU2",
-        "key": "no.priv.bang.sonar.sonar-collector:parent",
-        "name": "SonarQube data collector parent project",
+        "key": "no.priv.bang.sonar.sonar-collector:sonar-collector",
+        "name": "SonarQube data collector",
         "description": "Apache karaf microservices to capture statistics over SonarQube/SonarCloud key measures.",
         "qualifier": "TRK",
         "measures": [
-            {
-                "metric": "vulnerabilities",
-                "value": "3",
-                "periods": [
-                    {
-                        "index": 1,
-                        "value": "0"
-                    }
-                ]
-            },
             {
                 "metric": "new_vulnerabilities",
                 "periods": [
                     {
                         "index": 1,
-                        "value": "1"
+                        "value": "0",
+                        "bestValue": true
                     }
-                ]
+                ],
+                "period": {
+                    "index": 1,
+                    "value": "0",
+                    "bestValue": true
+                }
+            },
+            {
+                "metric": "lines",
+                "value": "952"
             },
             {
                 "metric": "new_coverage",
                 "periods": [
                     {
                         "index": 1,
-                        "value": "92.9824561403509"
+                        "value": "100.0",
+                        "bestValue": true
                     }
-                ]
+                ],
+                "period": {
+                    "index": 1,
+                    "value": "100.0",
+                    "bestValue": true
+                }
             },
             {
                 "metric": "complexity",
-                "value": "56",
-                "periods": [
-                    {
-                        "index": 1,
-                        "value": "-20"
-                    }
-                ]
+                "value": "41"
+            },
+            {
+                "metric": "vulnerabilities",
+                "value": "0",
+                "bestValue": true
             },
             {
                 "metric": "code_smells",
-                "value": "3",
-                "periods": [
-                    {
-                        "index": 1,
-                        "value": "0"
-                    }
-                ]
+                "value": "0",
+                "bestValue": true
             },
             {
                 "metric": "bugs",
-                "value": "5",
-                "periods": [
-                    {
-                        "index": 1,
-                        "value": "0"
-                    }
-                ]
+                "value": "0",
+                "bestValue": true
             },
             {
                 "metric": "new_bugs",
                 "periods": [
                     {
                         "index": 1,
-                        "value": "2"
+                        "value": "0",
+                        "bestValue": true
                     }
-                ]
-            },
-            {
-                "metric": "lines",
-                "value": "1086",
-                "periods": [
-                    {
-                        "index": 1,
-                        "value": "-129"
-                    }
-                ]
+                ],
+                "period": {
+                    "index": 1,
+                    "value": "0",
+                    "bestValue": true
+                }
             },
             {
                 "metric": "new_code_smells",
                 "periods": [
                     {
                         "index": 1,
-                        "value": "1"
+                        "value": "0",
+                        "bestValue": true
                     }
-                ]
+                ],
+                "period": {
+                    "index": 1,
+                    "value": "0",
+                    "bestValue": true
+                }
             },
             {
                 "metric": "coverage",
                 "value": "100.0",
-                "periods": [
-                    {
-                        "index": 1,
-                        "value": "0.0"
-                    }
-                ]
+                "bestValue": true
             }
         ]
     }

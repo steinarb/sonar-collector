@@ -152,7 +152,7 @@ class SonarCollectorServletTest {
         assertEquals("no.priv.bang.sonar.sonar-collector:parent", measuresRow.get("PROJECT_KEY"));
         assertEquals("1.0.0-SNAPSHOT", measuresRow.get("VERSION"));
         assertEquals(false, measuresRow.get("VERSION_IS_RELEASE"));
-        assertEquals(1086L, measuresRow.get("LINES"));
+        assertEquals(952L, measuresRow.get("LINES"));
         assertEquals(5L, measuresRow.get("BUGS"));
         assertEquals(2L, measuresRow.get("NEW_BUGS"));
         assertEquals(3L, measuresRow.get("VULNERABILITIES"));
@@ -161,7 +161,7 @@ class SonarCollectorServletTest {
         assertEquals(1L, measuresRow.get("NEW_CODE_SMELLS"));
         assertEquals(100.0, measuresRow.get("COVERAGE"));
         assertEquals(92.98, ((Double)measuresRow.get("NEW_COVERAGE")).doubleValue(), 0.01);
-        assertEquals(56L, measuresRow.get("COMPLEXITY"));
+        assertEquals(41L, measuresRow.get("COMPLEXITY"));
     }
 
     /**

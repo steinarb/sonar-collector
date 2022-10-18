@@ -10,14 +10,12 @@
                 "periods": [
                     {
                         "index": 1,
-                        "value": "0",
-                        "bestValue": true
+                        "value": "1"
                     }
                 ],
                 "period": {
                     "index": 1,
-                    "value": "0",
-                    "bestValue": true
+                    "value": "1"
                 }
             },
             {
@@ -29,14 +27,12 @@
                 "periods": [
                     {
                         "index": 1,
-                        "value": "100.0",
-                        "bestValue": true
+                        "value": "92.9824561403509"
                     }
                 ],
                 "period": {
                     "index": 1,
-                    "value": "100.0",
-                    "bestValue": true
+                    "value": "92.9824561403509"
                 }
             },
             {
@@ -45,32 +41,27 @@
             },
             {
                 "metric": "vulnerabilities",
-                "value": "0",
-                "bestValue": true
+                "value": "3"
             },
             {
                 "metric": "code_smells",
-                "value": "0",
-                "bestValue": true
+                "value": "3"
             },
             {
                 "metric": "bugs",
-                "value": "0",
-                "bestValue": true
+                "value": "5"
             },
             {
                 "metric": "new_bugs",
                 "periods": [
                     {
                         "index": 1,
-                        "value": "0",
-                        "bestValue": true
+                        "value": "2"
                     }
                 ],
                 "period": {
                     "index": 1,
-                    "value": "0",
-                    "bestValue": true
+                    "value": "2"
                 }
             },
             {
@@ -78,14 +69,12 @@
                 "periods": [
                     {
                         "index": 1,
-                        "value": "0",
-                        "bestValue": true
+                        "value": "1"
                     }
                 ],
                 "period": {
                     "index": 1,
-                    "value": "0",
-                    "bestValue": true
+                    "value": "1"
                 }
             },
             {

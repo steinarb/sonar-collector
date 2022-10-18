@@ -148,7 +148,7 @@ class SonarCollectorServletTest {
         // Check the contents of the measurement row
         List<Map<String, Object>> measuresRows = getRowsOfTableMeasures(servlet.dataSource);
         Map<String, Object> measuresRow = measuresRows.get(0);
-        assertEquals(15, measuresRow.size());
+        assertEquals(21, measuresRow.size());
         assertEquals("no.priv.bang.sonar.sonar-collector:parent", measuresRow.get("PROJECT_KEY"));
         assertEquals("1.0.0-SNAPSHOT", measuresRow.get("VERSION"));
         assertEquals(false, measuresRow.get("VERSION_IS_RELEASE"));
@@ -162,6 +162,12 @@ class SonarCollectorServletTest {
         assertEquals(100.0, measuresRow.get("COVERAGE"));
         assertEquals(92.98, ((Double)measuresRow.get("NEW_COVERAGE")).doubleValue(), 0.01);
         assertEquals(41L, measuresRow.get("COMPLEXITY"));
+        assertEquals("A", measuresRow.get("SQALE_RATING"));
+        assertEquals("A", measuresRow.get("NEW_MAINTAINABILITY_RATING"));
+        assertEquals("A", measuresRow.get("SECURITY_RATING"));
+        assertEquals("A", measuresRow.get("NEW_SECURITY_RATING"));
+        assertEquals("A", measuresRow.get("RELIABILITY_RATING"));
+        assertEquals("A", measuresRow.get("NEW_RELIABILITY_RATING"));
     }
 
     /**
@@ -204,7 +210,7 @@ class SonarCollectorServletTest {
         // Check the contents of the measurement row
         List<Map<String, Object>> measuresRows = getRowsOfTableMeasures(servlet.dataSource);
         Map<String, Object> measuresRow = measuresRows.get(0);
-        assertEquals(15, measuresRow.size());
+        assertEquals(21, measuresRow.size());
         assertEquals(0.0, ((Double)measuresRow.get("NEW_COVERAGE")).doubleValue(), 0.01);
     }
 
@@ -240,11 +246,11 @@ class SonarCollectorServletTest {
         // Check the contents of the measurement row
         List<Map<String, Object>> measuresRows = getRowsOfTableMeasures(servlet.dataSource);
         Map<String, Object> measuresRow = measuresRows.get(0);
-        assertEquals(15, measuresRow.size());
+        assertEquals(21, measuresRow.size());
         assertEquals("no.priv.bang.sonar.sonar-collector:parent", measuresRow.get("PROJECT_KEY"));
         assertEquals("1.0.0-SNAPSHOT", measuresRow.get("VERSION"));
         assertEquals(false, measuresRow.get("VERSION_IS_RELEASE"));
-        assertEquals(971L, measuresRow.get("LINES"));
+        assertEquals(866L, measuresRow.get("LINES"));
         assertEquals(5L, measuresRow.get("BUGS"));
         assertEquals(2L, measuresRow.get("NEW_BUGS"));
         assertEquals(3L, measuresRow.get("VULNERABILITIES"));
@@ -253,7 +259,13 @@ class SonarCollectorServletTest {
         assertEquals(1L, measuresRow.get("NEW_CODE_SMELLS"));
         assertEquals(100.0, measuresRow.get("COVERAGE"));
         assertEquals(92.98, ((Double)measuresRow.get("NEW_COVERAGE")).doubleValue(), 0.01);
-        assertEquals(44L, measuresRow.get("COMPLEXITY"));
+        assertEquals(37L, measuresRow.get("COMPLEXITY"));
+        assertEquals("A", measuresRow.get("SQALE_RATING"));
+        assertEquals("A", measuresRow.get("NEW_MAINTAINABILITY_RATING"));
+        assertEquals("A", measuresRow.get("SECURITY_RATING"));
+        assertEquals("A", measuresRow.get("NEW_SECURITY_RATING"));
+        assertEquals("A", measuresRow.get("RELIABILITY_RATING"));
+        assertEquals("A", measuresRow.get("NEW_RELIABILITY_RATING"));
     }
 
     /**
@@ -297,7 +309,7 @@ class SonarCollectorServletTest {
         // Check the contents of the measurement row
         List<Map<String, Object>> measuresRows = doSqlQuery(servlet.dataSource, "select * from measures_view");
         Map<String, Object> measuresRow = measuresRows.get(0);
-        assertEquals(16, measuresRow.size());
+        assertEquals(22, measuresRow.size());
         assertEquals(11L, measuresRow.get("ISSUES")); // This goes to 11!
     }
 
@@ -373,7 +385,7 @@ class SonarCollectorServletTest {
         servlet.setLogservice(logservice);
         servlet.activate(Collections.emptyMap());
         String[] metricKeys = servlet.getConfiguration().getMetricKeys();
-        assertEquals(10, metricKeys.length);
+        assertEquals(16, metricKeys.length);
         String project = "no.priv.bang.ukelonn:parent";
         URL serverUrl = new URL("http://localhost:9000");
         URL metricsUrl = servlet.createSonarComponentsShowUrl(serverUrl, project);
@@ -393,7 +405,7 @@ class SonarCollectorServletTest {
         servlet.setLogservice(logservice);
         servlet.activate(Collections.emptyMap());
         String[] metricKeys = servlet.getConfiguration().getMetricKeys();
-        assertEquals(10, metricKeys.length);
+        assertEquals(16, metricKeys.length);
         String project = "no.priv.bang.ukelonn:parent";
         URL serverUrl = new URL("http://localhost:9000");
         SonarBuild build = new SonarBuild(0, project, null, serverUrl);
@@ -418,7 +430,7 @@ class SonarCollectorServletTest {
         String[] metricKeys = servlet.getConfiguration().getMetricKeys();
         HashMap<String, String> measures = new HashMap<>();
         servlet.parseMeasures(measures, measuresNode);
-        assertEquals(metricKeys.length, measures.size());
+        assertThat(measures).hasSameSizeAs(metricKeys).containsKeys(metricKeys);
         assertEquals("2", measures.get("new_bugs"));
     }
 
@@ -495,6 +507,46 @@ class SonarCollectorServletTest {
         // I found some reflection examples for java 8 but they don't work for Java 11
         // (internal classes have probably been changed)
         assertThat(connection.getRequestProperties()).isEmpty();
+    }
+
+    @Test
+    void testExtractRating() throws Exception {
+        var logservice = new MockLogService();
+        var servlet = new SonarCollectorServlet();
+        servlet.setLogservice(logservice);
+        servlet.activate(Collections.emptyMap());
+
+        String rating = "maintainability_rating";
+
+        // Verify what happens when extracting a rating that is present and has a legal value
+        Map<String, String> measuresResults = Collections.singletonMap(rating, "2.0");
+        assertEquals("B", servlet.extractRating(rating, measuresResults));
+
+        // Verify what happens when attempting to extract a rating that isn't present
+        var numberOfLogmessagesBefore = logservice.getLogmessages().size();
+        assertEquals("", servlet.extractRating(rating, Collections.emptyMap()));
+        assertThat(logservice.getLogmessages()).hasSizeGreaterThan(numberOfLogmessagesBefore);
+        var lastLogmessage = logservice.getLogmessages().get(logservice.getLogmessages().size() - 1);
+        assertThat(lastLogmessage).startsWith("[WARNING] Unable to convert number \"null\" to rating for rating").contains(rating);
+    }
+
+    @Test
+    void testConvertFromNumberRating() throws Exception {
+        String rating = "maintability_rating";
+        var logservice = new MockLogService();
+        var servlet = new SonarCollectorServlet();
+        servlet.setLogservice(logservice);
+        servlet.activate(Collections.emptyMap());
+        var numberOfLogmessagesBefore = logservice.getLogmessages().size();
+        assertEquals("", servlet.convertFromNumberToRating(rating, "XX"));
+        assertThat(logservice.getLogmessages()).hasSizeGreaterThan(numberOfLogmessagesBefore);
+        var lastLogmessage = logservice.getLogmessages().get(logservice.getLogmessages().size() - 1);
+        assertThat(lastLogmessage).startsWith("[WARNING] Unable to convert number \"XX\" to rating for rating").contains(rating);
+        assertEquals("A", servlet.convertFromNumberToRating(rating, "1.0"));
+        assertEquals("B", servlet.convertFromNumberToRating(rating, "2.0"));
+        assertEquals("C", servlet.convertFromNumberToRating(rating, "3.0"));
+        assertEquals("D", servlet.convertFromNumberToRating(rating, "4.0"));
+        assertEquals("E", servlet.convertFromNumberToRating(rating, "5.0"));
     }
 
     private void truncateMeasuresTable(DataSource dataSource) throws SQLException {

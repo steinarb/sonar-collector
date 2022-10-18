@@ -6,21 +6,75 @@
         "qualifier": "TRK",
         "measures": [
             {
-                "metric": "new_vulnerabilities",
+                "metric": "lines",
+                "value": "952"
+            },
+            {
+                "metric": "new_reliability_rating",
                 "periods": [
                     {
                         "index": 1,
-                        "value": "1"
+                        "value": "1.0",
+                        "bestValue": true
                     }
                 ],
                 "period": {
                     "index": 1,
-                    "value": "1"
+                    "value": "1.0",
+                    "bestValue": true
                 }
             },
             {
-                "metric": "lines",
-                "value": "952"
+                "metric": "complexity",
+                "value": "41"
+            },
+            {
+                "metric": "code_smells",
+                "value": "3"
+            },
+            {
+                "metric": "vulnerabilities",
+                "value": "3"
+            },
+            {
+                "metric": "reliability_rating",
+                "value": "1.0",
+                "bestValue": true
+            },
+            {
+                "metric": "sqale_rating",
+                "value": "1.0",
+                "bestValue": true
+            },
+            {
+                "metric": "new_security_rating",
+                "periods": [
+                    {
+                        "index": 1,
+                        "value": "1.0",
+                        "bestValue": true
+                    }
+                ],
+                "period": {
+                    "index": 1,
+                    "value": "1.0",
+                    "bestValue": true
+                }
+            },
+            {
+                "metric": "new_maintainability_rating",
+                "periods": [
+                    {
+                        "index": 1,
+                        "value": "1.0",
+                        "bestValue": true
+                    }
+                ],
+                "period": {
+                    "index": 1,
+                    "value": "1.0",
+                    "bestValue": true
+                }
             },
             {
                 "metric": "new_coverage",
@@ -36,20 +90,39 @@
                 }
             },
             {
-                "metric": "complexity",
-                "value": "41"
-            },
-            {
-                "metric": "vulnerabilities",
-                "value": "3"
-            },
-            {
-                "metric": "code_smells",
-                "value": "3"
+                "metric": "new_code_smells",
+                "periods": [
+                    {
+                        "index": 1,
+                        "value": "1"
+                    }
+                ],
+                "period": {
+                    "index": 1,
+                    "value": "1"
+                }
             },
             {
                 "metric": "bugs",
                 "value": "5"
+            },
+            {
+                "metric": "new_vulnerabilities",
+                "periods": [
+                    {
+                        "index": 1,
+                        "value": "1"
+                    }
+                ],
+                "period": {
+                    "index": 1,
+                    "value": "1"
+                }
+            },
+            {
+                "metric": "security_rating",
+                "value": "1.0",
+                "bestValue": true
             },
             {
                 "metric": "new_bugs",
@@ -62,19 +135,6 @@
                 "period": {
                     "index": 1,
                     "value": "2"
-                }
-            },
-            {
-                "metric": "new_code_smells",
-                "periods": [
-                    {
-                        "index": 1,
-                        "value": "1"
-                    }
-                ],
-                "period": {
-                    "index": 1,
-                    "value": "1"
                 }
             },
             {

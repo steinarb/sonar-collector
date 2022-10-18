@@ -170,7 +170,7 @@ public class SonarCollectorServlet extends HttpServlet {
     private int saveMeasuresInDatabase(SonarBuild build) throws SQLException {
         boolean isRelease = versionIsReleaseVersion(build.getVersion());
         try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement statement = connection.prepareStatement("insert into measures (project_key, version, version_is_release, analysis_time, lines, bugs, new_bugs, vulnerabilities, new_vulnerabilities, code_smells, new_code_smells, coverage, new_coverage, complexity) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+            try (PreparedStatement statement = connection.prepareStatement("insert into measures (project_key, version, version_is_release, analysis_time, lines, bugs, new_bugs, vulnerabilities, new_vulnerabilities, code_smells, new_code_smells, coverage, new_coverage, complexity, sqale_rating, new_maintainability_rating, security_rating, new_security_rating, reliability_rating, new_reliability_rating) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
                 statement.setString(1, build.getProject());
                 statement.setString(2, build.getVersion());
                 statement.setBoolean(3, isRelease);
@@ -185,6 +185,12 @@ public class SonarCollectorServlet extends HttpServlet {
                 statement.setDouble(12, Double.valueOf(build.getMeasurements().get("coverage")));
                 statement.setDouble(13, Double.valueOf(build.getMeasurements().get("new_coverage")));
                 statement.setLong(14, Long.valueOf(build.getMeasurements().get("complexity")));
+                statement.setString(15, extractRating("sqale_rating", build.getMeasurements()));
+                statement.setString(16, extractRating("new_maintainability_rating", build.getMeasurements()));
+                statement.setString(17, extractRating("security_rating", build.getMeasurements()));
+                statement.setString(18, extractRating("new_security_rating", build.getMeasurements()));
+                statement.setString(19, extractRating("reliability_rating", build.getMeasurements()));
+                statement.setString(20, extractRating("new_reliability_rating", build.getMeasurements()));
 
                 return statement.executeUpdate();
             }
@@ -249,6 +255,27 @@ public class SonarCollectorServlet extends HttpServlet {
 
     public SonarCollectorConfiguration getConfiguration() {
         return configuration;
+    }
+
+    public String extractRating(String rating, Map<String, String> measuresResults) {
+        return convertFromNumberToRating(rating, measuresResults.get(rating));
+    }
+
+    public String convertFromNumberToRating(String rating, String number) {
+        if ("1.0".equals(number)) {
+            return "A";
+        } else if ("2.0".equals(number)) {
+            return "B";
+        } else if ("3.0".equals(number)) {
+            return "C";
+        } else if ("4.0".equals(number)) {
+            return "D";
+        } else if ("5.0".equals(number)) {
+            return "E";
+        }
+
+        logger.warn("Unable to convert number \"{}\" to rating for rating \"{}\"", number, rating);
+        return "";
     }
 
 }

@@ -41,7 +41,7 @@ class SonarCollectorConfigurationTest {
         SonarCollectorConfiguration configuration = new SonarCollectorConfiguration();
         configuration.loadProperties(logservice);
 
-        assertEquals(10, configuration.getMetricKeys().length);
+        assertEquals(16, configuration.getMetricKeys().length);
     }
 
     /**
@@ -58,7 +58,7 @@ class SonarCollectorConfigurationTest {
 
         configuration.setConfig(null);
 
-        assertEquals(10, configuration.getMetricKeys().length);
+        assertEquals(16, configuration.getMetricKeys().length);
     }
 
     /**

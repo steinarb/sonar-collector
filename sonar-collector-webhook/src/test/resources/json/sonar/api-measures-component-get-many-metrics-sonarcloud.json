@@ -1,7 +1,7 @@
 {
     "component": {
-        "id": "AYN0Oh1e1ZwmMcTmqnsN",
-        "key": "steinarb_sonar-collector",
+        "id": "AW4zKW7j_Qdm18Kt2qWo",
+        "key": "no.priv.bang.sonar.sonar-collector:sonar-collector",
         "name": "SonarQube data collector",
         "description": "Apache karaf microservices to capture statistics over SonarQube/SonarCloud key measures.",
         "qualifier": "TRK",
@@ -22,11 +22,12 @@
             },
             {
                 "metric": "complexity",
-                "value": "44"
+                "value": "37"
             },
             {
-                "metric": "bugs",
-                "value": "5"
+                "metric": "reliability_rating",
+                "value": "1.0",
+                "bestValue": true
             },
             {
                 "metric": "code_smells",
@@ -42,12 +43,29 @@
                 ]
             },
             {
-                "metric": "vulnerabilities",
-                "value": "3"
+                "metric": "new_reliability_rating",
+                "periods": [
+                    {
+                        "index": 1,
+                        "value": "1.0",
+                        "bestValue": true
+                    }
+                ]
             },
             {
-                "metric": "lines",
-                "value": "971"
+                "metric": "security_rating",
+                "value": "1.0",
+                "bestValue": true
+            },
+            {
+                "metric": "new_security_rating",
+                "periods": [
+                    {
+                        "index": 1,
+                        "value": "1.0",
+                        "bestValue": true
+                    }
+                ]
             },
             {
                 "metric": "new_bugs",
@@ -64,6 +82,33 @@
                     {
                         "index": 1,
                         "value": "1"
+                    }
+                ]
+            },
+            {
+                "metric": "sqale_rating",
+                "value": "1.0",
+                "bestValue": true
+            },
+            {
+                "metric": "bugs",
+                "value": "5"
+            },
+            {
+                "metric": "vulnerabilities",
+                "value": "3"
+            },
+            {
+                "metric": "lines",
+                "value": "866"
+            },
+            {
+                "metric": "new_maintainability_rating",
+                "periods": [
+                    {
+                        "index": 1,
+                        "value": "1.0",
+                        "bestValue": true
                     }
                 ]
             }

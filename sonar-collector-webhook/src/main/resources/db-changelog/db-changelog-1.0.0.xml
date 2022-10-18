@@ -80,4 +80,40 @@
     <changeSet author="sb" id="create-measures_view">
         <createView viewName="measures_view">select id,project_key,version,version_is_release,analysis_time,lines,bugs,new_bugs,vulnerabilities,new_vulnerabilities,code_smells,new_code_smells,coverage,new_coverage,complexity, (bugs + vulnerabilities + code_smells) as issues from measures </createView>
     </changeSet>
+
+    <changeSet author="sb" id="measures-add-ratings">
+        <validCheckSum>ANY</validCheckSum>
+        <addColumn tableName="measures" >
+            <column name="sqale_rating" type="VARCHAR(1)" defaultValue=""/>
+            <column name="new_maintainability_rating" type="VARCHAR(1)" defaultValue=""/>
+            <column name="security_rating" type="VARCHAR(1)" defaultValue=""/>
+            <column name="new_security_rating" type="VARCHAR(1)" defaultValue=""/>
+            <column name="reliability_rating" type="VARCHAR(1)" defaultValue=""/>
+            <column name="new_reliability_rating" type="VARCHAR(1)" defaultValue=""/>
+        </addColumn>
+        <addNotNullConstraint tableName="measures" columnName="sqale_rating" columnDataType="VARCHAR(1)"/>
+        <addNotNullConstraint tableName="measures" columnName="new_maintainability_rating" columnDataType="VARCHAR(1)"/>
+        <addNotNullConstraint tableName="measures" columnName="security_rating" columnDataType="VARCHAR(1)"/>
+        <addNotNullConstraint tableName="measures" columnName="new_security_rating" columnDataType="VARCHAR(1)"/>
+        <addNotNullConstraint tableName="measures" columnName="reliability_rating" columnDataType="VARCHAR(1)"/>
+        <addNotNullConstraint tableName="measures" columnName="new_reliability_rating" columnDataType="VARCHAR(1)"/>
+    </changeSet>
+
+    <changeSet author="sb" id="remove-measures_view-to-add-ratings">
+        <preConditions onFail="CONTINUE" >
+            <viewExists viewName="measures_view" />
+        </preConditions>
+
+        <dropView viewName="measures_view" />
+    </changeSet>
+
+    <changeSet author="sb" id="add-ratings-to-measures_view">
+        <preConditions onFail="CONTINUE" >
+            <not>
+                <viewExists viewName="measures_view" />
+            </not>
+        </preConditions>
+
+        <createView viewName="measures_view">select id,project_key,version,version_is_release,analysis_time,lines,bugs,new_bugs,vulnerabilities,new_vulnerabilities,code_smells,new_code_smells,coverage,new_coverage,complexity, (bugs + vulnerabilities + code_smells) as issues,sqale_rating,new_maintainability_rating,security_rating,new_security_rating,reliability_rating,new_reliability_rating from measures </createView>
+    </changeSet>
 </databaseChangeLog>

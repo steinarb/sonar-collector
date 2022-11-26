@@ -36,6 +36,7 @@ The servlet has been written as a microservice that can be installed into an [[h
 
 | Version | Date             | Description                                                                                 |
 |---------+------------------+---------------------------------------------------------------------------------------------|
+|   1.5.9 | <2022-11-01 Tue> | Use liquibase 4.17.1, postgresql jdbc 42.5.0                                                |
 |   1.5.8 | <2022-10-20 Thu> | Add support for maintainability, security and reliability ratings                           |
 |   1.5.7 | <2022-10-12 Wed> | Work with SonarQube with version >= 8 (no longer works with version 7.x and older)          |
 |   1.5.6 | <2022-10-09 Sun> | Github actions CI build, sonar report cleanup, support for sonar user token                 |

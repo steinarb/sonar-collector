@@ -148,6 +148,7 @@
                 <artifactId>maven-release-plugin</artifactId>
                 <configuration>
                     <pushChanges>false</pushChanges>
+                    <localCheckout>true</localCheckout>
                     <releaseProfiles>release-sign-artifact</releaseProfiles>
                 </configuration>
             </plugin>

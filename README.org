@@ -36,6 +36,7 @@ The servlet has been written as a microservice that can be installed into an [[h
 
 | Version | Date             | Description                                                                                 |
 |---------+------------------+---------------------------------------------------------------------------------------------|
+|  1.5.14 | <2023-04-24 Mon> | Use jackson 2.14.2                                                                          |
 |  1.5.13 | <2023-04-23 Sun> | Build karaf feature files in the maven "compile" phase                                      |
 |  1.5.12 | <2023-03-06 Mon> | Use liquibase 4.19.0, pax-jdbc 1.5.5, postgresql jdbc 42.5.4, karaf 4.4.3                   |
 |  1.5.11 | <2022-12-04 Sun> | Use jackson 2.14.1 to fix CVE-2022-42003 and CVE-2022-42004                                 |

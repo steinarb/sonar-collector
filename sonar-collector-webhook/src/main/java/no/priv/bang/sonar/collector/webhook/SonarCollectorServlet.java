@@ -48,8 +48,15 @@ import org.osgi.service.log.LogService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import liquibase.Liquibase;
-import liquibase.database.DatabaseConnection;
+import liquibase.Scope;
+import liquibase.Scope.ScopedRunner;
+import liquibase.ThreadLocalScopeManager;
+import liquibase.changelog.ChangeLogParameters;
+import liquibase.command.CommandScope;
+import liquibase.command.core.UpdateCommandStep;
+import liquibase.command.core.helpers.DatabaseChangelogCommandStep;
+import liquibase.command.core.helpers.DbUrlConnectionCommandStep;
+import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import no.priv.bang.osgi.service.adapters.jdbc.DataSourceAdapter;
@@ -89,16 +96,22 @@ public class SonarCollectorServlet extends HttpServlet {
     public void activate(Map<String, Object> config) {
         configuration.loadProperties(logservice);
         configuration.setConfig(config);
+        Scope.setScopeManager(new ThreadLocalScopeManager());
         createSchemaWithLiquibase(dataSource);
     }
 
     private void createSchemaWithLiquibase(DataSource db) {
         try (Connection connection = db.getConnection()) {
-            DatabaseConnection databaseConnection = new JdbcConnection(connection);
-            try(var classLoaderResourceAccessor = new ClassLoaderResourceAccessor(getClass().getClassLoader())) {
-                try(var liquibase = new Liquibase("db-changelog/db-changelog-1.0.0.xml", classLoaderResourceAccessor, databaseConnection)) {
-                    liquibase.update("");
-                }
+            try (var database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection))) {
+                Map<String, Object> scopeObjects = Map.of(
+                    Scope.Attr.database.name(), database,
+                    Scope.Attr.resourceAccessor.name(), new ClassLoaderResourceAccessor(getClass().getClassLoader()));
+
+                Scope.child(scopeObjects, (ScopedRunner<?>) () -> new CommandScope("update")
+                            .addArgumentValue(DbUrlConnectionCommandStep.DATABASE_ARG, database)
+                            .addArgumentValue(UpdateCommandStep.CHANGELOG_FILE_ARG, "db-changelog/db-changelog-1.0.0.xml")
+                            .addArgumentValue(DatabaseChangelogCommandStep.CHANGELOG_PARAMETERS, new ChangeLogParameters(database))
+                            .execute());
             }
         } catch (Exception e) {
             logger.error("Sonar Collector servlet unable to create or update the database schema", e);

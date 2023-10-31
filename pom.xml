@@ -21,7 +21,7 @@
     </parent>
     <groupId>no.priv.bang.sonar.sonar-collector</groupId>
     <artifactId>sonar-collector</artifactId>
-    <version>1.5.19</version>
+    <version>1.5.20-SNAPSHOT</version>
 
     <packaging>pom</packaging>
 
@@ -195,7 +195,7 @@
     <scm>
         <url>https://github.com/steinarb/sonar-collector</url>
         <connection>scm:git:https://github.com/steinarb/sonar-collector.git</connection>
-        <tag>sonar-collector-1.5.19</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <issueManagement>

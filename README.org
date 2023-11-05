@@ -36,6 +36,7 @@ The servlet has been written as a microservice that can be installed into an [[h
 
 | Version | Date             | Description                                                                                 |
 |---------+------------------+---------------------------------------------------------------------------------------------|
+|  1.5.20 | <2023-11-05 Sun> | Use jackson 2.15.3, junit jupiter 5.10.0, and mockito 5.7.0                                 |
 |  1.5.19 | <2023-10-31 Tue> | Use karaf 4.4.4                                                                             |
 |  1.5.18 | <2023-07-30 Sun> | Use liquibase 2.15.2                                                                        |
 |  1.5.17 | <2023-07-08 Sat> | Use Java 17                                                                                 |

@@ -36,7 +36,7 @@
                 <configuration>
                     <skipDocker>${skip.docker}</skipDocker>
                     <imageName>steinarb/sonar-collector</imageName>
-                    <baseImage>apache/karaf:4.2.8</baseImage>
+                    <baseImage>apache/karaf:4.4.4</baseImage>
                     <dockerDirectory>docker</dockerDirectory>
                 </configuration>
                 <executions>

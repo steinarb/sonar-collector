@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- Copyright 2020-2021 Steinar Bang                                                -->
+<!-- Copyright 2020-2023 Steinar Bang                                                -->
 <!--                                                                                 -->
 <!-- Licensed under the Apache License, Version 2.0 (the "License");                 -->
 <!-- you may not use this file except in compliance with the License.                -->
@@ -24,28 +24,42 @@
     <name>sonar-collector docker image</name>
 
     <properties>
+        <sonar-collector.release.version>1.5.21</sonar-collector.release.version>
         <skip.docker>true</skip.docker>
     </properties>
 
     <build>
         <plugins>
             <plugin>
-                <groupId>com.spotify</groupId>
+                <groupId>io.fabric8</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
-                <version>1.2.2</version>
+                <version>0.43.4</version>
                 <configuration>
-                    <skipDocker>${skip.docker}</skipDocker>
-                    <imageName>steinarb/sonar-collector</imageName>
-                    <baseImage>apache/karaf:4.4.4</baseImage>
-                    <dockerDirectory>docker</dockerDirectory>
+                    <outputDirectory>target/docker-build</outputDirectory>
+                    <useColor>false</useColor>
+                    <verbose>all</verbose>
+                    <images>
+                        <image>
+                            <name>sonar-collector:${sonar-collector.release.version}</name>
+                            <build>
+                                <dockerFile>${project.basedir}/docker/Dockerfile</dockerFile>
+                                <contextDir>${project.basedir}/docker</contextDir>
+                                <buildx>
+                                    <platforms>
+                                        <platform>linux/amd64</platform>
+o                                    </platforms>
+                                </buildx>
+                            </build>
+                        </image>
+                    </images>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>build-image</id>
-                        <phase>package</phase>
+                        <id>default</id>
                         <goals>
                             <goal>build</goal>
                         </goals>
+                        <phase>package</phase>
                     </execution>
                 </executions>
             </plugin>

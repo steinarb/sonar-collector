@@ -40,7 +40,7 @@
                     <verbose>all</verbose>
                     <images>
                         <image>
-                            <name>sonar-collector:${sonar-collector.release.version}</name>
+                            <name>steinarb/sonar-collector:${sonar-collector.release.version}</name>
                             <build>
                                 <dockerFile>${project.basedir}/docker/Dockerfile</dockerFile>
                                 <contextDir>${project.basedir}/docker</contextDir>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- Copyright 2020-2023 Steinar Bang                                                -->
+<!-- Copyright 2020-2024 Steinar Bang                                                -->
 <!--                                                                                 -->
 <!-- Licensed under the Apache License, Version 2.0 (the "License");                 -->
 <!-- you may not use this file except in compliance with the License.                -->
@@ -44,11 +44,6 @@
                             <build>
                                 <dockerFile>${project.basedir}/docker/Dockerfile</dockerFile>
                                 <contextDir>${project.basedir}/docker</contextDir>
-                                <buildx>
-                                    <platforms>
-                                        <platform>linux/amd64</platform>
-o                                    </platforms>
-                                </buildx>
                             </build>
                         </image>
                     </images>

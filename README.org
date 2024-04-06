@@ -36,6 +36,7 @@ The servlet has been written as a microservice that can be installed into an [[h
 
 | Version | Date             | Description                                                                                 |
 |---------+------------------+---------------------------------------------------------------------------------------------|
+|  1.5.25 | <2024-04-06 Sat> | Use liquibase 4.27.0 and to build with karaf 4.4.5                                          |
 |  1.5.24 | <2024-03-25 Mon> | Use postgresql JDBC 42.7.3, jackson 2.16.2                                                  |
 |  1.5.23 | <2024-03-02 Sat> | Use postgresql JDBC 42.7.2                                                                  |
 |  1.5.22 | <2023-12-14 Thu> | Use postgresql JDBC 42.7.1 and mockito 5.8.0                                                |

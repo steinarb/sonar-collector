@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Steinar Bang
+ * Copyright 2017-2024 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,10 +25,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -75,10 +72,10 @@ class SonarCollectorServletTest {
     }
 
     private static Properties addTestPropertiesToSystemProperties() throws IOException {
-        Properties originalSystemProperties = (Properties) System.getProperties().clone();
-        Properties testProperties = new Properties();
+        var originalSystemProperties = (Properties) System.getProperties().clone();
+        var testProperties = new Properties();
         testProperties.load(SonarCollectorServletTest.class.getClassLoader().getResourceAsStream("application-test.properties"));
-        Properties systemProperties = System.getProperties();
+        var systemProperties = System.getProperties();
         systemProperties.putAll(testProperties);
         System.setProperties(systemProperties);
 
@@ -96,10 +93,10 @@ class SonarCollectorServletTest {
 
     @Test
     void testGetExceptionWhenCreatingDbSchema() throws IOException, SQLException {
-        MockLogService logservice = new MockLogService();
-        DataSource datasource = mock(DataSource.class);
+        var logservice = new MockLogService();
+        var datasource = mock(DataSource.class);
         when(datasource.getConnection()).thenThrow(SQLException.class);
-        SonarCollectorServlet servlet = new SonarCollectorServlet();
+        var servlet = new SonarCollectorServlet();
         servlet.setLogservice(logservice);
 
         // Verify that nothing has been logged
@@ -118,19 +115,19 @@ class SonarCollectorServletTest {
 
     @Test
     void testReceiveSonarWebhookCall() throws ServletException, IOException, SQLException {
-        URLConnectionFactory factory = mock(URLConnectionFactory.class);
-        HttpURLConnection componentsShowConnection = createConnectionFromResource("json/sonar/api-components-show-version-1.0.0-SNAPSHOT.json");
-        HttpURLConnection measurementsConnection = createConnectionFromResource("json/sonar/api-measures-component-get-many-metrics.json");
+        var factory = mock(URLConnectionFactory.class);
+        var componentsShowConnection = createConnectionFromResource("json/sonar/api-components-show-version-1.0.0-SNAPSHOT.json");
+        var measurementsConnection = createConnectionFromResource("json/sonar/api-measures-component-get-many-metrics.json");
         when(factory.openConnection(any()))
             .thenReturn(componentsShowConnection)
             .thenReturn(measurementsConnection);
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        ServletInputStream value = wrap(getClass().getClassLoader().getResourceAsStream("json/sonar/webhook-post.json"));
+        var request = mock(HttpServletRequest.class);
+        var value = wrap(getClass().getClassLoader().getResourceAsStream("json/sonar/webhook-post.json"));
         when(request.getInputStream()).thenReturn(value);
-        HttpServletResponse response = mock(HttpServletResponse.class);
+        var response = mock(HttpServletResponse.class);
         MockLogService logservice = new MockLogService();
 
-        SonarCollectorServlet servlet = new SonarCollectorServlet(factory);
+        var servlet = new SonarCollectorServlet(factory);
         servlet.setDataSource(dataSourceFactory.createDataSource(connectionproperties));
         servlet.setLogservice(logservice);
         servlet.activate(null);
@@ -146,8 +143,8 @@ class SonarCollectorServletTest {
         assertEquals(1, countRowsOfTableMeasures(servlet.dataSource));
 
         // Check the contents of the measurement row
-        List<Map<String, Object>> measuresRows = getRowsOfTableMeasures(servlet.dataSource);
-        Map<String, Object> measuresRow = measuresRows.get(0);
+        var measuresRows = getRowsOfTableMeasures(servlet.dataSource);
+        var measuresRow = measuresRows.get(0);
         assertEquals(21, measuresRow.size());
         assertEquals("no.priv.bang.sonar.sonar-collector:parent", measuresRow.get("PROJECT_KEY"));
         assertEquals("1.0.0-SNAPSHOT", measuresRow.get("VERSION"));
@@ -180,19 +177,19 @@ class SonarCollectorServletTest {
      */
     @Test
     void testReceiveSonarWebhookCallNoNewCoverage() throws ServletException, IOException, SQLException {
-        URLConnectionFactory factory = mock(URLConnectionFactory.class);
-        HttpURLConnection componentsShowConnection = createConnectionFromResource("json/sonar/api-components-show-version-1.0.0-SNAPSHOT.json");
-        HttpURLConnection measurementsConnection = createConnectionFromResource("json/sonar/api-measures-component-get-many-metrics-no-new_coverage.json");
+        var factory = mock(URLConnectionFactory.class);
+        var componentsShowConnection = createConnectionFromResource("json/sonar/api-components-show-version-1.0.0-SNAPSHOT.json");
+        var measurementsConnection = createConnectionFromResource("json/sonar/api-measures-component-get-many-metrics-no-new_coverage.json");
         when(factory.openConnection(any()))
             .thenReturn(componentsShowConnection)
             .thenReturn(measurementsConnection);
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        ServletInputStream value = wrap(getClass().getClassLoader().getResourceAsStream("json/sonar/webhook-post.json"));
+        var request = mock(HttpServletRequest.class);
+        var value = wrap(getClass().getClassLoader().getResourceAsStream("json/sonar/webhook-post.json"));
         when(request.getInputStream()).thenReturn(value);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        MockLogService logservice = new MockLogService();
+        var response = mock(HttpServletResponse.class);
+        var logservice = new MockLogService();
 
-        SonarCollectorServlet servlet = new SonarCollectorServlet(factory);
+        var servlet = new SonarCollectorServlet(factory);
         servlet.setDataSource(dataSourceFactory.createDataSource(connectionproperties));
         servlet.setLogservice(logservice);
         servlet.activate(null);
@@ -208,27 +205,27 @@ class SonarCollectorServletTest {
         assertEquals(1, countRowsOfTableMeasures(servlet.dataSource));
 
         // Check the contents of the measurement row
-        List<Map<String, Object>> measuresRows = getRowsOfTableMeasures(servlet.dataSource);
-        Map<String, Object> measuresRow = measuresRows.get(0);
+        var measuresRows = getRowsOfTableMeasures(servlet.dataSource);
+        var measuresRow = measuresRows.get(0);
         assertEquals(21, measuresRow.size());
         assertEquals(0.0, ((Double)measuresRow.get("NEW_COVERAGE")).doubleValue(), 0.01);
     }
 
     @Test
     void testReceiveSonarCloudWebhookCall() throws ServletException, IOException, SQLException {
-        URLConnectionFactory factory = mock(URLConnectionFactory.class);
-        HttpURLConnection componentsShowConnection = createConnectionFromResource("json/sonar/api-components-show-version-1.0.0-SNAPSHOT.json");
-        HttpURLConnection measurementsConnection = createConnectionFromResource("json/sonar/api-measures-component-get-many-metrics-sonarcloud.json");
+        var factory = mock(URLConnectionFactory.class);
+        var componentsShowConnection = createConnectionFromResource("json/sonar/api-components-show-version-1.0.0-SNAPSHOT.json");
+        var measurementsConnection = createConnectionFromResource("json/sonar/api-measures-component-get-many-metrics-sonarcloud.json");
         when(factory.openConnection(any()))
             .thenReturn(componentsShowConnection)
             .thenReturn(measurementsConnection);
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        ServletInputStream value = wrap(getClass().getClassLoader().getResourceAsStream("json/sonar/webhook-post.json"));
+        var request = mock(HttpServletRequest.class);
+        var value = wrap(getClass().getClassLoader().getResourceAsStream("json/sonar/webhook-post.json"));
         when(request.getInputStream()).thenReturn(value);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        MockLogService logservice = new MockLogService();
+        var response = mock(HttpServletResponse.class);
+        var logservice = new MockLogService();
 
-        SonarCollectorServlet servlet = new SonarCollectorServlet(factory);
+        var servlet = new SonarCollectorServlet(factory);
         servlet.setDataSource(dataSourceFactory.createDataSource(connectionproperties));
         servlet.setLogservice(logservice);
         servlet.activate(null);
@@ -244,8 +241,8 @@ class SonarCollectorServletTest {
         assertEquals(1, countRowsOfTableMeasures(servlet.dataSource));
 
         // Check the contents of the measurement row
-        List<Map<String, Object>> measuresRows = getRowsOfTableMeasures(servlet.dataSource);
-        Map<String, Object> measuresRow = measuresRows.get(0);
+        var measuresRows = getRowsOfTableMeasures(servlet.dataSource);
+        var measuresRow = measuresRows.get(0);
         assertEquals(21, measuresRow.size());
         assertEquals("no.priv.bang.sonar.sonar-collector:parent", measuresRow.get("PROJECT_KEY"));
         assertEquals("1.0.0-SNAPSHOT", measuresRow.get("VERSION"));
@@ -279,19 +276,19 @@ class SonarCollectorServletTest {
      */
     @Test
     void testMeasuresView() throws ServletException, IOException, SQLException {
-        URLConnectionFactory factory = mock(URLConnectionFactory.class);
-        HttpURLConnection componentsShowConnection = createConnectionFromResource("json/sonar/api-components-show-version-1.0.0-SNAPSHOT.json");
-        HttpURLConnection measurementsConnection = createConnectionFromResource("json/sonar/api-measures-component-get-many-metrics.json");
+        var factory = mock(URLConnectionFactory.class);
+        var componentsShowConnection = createConnectionFromResource("json/sonar/api-components-show-version-1.0.0-SNAPSHOT.json");
+        var measurementsConnection = createConnectionFromResource("json/sonar/api-measures-component-get-many-metrics.json");
         when(factory.openConnection(any()))
             .thenReturn(componentsShowConnection)
             .thenReturn(measurementsConnection);
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        ServletInputStream value = wrap(getClass().getClassLoader().getResourceAsStream("json/sonar/webhook-post.json"));
+        var request = mock(HttpServletRequest.class);
+        var value = wrap(getClass().getClassLoader().getResourceAsStream("json/sonar/webhook-post.json"));
         when(request.getInputStream()).thenReturn(value);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        MockLogService logservice = new MockLogService();
+        var response = mock(HttpServletResponse.class);
+        var logservice = new MockLogService();
 
-        SonarCollectorServlet servlet = new SonarCollectorServlet(factory);
+        var servlet = new SonarCollectorServlet(factory);
         servlet.setDataSource(dataSourceFactory.createDataSource(connectionproperties));
         servlet.setLogservice(logservice);
         servlet.activate(null);
@@ -307,37 +304,37 @@ class SonarCollectorServletTest {
         assertEquals(1, countRowsOfTableMeasures(servlet.dataSource));
 
         // Check the contents of the measurement row
-        List<Map<String, Object>> measuresRows = doSqlQuery(servlet.dataSource, "select * from measures_view");
-        Map<String, Object> measuresRow = measuresRows.get(0);
+        var measuresRows = doSqlQuery(servlet.dataSource, "select * from measures_view");
+        var measuresRow = measuresRows.get(0);
         assertEquals(22, measuresRow.size());
         assertEquals(11L, measuresRow.get("ISSUES")); // This goes to 11!
     }
 
     @Test
     void testUseNoArgumentConstructorAndReceiveSonarWebhookCall() throws ServletException, IOException {
-        MockLogService logservice = new MockLogService();
-        SonarCollectorServlet servlet = new SonarCollectorServlet();
+        var logservice = new MockLogService();
+        var servlet = new SonarCollectorServlet();
         servlet.setLogservice(logservice);
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        ServletInputStream value = wrap(getClass().getClassLoader().getResourceAsStream("json/sonar/webhook-post.json"));
+        var request = mock(HttpServletRequest.class);
+        var value = wrap(getClass().getClassLoader().getResourceAsStream("json/sonar/webhook-post.json"));
         when(request.getInputStream()).thenReturn(value);
-        HttpServletResponse response = mock(HttpServletResponse.class);
+        var response = mock(HttpServletResponse.class);
 
         servlet.doPost(request, response);
 
-        ArgumentCaptor<Integer> status = ArgumentCaptor.forClass(Integer.class);
+        var status = ArgumentCaptor.forClass(Integer.class);
         verify(response).setStatus(status.capture());
         assertEquals(500, status.getValue().intValue(), "Expected HTTP internal server error code");
     }
 
     @Test
     void testCallbackToSonarServerToGetMetrics() throws ServletException, IOException {
-        MockLogService logservice = new MockLogService();
-        URLConnectionFactory factory = mock(URLConnectionFactory.class);
-        HttpURLConnection componentsShowNoMavenVersion = createConnectionFromResource("json/sonar/api-components-show-component-not-found.json");
-        HttpURLConnection componentsShowWithSnapshot = createConnectionFromResource("json/sonar/api-components-show-version-1.0.0-SNAPSHOT.json");
-        HttpURLConnection componentsShow = createConnectionFromResource("json/sonar/api-components-show-version-1.0.0.json");
-        HttpURLConnection[] connections = createConnectionFromResource("json/sonar/api-measures-component-get-many-metrics.json", 3);
+        var logservice = new MockLogService();
+        var factory = mock(URLConnectionFactory.class);
+        var componentsShowNoMavenVersion = createConnectionFromResource("json/sonar/api-components-show-component-not-found.json");
+        var componentsShowWithSnapshot = createConnectionFromResource("json/sonar/api-components-show-version-1.0.0-SNAPSHOT.json");
+        var componentsShow = createConnectionFromResource("json/sonar/api-components-show-version-1.0.0.json");
+        var connections = createConnectionFromResource("json/sonar/api-measures-component-get-many-metrics.json", 3);
         when(factory.openConnection(any()))
             .thenReturn(componentsShowNoMavenVersion)
             .thenReturn(connections[0])
@@ -345,32 +342,32 @@ class SonarCollectorServletTest {
             .thenReturn(connections[1])
             .thenReturn(componentsShow)
             .thenReturn(connections[2]);
-        SonarCollectorServlet servlet = new SonarCollectorServlet(factory);
+        var servlet = new SonarCollectorServlet(factory);
         servlet.setLogservice(logservice);
-        ServletRequest request = mock(ServletRequest.class);
-        String resource = "json/sonar/webhook-post.json";
-        ServletInputStream[] webhookPostBody = createServletInputStreamFromResource(resource, 3);
+        var request = mock(ServletRequest.class);
+        var resource = "json/sonar/webhook-post.json";
+        var webhookPostBody = createServletInputStreamFromResource(resource, 3);
         when(request.getInputStream())
             .thenReturn(webhookPostBody[0])
             .thenReturn(webhookPostBody[1])
             .thenReturn(webhookPostBody[2]);
 
-        long expectedTimeInMillisecondsSinceEpoch = ZonedDateTime.parse("2017-11-19T10:39:24+0100", SonarCollectorServlet.isoZonedDateTimeformatter).toEpochSecond() * 1000;
+        var expectedTimeInMillisecondsSinceEpoch = ZonedDateTime.parse("2017-11-19T10:39:24+0100", SonarCollectorServlet.isoZonedDateTimeformatter).toEpochSecond() * 1000;
         assertEquals(0, logservice.getLogmessages().size(), "Expected no log messages initially");
-        SonarBuild buildWithNoMavenVersion = servlet.callbackToSonarServerToGetMetrics(request);
+        var buildWithNoMavenVersion = servlet.callbackToSonarServerToGetMetrics(request);
         assertEquals("no.priv.bang.sonar.sonar-collector:parent", buildWithNoMavenVersion.getProject());
         assertEquals(expectedTimeInMillisecondsSinceEpoch, buildWithNoMavenVersion.getAnalysedAt());
         assertEquals("", buildWithNoMavenVersion.getVersion());
         assertEquals(2, logservice.getLogmessages().size(), "Expected an initial info log and a single warning log message from missing maven version");
         assertEquals("http://localhost:9000", buildWithNoMavenVersion.getServerUrl().toString());
 
-        SonarBuild buildWithMavenSnapshotVersion = servlet.callbackToSonarServerToGetMetrics(request);
+        var buildWithMavenSnapshotVersion = servlet.callbackToSonarServerToGetMetrics(request);
         assertEquals("no.priv.bang.sonar.sonar-collector:parent", buildWithMavenSnapshotVersion.getProject());
         assertEquals(expectedTimeInMillisecondsSinceEpoch, buildWithMavenSnapshotVersion.getAnalysedAt());
         assertEquals("1.0.0-SNAPSHOT", buildWithMavenSnapshotVersion.getVersion());
         assertEquals("http://localhost:9000", buildWithMavenSnapshotVersion.getServerUrl().toString());
 
-        SonarBuild buildWithMavenVersion = servlet.callbackToSonarServerToGetMetrics(request);
+        var buildWithMavenVersion = servlet.callbackToSonarServerToGetMetrics(request);
         assertEquals("no.priv.bang.sonar.sonar-collector:parent", buildWithMavenVersion.getProject());
         assertEquals(expectedTimeInMillisecondsSinceEpoch, buildWithMavenVersion.getAnalysedAt());
         assertEquals("1.0.0", buildWithMavenVersion.getVersion());
@@ -379,56 +376,56 @@ class SonarCollectorServletTest {
 
     @Test
     void testCreateSonarComponentsShowUrl() throws ServletException, IOException {
-        URLConnectionFactory factory = mock(URLConnectionFactory.class);
-        SonarCollectorServlet servlet = new SonarCollectorServlet(factory);
-        MockLogService logservice = new MockLogService();
+        var factory = mock(URLConnectionFactory.class);
+        var servlet = new SonarCollectorServlet(factory);
+        var logservice = new MockLogService();
         servlet.setLogservice(logservice);
         servlet.activate(Collections.emptyMap());
-        String[] metricKeys = servlet.getConfiguration().getMetricKeys();
+        var metricKeys = servlet.getConfiguration().getMetricKeys();
         assertEquals(16, metricKeys.length);
-        String project = "no.priv.bang.ukelonn:parent";
-        URL serverUrl = new URL("http://localhost:9000");
-        URL metricsUrl = servlet.createSonarComponentsShowUrl(serverUrl, project);
+        var project = "no.priv.bang.ukelonn:parent";
+        var serverUrl = new URL("http://localhost:9000");
+        var metricsUrl = servlet.createSonarComponentsShowUrl(serverUrl, project);
         assertEquals(serverUrl.getProtocol(), metricsUrl.getProtocol());
         assertEquals(serverUrl.getHost(), metricsUrl.getHost());
         assertEquals(serverUrl.getPort(), metricsUrl.getPort());
         assertEquals("/api/components/show", metricsUrl.getPath());
-        String query = URLDecoder.decode(metricsUrl.getQuery(), "UTF-8");
+        var query = URLDecoder.decode(metricsUrl.getQuery(), "UTF-8");
         assertThat(query).contains(project);
     }
 
     @Test
     void testCreateSonarMeasurementsComponentUrl() throws ServletException, IOException {
-        URLConnectionFactory factory = mock(URLConnectionFactory.class);
-        SonarCollectorServlet servlet = new SonarCollectorServlet(factory);
-        MockLogService logservice = new MockLogService();
+        var factory = mock(URLConnectionFactory.class);
+        var servlet = new SonarCollectorServlet(factory);
+        var logservice = new MockLogService();
         servlet.setLogservice(logservice);
         servlet.activate(Collections.emptyMap());
-        String[] metricKeys = servlet.getConfiguration().getMetricKeys();
+        var metricKeys = servlet.getConfiguration().getMetricKeys();
         assertEquals(16, metricKeys.length);
-        String project = "no.priv.bang.ukelonn:parent";
-        URL serverUrl = new URL("http://localhost:9000");
-        SonarBuild build = new SonarBuild(0, project, null, serverUrl);
-        URL metricsUrl = servlet.createSonarMeasurementsComponentUrl(build, metricKeys);
+        var project = "no.priv.bang.ukelonn:parent";
+        var serverUrl = new URL("http://localhost:9000");
+        var build = new SonarBuild(0, project, null, serverUrl);
+        var metricsUrl = servlet.createSonarMeasurementsComponentUrl(build, metricKeys);
         assertEquals(build.getServerUrl().getProtocol(), metricsUrl.getProtocol());
         assertEquals(build.getServerUrl().getHost(), metricsUrl.getHost());
         assertEquals(build.getServerUrl().getPort(), metricsUrl.getPort());
         assertEquals("/api/measures/component", metricsUrl.getPath());
-        String query = URLDecoder.decode(metricsUrl.getQuery(), "UTF-8");
+        var query = URLDecoder.decode(metricsUrl.getQuery(), "UTF-8");
         assertThat(query).contains(build.getProject());
     }
 
     @Test
     void testParseMeasures() throws JsonProcessingException, IOException {
-        JsonNode root = SonarCollectorServlet.mapper.readTree(getClass().getClassLoader().getResourceAsStream("json/sonar/api-measures-component-get-many-metrics.json"));
-        JsonNode measuresNode = root.path("component").path("measures");
-        SonarCollectorServlet servlet = new SonarCollectorServlet();
-        MockLogService logservice = new MockLogService();
+        var root = SonarCollectorServlet.mapper.readTree(getClass().getClassLoader().getResourceAsStream("json/sonar/api-measures-component-get-many-metrics.json"));
+        var measuresNode = root.path("component").path("measures");
+        var servlet = new SonarCollectorServlet();
+        var logservice = new MockLogService();
         servlet.setLogservice(logservice);
         servlet.activate(Collections.emptyMap());
 
-        String[] metricKeys = servlet.getConfiguration().getMetricKeys();
-        HashMap<String, String> measures = new HashMap<>();
+        var metricKeys = servlet.getConfiguration().getMetricKeys();
+        var measures = new HashMap<String, String>();
         servlet.parseMeasures(measures, measuresNode);
         assertThat(measures).hasSameSizeAs(metricKeys).containsKeys(metricKeys);
         assertEquals("2", measures.get("new_bugs"));
@@ -445,31 +442,31 @@ class SonarCollectorServletTest {
      */
     @Test
     void testParseMeasuresEmptyDocument() throws JsonProcessingException, IOException {
-        JsonNode root = SonarCollectorServlet.mapper.readTree("{}");
-        JsonNode measuresNode = root.path("component").path("measures");
-        SonarCollectorServlet servlet = new SonarCollectorServlet();
+        var root = SonarCollectorServlet.mapper.readTree("{}");
+        var measuresNode = root.path("component").path("measures");
+        var servlet = new SonarCollectorServlet();
 
-        HashMap<String, String> measures = new HashMap<>();
+        var measures = new HashMap<String, String>();
         servlet.parseMeasures(measures, measuresNode);
         assertEquals(0, measures.size(), "Parse results weren't empty");
     }
 
     @Test
     void testInjectConfigFromKaraf() throws IOException {
-        SonarCollectorServlet servlet = new SonarCollectorServlet();
-        MockLogService logservice = new MockLogService();
+        var servlet = new SonarCollectorServlet();
+        var logservice = new MockLogService();
         servlet.setLogservice(logservice);
-        Map<String, Object> configFromKaraf = new HashMap<>();
+        var configFromKaraf = new HashMap<String, Object>();
         configFromKaraf.put(SonarCollectorConfiguration.SONAR_MEASURES_COMPONENTS_METRIC_KEYS, "lines,bugs,new_bugs");
         servlet.activate(configFromKaraf);
-        SonarCollectorConfiguration configuration = servlet.configuration;
-        String[] metricKeys = configuration.getMetricKeys();
+        var configuration = servlet.configuration;
+        var metricKeys = configuration.getMetricKeys();
         assertEquals(3, metricKeys.length);
     }
 
     @Test
     void testVersionIsReleaseVersion() throws IOException {
-        SonarCollectorServlet servlet = new SonarCollectorServlet();
+        var servlet = new SonarCollectorServlet();
         assertFalse(servlet.versionIsReleaseVersion(""));
         assertFalse(servlet.versionIsReleaseVersion("1.0.0-SNAPSHOT"));
         assertTrue(servlet.versionIsReleaseVersion("1.0.0"));
@@ -477,10 +474,10 @@ class SonarCollectorServletTest {
 
     @Test
     void testParseTimestamp() throws IOException {
-        SonarCollectorServlet servlet = new SonarCollectorServlet();
-        long timestamp = servlet.parseTimestamp("2017-11-19T10:39:24+0100");
-        Date date = new Date(timestamp);
-        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT+1"));
+        var servlet = new SonarCollectorServlet();
+        var timestamp = servlet.parseTimestamp("2017-11-19T10:39:24+0100");
+        var date = new Date(timestamp);
+        var calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT+1"));
         calendar.setTime(date);
         System.out.println(String.format("Date: %s", date.toString()));
         assertEquals(2017, calendar.get(Calendar.YEAR));
@@ -493,7 +490,7 @@ class SonarCollectorServletTest {
     @Test
     void testOpenConnectionWithUserToken() throws Exception {
         var logservice = new MockLogService();
-        String usertoken = "squ_3869fbac07cc388306804e35fb72ca7c4baff275";
+        var usertoken = "squ_3869fbac07cc388306804e35fb72ca7c4baff275";
         var config = new HashMap<String, Object>();
         config.put(SonarCollectorConfiguration.SONAR_USER_TOKEN, usertoken);
         var servlet = new SonarCollectorServlet();
@@ -516,10 +513,10 @@ class SonarCollectorServletTest {
         servlet.setLogservice(logservice);
         servlet.activate(Collections.emptyMap());
 
-        String rating = "maintainability_rating";
+        var rating = "maintainability_rating";
 
         // Verify what happens when extracting a rating that is present and has a legal value
-        Map<String, String> measuresResults = Collections.singletonMap(rating, "2.0");
+        var measuresResults = Collections.singletonMap(rating, "2.0");
         assertEquals("B", servlet.extractRating(rating, measuresResults));
 
         // Verify what happens when attempting to extract a rating that isn't present
@@ -532,7 +529,7 @@ class SonarCollectorServletTest {
 
     @Test
     void testConvertFromNumberRating() throws Exception {
-        String rating = "maintability_rating";
+        var rating = "maintability_rating";
         var logservice = new MockLogService();
         var servlet = new SonarCollectorServlet();
         servlet.setLogservice(logservice);
@@ -550,17 +547,17 @@ class SonarCollectorServletTest {
     }
 
     private void truncateMeasuresTable(DataSource dataSource) throws SQLException {
-        try(Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement statement = connection.prepareStatement("truncate table measures")) {
+        try(var connection = dataSource.getConnection()) {
+            try (var statement = connection.prepareStatement("truncate table measures")) {
                 statement.executeUpdate();
             }
         }
     }
 
     private int countRowsOfTableMeasures(DataSource dataSource) throws SQLException {
-        try(Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement statement = connection.prepareStatement("select count(*) from measures")) {
-                try (ResultSet resultset = statement.executeQuery()) {
+        try(var connection = dataSource.getConnection()) {
+            try (var statement = connection.prepareStatement("select count(*) from measures")) {
+                try (var resultset = statement.executeQuery()) {
                     while (resultset.next()) {
                         return resultset.getInt(1);
                     }
@@ -576,15 +573,15 @@ class SonarCollectorServletTest {
     }
 
     private List<Map<String, Object>> doSqlQuery(DataSource dataSource, String query) throws SQLException {
-        List<Map<String, Object>> rows = new ArrayList<>();
+        var rows = new ArrayList<Map<String, Object>>();
 
-        try(Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement statement = connection.prepareStatement(query)) {
-                try (ResultSet resultset = statement.executeQuery()) {
-                    List<String> columnnames = getColumnNames(resultset);
+        try(var connection = dataSource.getConnection()) {
+            try (var statement = connection.prepareStatement(query)) {
+                try (var resultset = statement.executeQuery()) {
+                    var columnnames = getColumnNames(resultset);
                     while (resultset.next()) {
-                        Map<String, Object> row = new HashMap<>();
-                        for (String columnname : columnnames) {
+                        var row = new HashMap<String, Object>();
+                        for (var columnname : columnnames) {
                             row.put(columnname, resultset.getObject(columnname));
                         }
 
@@ -598,9 +595,9 @@ class SonarCollectorServletTest {
     }
 
     private List<String> getColumnNames(ResultSet resultset) throws SQLException {
-        ResultSetMetaData metadata = resultset.getMetaData();
-        int columnCount = metadata.getColumnCount();
-        List<String> columnnames = new ArrayList<>(columnCount);
+        var metadata = resultset.getMetaData();
+        var columnCount = metadata.getColumnCount();
+        var columnnames = new ArrayList<String>(columnCount);
         for(int i=1; i<=columnCount; ++i) {
             columnnames.add(metadata.getColumnName(i));
         }
@@ -609,8 +606,8 @@ class SonarCollectorServletTest {
     }
 
     private ServletInputStream[] createServletInputStreamFromResource(String resource, int numberOfCopies) {
-        ServletInputStream[] streams = new ServletInputStream[numberOfCopies];
-        for(int i=0; i<numberOfCopies; ++i) {
+        var streams = new ServletInputStream[numberOfCopies];
+        for(var i=0; i<numberOfCopies; ++i) {
             streams[i] = wrap(getClass().getClassLoader().getResourceAsStream(resource));
         }
 
@@ -618,8 +615,8 @@ class SonarCollectorServletTest {
     }
 
     private HttpURLConnection[] createConnectionFromResource(String resource, int numberOfCopies) throws IOException {
-        HttpURLConnection[] connections = new HttpURLConnection[numberOfCopies];
-        for(int i=0; i<numberOfCopies; ++i) {
+        var connections = new HttpURLConnection[numberOfCopies];
+        for(var i=0; i<numberOfCopies; ++i) {
             connections[i] = createConnectionFromResource(resource);
         }
 
@@ -627,8 +624,8 @@ class SonarCollectorServletTest {
     }
 
     private HttpURLConnection createConnectionFromResource(String resource) throws IOException {
-        InputStream measurementsBody = getClass().getClassLoader().getResourceAsStream(resource);
-        HttpURLConnection measurementsConnection = mock(HttpURLConnection.class);
+        var measurementsBody = getClass().getClassLoader().getResourceAsStream(resource);
+        var measurementsConnection = mock(HttpURLConnection.class);
         when(measurementsConnection.getInputStream()).thenReturn(measurementsBody);
         return measurementsConnection;
     }

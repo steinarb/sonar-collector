@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Steinar Bang
+ * Copyright 2017-2024 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import static org.mockito.Mockito.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
 import org.junit.jupiter.api.Test;
@@ -37,8 +36,8 @@ class SonarCollectorConfigurationTest {
      */
     @Test
     void testGetMetricKeys() {
-        MockLogService logservice = new MockLogService();
-        SonarCollectorConfiguration configuration = new SonarCollectorConfiguration();
+        var logservice = new MockLogService();
+        var configuration = new SonarCollectorConfiguration();
         configuration.loadProperties(logservice);
 
         assertEquals(16, configuration.getMetricKeys().length);
@@ -52,8 +51,8 @@ class SonarCollectorConfigurationTest {
      */
     @Test
     void testGetMetricKeysNullConfig() {
-        MockLogService logservice = new MockLogService();
-        SonarCollectorConfiguration configuration = new SonarCollectorConfiguration();
+        var logservice = new MockLogService();
+        var configuration = new SonarCollectorConfiguration();
         configuration.loadProperties(logservice);
 
         configuration.setConfig(null);
@@ -71,10 +70,10 @@ class SonarCollectorConfigurationTest {
     void testGetMetricKeysInjectedConfig() {
         Properties originalProperties = (Properties) System.getProperties().clone();
         try {
-            MockLogService logservice = new MockLogService();
-            SonarCollectorConfiguration configuration = new SonarCollectorConfiguration();
+            var logservice = new MockLogService();
+            var configuration = new SonarCollectorConfiguration();
             configuration.loadProperties(logservice);
-            Map<String, Object> injectedConfig = new HashMap<>();
+            var injectedConfig = new HashMap<String, Object>();
             injectedConfig.put(SonarCollectorConfiguration.SONAR_MEASURES_COMPONENTS_METRIC_KEYS, "lines,bugs,new_bugs,vulnerabilities,new_vulnerabilities,code_smells");
 
             // Set a system property that should not be picked up, since the injected config is picked first
@@ -97,12 +96,12 @@ class SonarCollectorConfigurationTest {
      */
     @Test
     void testGetMetricKeysFromSystemProperties() {
-        Properties originalProperties = (Properties) System.getProperties().clone();
+        var originalProperties = (Properties) System.getProperties().clone();
         try {
-            MockLogService logservice = new MockLogService();
-            SonarCollectorConfiguration configuration = new SonarCollectorConfiguration();
+            var logservice = new MockLogService();
+            var configuration = new SonarCollectorConfiguration();
             configuration.loadProperties(logservice);
-            Map<String, Object> injectedConfig = new HashMap<>();
+            var injectedConfig = new HashMap<String, Object>();
             configuration.setConfig(injectedConfig);
 
             System.setProperty(SonarCollectorConfiguration.SONAR_MEASURES_COMPONENTS_METRIC_KEYS, "lines,bugs,new_bugs,vulnerabilities,new_vulnerabilities,code_smells,new_code_smells,coverage");
@@ -116,14 +115,14 @@ class SonarCollectorConfigurationTest {
 
     @Test
     void testSonarApiUserTokenConfigNotSet() {
-        SonarCollectorConfiguration configuration = new SonarCollectorConfiguration();
+        var configuration = new SonarCollectorConfiguration();
         assertFalse(configuration.hasSonarApiUserToken());
     }
 
     @Test
     void testHasSonarApiUserToken() {
-        SonarCollectorConfiguration configuration = new SonarCollectorConfiguration();
-        String usertoken = "squ_3869fbac07cc388306804e35fb72ca7c4baff275";
+        var configuration = new SonarCollectorConfiguration();
+        var usertoken = "squ_3869fbac07cc388306804e35fb72ca7c4baff275";
         var config = new HashMap<String, Object>();
         config.put(SonarCollectorConfiguration.SONAR_USER_TOKEN, usertoken);
         configuration.setConfig(config);
@@ -139,7 +138,7 @@ class SonarCollectorConfigurationTest {
 
         @Override
         protected InputStream getApplicationProperties() {
-            InputStream inputstream = mock(InputStream.class);
+            var inputstream = mock(InputStream.class);
             try {
                 when(inputstream.read(any(byte[].class))).thenThrow(IOException.class);
             } catch (IOException e) {
@@ -158,12 +157,12 @@ class SonarCollectorConfigurationTest {
      */
     @Test
     void testGetApplicationPropertiesThrowsIOException() throws IOException {
-        MockLogService logservice = new MockLogService();
+        var logservice = new MockLogService();
 
         // Verify that there are no log messages before the configuration property class is created
         assertEquals(0, logservice.getLogmessages().size());
 
-        SonarCollectorConfiguration configuration = new SonarCollectorConfigurationWithApplicationPropertiesThrowingIOException(logservice);
+        var configuration = new SonarCollectorConfigurationWithApplicationPropertiesThrowingIOException(logservice);
         configuration.loadProperties(logservice);
 
         // Verify that a single log message had been logged

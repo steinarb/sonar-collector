@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2022 Steinar Bang
+ * Copyright 2017-2024 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 import org.osgi.service.log.LogService;
-import org.osgi.service.log.Logger;
 
 /***
  * A class that encapsulates finding configuration settings
@@ -37,10 +36,10 @@ public class SonarCollectorConfiguration {
     private Map<String, Object> injectedconfig = Collections.emptyMap();
 
     void loadProperties(LogService logservice) {
-        try(InputStream propertiesFile = getApplicationProperties()) {
+        try(var propertiesFile = getApplicationProperties()) {
             applicationProperties.load(propertiesFile);
         } catch (IOException e) {
-            Logger logger = logservice.getLogger(getClass());
+            var logger = logservice.getLogger(getClass());
             logger.error("SonarCollectorConfiguration failed to load the application.properties", e);
         }
     }
@@ -67,12 +66,12 @@ public class SonarCollectorConfiguration {
      */
     public String[] getMetricKeys() {
         // Settings made in karaf configuration takes precedence
-        Object metricKeysFromKarafConfig = injectedconfig.get(SONAR_MEASURES_COMPONENTS_METRIC_KEYS);
+        var metricKeysFromKarafConfig = injectedconfig.get(SONAR_MEASURES_COMPONENTS_METRIC_KEYS);
         if (metricKeysFromKarafConfig != null) {
             return ((String) metricKeysFromKarafConfig).split(",");
         }
 
-        String metricKeys = System.getProperty(SONAR_MEASURES_COMPONENTS_METRIC_KEYS, applicationProperties.getProperty(SONAR_MEASURES_COMPONENTS_METRIC_KEYS));
+        var metricKeys = System.getProperty(SONAR_MEASURES_COMPONENTS_METRIC_KEYS, applicationProperties.getProperty(SONAR_MEASURES_COMPONENTS_METRIC_KEYS));
         if (metricKeys != null) {
             return metricKeys.split(",");
         }

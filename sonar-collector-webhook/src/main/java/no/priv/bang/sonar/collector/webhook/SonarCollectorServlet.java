@@ -16,13 +16,10 @@
 package no.priv.bang.sonar.collector.webhook;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.ZonedDateTime;
@@ -101,17 +98,17 @@ public class SonarCollectorServlet extends HttpServlet {
     }
 
     private void createSchemaWithLiquibase(DataSource db) {
-        try (Connection connection = db.getConnection()) {
+        try (var connection = db.getConnection()) {
             try (var database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection))) {
                 Map<String, Object> scopeObjects = Map.of(
                     Scope.Attr.database.name(), database,
                     Scope.Attr.resourceAccessor.name(), new ClassLoaderResourceAccessor(getClass().getClassLoader()));
 
                 Scope.child(scopeObjects, (ScopedRunner<?>) () -> new CommandScope("update")
-                            .addArgumentValue(DbUrlConnectionArgumentsCommandStep.DATABASE_ARG, database)
-                            .addArgumentValue(UpdateCommandStep.CHANGELOG_FILE_ARG, "db-changelog/db-changelog-1.0.0.xml")
-                            .addArgumentValue(DatabaseChangelogCommandStep.CHANGELOG_PARAMETERS, new ChangeLogParameters(database))
-                            .execute());
+                    .addArgumentValue(DbUrlConnectionArgumentsCommandStep.DATABASE_ARG, database)
+                    .addArgumentValue(UpdateCommandStep.CHANGELOG_FILE_ARG, "db-changelog/db-changelog-1.0.0.xml")
+                    .addArgumentValue(DatabaseChangelogCommandStep.CHANGELOG_PARAMETERS, new ChangeLogParameters(database))
+                    .execute());
             }
         } catch (Exception e) {
             logger.error("Sonar Collector servlet unable to create or update the database schema", e);
@@ -126,18 +123,18 @@ public class SonarCollectorServlet extends HttpServlet {
     public SonarCollectorServlet() throws IOException {
         this(new URLConnectionFactory() {
 
-                @Override
-                public HttpURLConnection openConnection(URL url) throws IOException {
-                    return (HttpURLConnection) url.openConnection();
-                }
-            });
+            @Override
+            public HttpURLConnection openConnection(URL url) throws IOException {
+                return (HttpURLConnection) url.openConnection();
+            }
+        });
 
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
-            SonarBuild build = callbackToSonarServerToGetMetrics(request);
+            var build = callbackToSonarServerToGetMetrics(request);
             saveMeasuresInDatabase(build);
         } catch (Exception e) {
             logger.error("Sonar Collector caught exception ", e);
@@ -146,24 +143,24 @@ public class SonarCollectorServlet extends HttpServlet {
     }
 
     SonarBuild callbackToSonarServerToGetMetrics(ServletRequest request) throws IOException {
-        try(InputStream postbody = request.getInputStream()) {
-            JsonNode root = mapper.readTree(postbody);
-            long analysedAt = findAnalysisTimeAsMillisecondsFromEpoch(root);
-            String project = findProjectKey(root);
-            URL serverUrl = findSonarServerUrl(root);
+        try(var postbody = request.getInputStream()) {
+            var root = mapper.readTree(postbody);
+            var analysedAt = findAnalysisTimeAsMillisecondsFromEpoch(root);
+            var project = findProjectKey(root);
+            var serverUrl = findSonarServerUrl(root);
             logger.info("sonar-collector webhook called for project {} from server {}", project, serverUrl);
 
-            String version = getAnalyzedProjectMavenVersionFromSonarServer(project, serverUrl);
+            var version = getAnalyzedProjectMavenVersionFromSonarServer(project, serverUrl);
 
             return getAnalyzedProjectMetricsFromSonarServer(serverUrl, project, version, analysedAt);
         }
     }
 
     private String getAnalyzedProjectMavenVersionFromSonarServer(String project, URL serverUrl) throws IOException {
-        URL componentsShowUrl = createSonarComponentsShowUrl(serverUrl, project);
-        HttpURLConnection componentsShowUrlConnection = openConnection(componentsShowUrl);
-        JsonNode componentsShowRoot = mapper.readTree(componentsShowUrlConnection.getInputStream());
-        String version = componentsShowRoot.path("component").path("version").asText();
+        var componentsShowUrl = createSonarComponentsShowUrl(serverUrl, project);
+        var componentsShowUrlConnection = openConnection(componentsShowUrl);
+        var componentsShowRoot = mapper.readTree(componentsShowUrlConnection.getInputStream());
+        var version = componentsShowRoot.path("component").path("version").asText();
         if ("".equals(version)) {
             logger.warn(String.format("Maven version is missing from build \"%s\". API URL used to request the version, is: %s", project, componentsShowUrl.toString()));
         }
@@ -172,18 +169,18 @@ public class SonarCollectorServlet extends HttpServlet {
     }
 
     private SonarBuild getAnalyzedProjectMetricsFromSonarServer(URL serverUrl, String project, String version, long analysedAt) throws IOException {
-        SonarBuild build = new SonarBuild(analysedAt, project, version, serverUrl);
-        URL measurementsUrl = createSonarMeasurementsComponentUrl(build, configuration.getMetricKeys());
-        HttpURLConnection measurementsUrlConnection = openConnection(measurementsUrl);
-        JsonNode measurementsRoot = mapper.readTree(measurementsUrlConnection.getInputStream());
+        var build = new SonarBuild(analysedAt, project, version, serverUrl);
+        var measurementsUrl = createSonarMeasurementsComponentUrl(build, configuration.getMetricKeys());
+        var measurementsUrlConnection = openConnection(measurementsUrl);
+        var measurementsRoot = mapper.readTree(measurementsUrlConnection.getInputStream());
         parseMeasures(build.getMeasurements(), measurementsRoot.path("component").path("measures"));
         return build;
     }
 
     private int saveMeasuresInDatabase(SonarBuild build) throws SQLException {
-        boolean isRelease = versionIsReleaseVersion(build.getVersion());
-        try (Connection connection = dataSource.getConnection()) {
-            try (PreparedStatement statement = connection.prepareStatement("insert into measures (project_key, version, version_is_release, analysis_time, lines, bugs, new_bugs, vulnerabilities, new_vulnerabilities, code_smells, new_code_smells, coverage, new_coverage, complexity, sqale_rating, new_maintainability_rating, security_rating, new_security_rating, reliability_rating, new_reliability_rating) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
+        var isRelease = versionIsReleaseVersion(build.getVersion());
+        try (var connection = dataSource.getConnection()) {
+            try (var statement = connection.prepareStatement("insert into measures (project_key, version, version_is_release, analysis_time, lines, bugs, new_bugs, vulnerabilities, new_vulnerabilities, code_smells, new_code_smells, coverage, new_coverage, complexity, sqale_rating, new_maintainability_rating, security_rating, new_security_rating, reliability_rating, new_reliability_rating) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")) {
                 statement.setString(1, build.getProject());
                 statement.setString(2, build.getVersion());
                 statement.setBoolean(3, isRelease);
@@ -215,9 +212,9 @@ public class SonarCollectorServlet extends HttpServlet {
     }
 
     public Map<String, String> parseMeasures(Map<String, String> measuresResults, JsonNode measuresNode) {
-        for (JsonNode measureNode : measuresNode) {
-            String metric = measureNode.path("metric").asText();
-            String value = measureNode.path("value").asText();
+        for (var measureNode : measuresNode) {
+            var metric = measureNode.path("metric").asText();
+            var value = measureNode.path("value").asText();
             if ("".equals(value)) {
                 value = measureNode.path("periods").path(0).path("value").asText();
             }
@@ -228,12 +225,12 @@ public class SonarCollectorServlet extends HttpServlet {
     }
 
     public URL createSonarComponentsShowUrl(URL serverUrl, String project) throws IOException {
-        String localPath = String.format("/api/components/show?component=%s", URLEncoder.encode(project,"UTF-8"));
+        var localPath = String.format("/api/components/show?component=%s", URLEncoder.encode(project,"UTF-8"));
         return new URL(serverUrl, localPath);
     }
 
     public URL createSonarMeasurementsComponentUrl(SonarBuild build, String[] metricKeys) throws IOException {
-        String localPath = String.format("/api/measures/component?component=%s&metricKeys=%s", URLEncoder.encode(build.getProject(),"UTF-8"), String.join(",", metricKeys));
+        var localPath = String.format("/api/measures/component?component=%s&metricKeys=%s", URLEncoder.encode(build.getProject(),"UTF-8"), String.join(",", metricKeys));
         return new URL(build.getServerUrl(), localPath);
     }
 

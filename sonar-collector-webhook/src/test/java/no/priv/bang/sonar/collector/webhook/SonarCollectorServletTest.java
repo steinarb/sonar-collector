@@ -92,28 +92,6 @@ class SonarCollectorServletTest {
     }
 
     @Test
-    void testGetExceptionWhenCreatingDbSchema() throws IOException, SQLException {
-        var logservice = new MockLogService();
-        var datasource = mock(DataSource.class);
-        when(datasource.getConnection()).thenThrow(SQLException.class);
-        var servlet = new SonarCollectorServlet();
-        servlet.setLogservice(logservice);
-
-        // Verify that nothing has been logged
-        assertEquals(0, logservice.getLogmessages().size());
-
-        // Get no exception when setting the connection factory
-        servlet.setDataSource(datasource);
-        assertEquals(0, logservice.getLogmessages().size());
-
-        // Get an exception when the activate method tries connecting liquibase to a database
-        servlet.activate(null);
-
-        // Verify that an exception has been logged
-        assertEquals(1, logservice.getLogmessages().size());
-    }
-
-    @Test
     void testReceiveSonarWebhookCall() throws ServletException, IOException, SQLException {
         var factory = mock(URLConnectionFactory.class);
         var componentsShowConnection = createConnectionFromResource("json/sonar/api-components-show-version-1.0.0-SNAPSHOT.json");

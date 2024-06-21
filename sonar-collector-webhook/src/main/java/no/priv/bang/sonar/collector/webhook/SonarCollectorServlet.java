@@ -15,16 +15,11 @@
  */
 package no.priv.bang.sonar.collector.webhook;
 
-import static liquibase.Scope.Attr.resourceAccessor;
-import static liquibase.command.core.UpdateCommandStep.CHANGELOG_FILE_ARG;
-import static liquibase.command.core.helpers.DbUrlConnectionArgumentsCommandStep.DATABASE_ARG;
-
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.ZonedDateTime;
@@ -52,12 +47,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import liquibase.Scope;
 import liquibase.ThreadLocalScopeManager;
-import liquibase.command.CommandScope;
-import liquibase.database.Database;
-import liquibase.database.DatabaseFactory;
-import liquibase.database.jvm.JdbcConnection;
-import liquibase.exception.DatabaseException;
-import liquibase.resource.ClassLoaderResourceAccessor;
+import no.priv.bang.karaf.liquibase.runner.LiquibaseClassPathChangeLogRunner;
 import no.priv.bang.osgi.service.adapters.jdbc.DataSourceAdapter;
 import no.priv.bang.osgi.service.adapters.logservice.LogServiceAdapter;
 import no.priv.bang.osgi.service.adapters.logservice.LoggerAdapter;
@@ -100,24 +90,12 @@ public class SonarCollectorServlet extends HttpServlet {
     }
 
     private void createSchemaWithLiquibase(DataSource db) {
-        try (var connection = db.getConnection()) {
-            try (var database = findCorrectDatabaseImplementation(connection)) {
-                Scope.child(scopeObjectsWithClassPathAcccessor(), () -> new CommandScope("update")
-                    .addArgumentValue(DATABASE_ARG, database)
-                    .addArgumentValue(CHANGELOG_FILE_ARG, "db-changelog/db-changelog-1.0.0.xml")
-                    .execute());
-            }
+        var liquibase = new LiquibaseClassPathChangeLogRunner();
+        try(var conn = db.getConnection()) {
+            liquibase.applyLiquibaseChangelist(conn, "db-changelog/db-changelog-1.0.0.xml", getClass().getClassLoader());
         } catch (Exception e) {
             logger.error("Sonar Collector servlet unable to create or update the database schema", e);
         }
-    }
-
-    private Database findCorrectDatabaseImplementation(Connection connection) throws DatabaseException {
-        return DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
-    }
-
-    private Map<String, Object> scopeObjectsWithClassPathAcccessor() {
-        return Map.of(resourceAccessor.name(), new ClassLoaderResourceAccessor(getClass().getClassLoader()));
     }
 
     public SonarCollectorServlet(URLConnectionFactory factory) throws IOException {

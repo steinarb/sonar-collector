@@ -45,8 +45,6 @@ import org.osgi.service.log.LogService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import liquibase.Scope;
-import liquibase.ThreadLocalScopeManager;
 import no.priv.bang.karaf.liquibase.runner.LiquibaseClassPathChangeLogRunner;
 import no.priv.bang.osgi.service.adapters.jdbc.DataSourceAdapter;
 import no.priv.bang.osgi.service.adapters.logservice.LogServiceAdapter;
@@ -85,7 +83,6 @@ public class SonarCollectorServlet extends HttpServlet {
     public void activate(Map<String, Object> config) {
         configuration.loadProperties(logservice);
         configuration.setConfig(config);
-        Scope.setScopeManager(new ThreadLocalScopeManager());
         createSchemaWithLiquibase(dataSource);
     }
 

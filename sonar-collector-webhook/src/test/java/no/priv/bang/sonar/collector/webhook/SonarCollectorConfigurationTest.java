@@ -122,7 +122,7 @@ class SonarCollectorConfigurationTest {
     @Test
     void testHasSonarApiUserToken() {
         var configuration = new SonarCollectorConfiguration();
-        var usertoken = "squ_3869fbac07cc388306804e35fb72ca7c4baff275";
+        var usertoken = "xyzzy";
         var config = new HashMap<String, Object>();
         config.put(SonarCollectorConfiguration.SONAR_USER_TOKEN, usertoken);
         configuration.setConfig(config);

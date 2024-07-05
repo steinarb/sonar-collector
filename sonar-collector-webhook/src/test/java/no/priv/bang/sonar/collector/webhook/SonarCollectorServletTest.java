@@ -468,7 +468,7 @@ class SonarCollectorServletTest {
     @Test
     void testOpenConnectionWithUserToken() throws Exception {
         var logservice = new MockLogService();
-        var usertoken = "squ_3869fbac07cc388306804e35fb72ca7c4baff275";
+        var usertoken = "xyzzy";
         var config = new HashMap<String, Object>();
         config.put(SonarCollectorConfiguration.SONAR_USER_TOKEN, usertoken);
         var servlet = new SonarCollectorServlet();

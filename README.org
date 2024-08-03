@@ -36,6 +36,7 @@ The servlet has been written as a microservice that can be installed into an [[h
 
 | Version | Date             | Description                                                                                 |
 |---------+------------------+---------------------------------------------------------------------------------------------|
+|  1.5.28 | <2024-08-03 Sat> | Use jackson 2.17.2                                                                          |
 |  1.5.27 | <2024-08-01 Thu> | Use liquibase 4.29.0                                                                        |
 |  1.5.26 | <2024-07-05 Fri> | Use liquibase 4.28.0                                                                        |
 |  1.5.25 | <2024-04-06 Sat> | Use liquibase 4.27.0 and to build with karaf 4.4.5                                          |

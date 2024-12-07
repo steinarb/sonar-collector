@@ -15,7 +15,7 @@
  */
 package no.priv.bang.sonar.collector.webhook;
 
-import java.net.URL;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,10 +24,10 @@ public class SonarBuild {
     private long analysedAt;
     private String project;
     private String version;
-    private URL serverUrl;
+    private URI serverUrl;
     private Map<String, String> measurements;
 
-    public SonarBuild(long analysedAt, String project, String version, URL serverUrl) {
+    public SonarBuild(long analysedAt, String project, String version, URI serverUrl) {
         this.analysedAt = analysedAt;
         this.project = project;
         this.version = version;
@@ -54,7 +54,7 @@ public class SonarBuild {
         return version;
     }
 
-    public URL getServerUrl() {
+    public URI getServerUrl() {
         return serverUrl;
     }
 

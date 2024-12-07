@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Steinar Bang
+ * Copyright 2017-2024 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,10 @@ package no.priv.bang.sonar.collector.webhook;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.URI;
 
 public interface URLConnectionFactory {
 
-    HttpURLConnection openConnection(URL url) throws IOException;
+    HttpURLConnection openConnection(URI url) throws IOException;
 
 }

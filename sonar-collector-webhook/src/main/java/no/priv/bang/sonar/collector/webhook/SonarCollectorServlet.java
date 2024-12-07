@@ -17,8 +17,8 @@ package no.priv.bang.sonar.collector.webhook;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -104,8 +104,8 @@ public class SonarCollectorServlet extends HttpServlet {
         this(new URLConnectionFactory() {
 
             @Override
-            public HttpURLConnection openConnection(URL url) throws IOException {
-                return (HttpURLConnection) url.openConnection();
+            public HttpURLConnection openConnection(URI url) throws IOException {
+                return (HttpURLConnection) url.toURL().openConnection();
             }
         });
 
@@ -122,7 +122,7 @@ public class SonarCollectorServlet extends HttpServlet {
         }
     }
 
-    SonarBuild callbackToSonarServerToGetMetrics(ServletRequest request) throws IOException {
+    SonarBuild callbackToSonarServerToGetMetrics(ServletRequest request) throws IOException, URISyntaxException {
         try(var postbody = request.getInputStream()) {
             var root = mapper.readTree(postbody);
             var analysedAt = findAnalysisTimeAsMillisecondsFromEpoch(root);
@@ -136,7 +136,7 @@ public class SonarCollectorServlet extends HttpServlet {
         }
     }
 
-    private String getAnalyzedProjectMavenVersionFromSonarServer(String project, URL serverUrl) throws IOException {
+    private String getAnalyzedProjectMavenVersionFromSonarServer(String project, URI serverUrl) throws IOException {
         var componentsShowUrl = createSonarComponentsShowUrl(serverUrl, project);
         var componentsShowUrlConnection = openConnection(componentsShowUrl);
         var componentsShowRoot = mapper.readTree(componentsShowUrlConnection.getInputStream());
@@ -148,7 +148,7 @@ public class SonarCollectorServlet extends HttpServlet {
         return version;
     }
 
-    private SonarBuild getAnalyzedProjectMetricsFromSonarServer(URL serverUrl, String project, String version, long analysedAt) throws IOException {
+    private SonarBuild getAnalyzedProjectMetricsFromSonarServer(URI serverUrl, String project, String version, long analysedAt) throws IOException {
         var build = new SonarBuild(analysedAt, project, version, serverUrl);
         var measurementsUrl = createSonarMeasurementsComponentUrl(build, configuration.getMetricKeys());
         var measurementsUrlConnection = openConnection(measurementsUrl);
@@ -204,14 +204,14 @@ public class SonarCollectorServlet extends HttpServlet {
         return measuresResults;
     }
 
-    public URL createSonarComponentsShowUrl(URL serverUrl, String project) throws IOException {
+    public URI createSonarComponentsShowUrl(URI serverUrl, String project) throws IOException {
         var localPath = String.format("/api/components/show?component=%s", URLEncoder.encode(project,"UTF-8"));
-        return new URL(serverUrl, localPath);
+        return serverUrl.resolve(localPath);
     }
 
-    public URL createSonarMeasurementsComponentUrl(SonarBuild build, String[] metricKeys) throws IOException {
+    public URI createSonarMeasurementsComponentUrl(SonarBuild build, String[] metricKeys) throws IOException {
         var localPath = String.format("/api/measures/component?component=%s&metricKeys=%s", URLEncoder.encode(build.getProject(),"UTF-8"), String.join(",", metricKeys));
-        return new URL(build.getServerUrl(), localPath);
+        return build.getServerUrl().resolve(localPath);
     }
 
     private long findAnalysisTimeAsMillisecondsFromEpoch(JsonNode root) {
@@ -222,15 +222,15 @@ public class SonarCollectorServlet extends HttpServlet {
         return root.path("project").path("key").asText();
     }
 
-    private URL findSonarServerUrl(JsonNode root) throws MalformedURLException {
-        return new URL(root.path("serverUrl").asText());
+    private URI findSonarServerUrl(JsonNode root) throws URISyntaxException {
+        return new URI(root.path("serverUrl").asText());
     }
 
     long parseTimestamp(String timestamp) {
         return ZonedDateTime.parse(timestamp, isoZonedDateTimeformatter).toEpochSecond() * 1000;
     }
 
-    HttpURLConnection openConnection(URL url) throws IOException {
+    HttpURLConnection openConnection(URI url) throws IOException {
         if (configuration.hasSonarApiUserToken()) {
             var connection = factory.openConnection(url);
             var authorization =

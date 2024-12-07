@@ -23,7 +23,7 @@ import static org.mockito.Mockito.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.URI;
 import java.net.URLDecoder;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -306,7 +306,7 @@ class SonarCollectorServletTest {
     }
 
     @Test
-    void testCallbackToSonarServerToGetMetrics() throws ServletException, IOException {
+    void testCallbackToSonarServerToGetMetrics() throws Exception {
         var logservice = new MockLogService();
         var factory = mock(URLConnectionFactory.class);
         var componentsShowNoMavenVersion = createConnectionFromResource("json/sonar/api-components-show-component-not-found.json");
@@ -353,7 +353,7 @@ class SonarCollectorServletTest {
     }
 
     @Test
-    void testCreateSonarComponentsShowUrl() throws ServletException, IOException {
+    void testCreateSonarComponentsShowUrl() throws Exception {
         var factory = mock(URLConnectionFactory.class);
         var servlet = new SonarCollectorServlet(factory);
         var logservice = new MockLogService();
@@ -362,9 +362,9 @@ class SonarCollectorServletTest {
         var metricKeys = servlet.getConfiguration().getMetricKeys();
         assertEquals(16, metricKeys.length);
         var project = "no.priv.bang.ukelonn:parent";
-        var serverUrl = new URL("http://localhost:9000");
+        var serverUrl = new URI("http://localhost:9000");
         var metricsUrl = servlet.createSonarComponentsShowUrl(serverUrl, project);
-        assertEquals(serverUrl.getProtocol(), metricsUrl.getProtocol());
+        assertEquals(serverUrl.getScheme(), metricsUrl.getScheme());
         assertEquals(serverUrl.getHost(), metricsUrl.getHost());
         assertEquals(serverUrl.getPort(), metricsUrl.getPort());
         assertEquals("/api/components/show", metricsUrl.getPath());
@@ -373,7 +373,7 @@ class SonarCollectorServletTest {
     }
 
     @Test
-    void testCreateSonarMeasurementsComponentUrl() throws ServletException, IOException {
+    void testCreateSonarMeasurementsComponentUrl() throws Exception {
         var factory = mock(URLConnectionFactory.class);
         var servlet = new SonarCollectorServlet(factory);
         var logservice = new MockLogService();
@@ -382,10 +382,10 @@ class SonarCollectorServletTest {
         var metricKeys = servlet.getConfiguration().getMetricKeys();
         assertEquals(16, metricKeys.length);
         var project = "no.priv.bang.ukelonn:parent";
-        var serverUrl = new URL("http://localhost:9000");
+        var serverUrl = new URI("http://localhost:9000");
         var build = new SonarBuild(0, project, null, serverUrl);
         var metricsUrl = servlet.createSonarMeasurementsComponentUrl(build, metricKeys);
-        assertEquals(build.getServerUrl().getProtocol(), metricsUrl.getProtocol());
+        assertEquals(build.getServerUrl().getScheme(), metricsUrl.getScheme());
         assertEquals(build.getServerUrl().getHost(), metricsUrl.getHost());
         assertEquals(build.getServerUrl().getPort(), metricsUrl.getPort());
         assertEquals("/api/measures/component", metricsUrl.getPath());
@@ -475,7 +475,7 @@ class SonarCollectorServletTest {
         servlet.setLogservice(logservice);
         servlet.activate(config);
 
-        var url = new URL("http://localhost:9900/api/components/show?component=no.priv.bang.osgi.service.adapters%3Aadapters-parent");
+        var url = new URI("http://localhost:9900/api/components/show?component=no.priv.bang.osgi.service.adapters%3Aadapters-parent");
         var connection = servlet.openConnection(url);
         // Bogus assert to keep sonar quiet, because getting the request properties back from
         // HttpURLConnection is ridiculously hard for "security" reasons.

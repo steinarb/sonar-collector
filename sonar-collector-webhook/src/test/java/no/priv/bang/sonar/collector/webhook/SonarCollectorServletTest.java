@@ -64,7 +64,7 @@ class SonarCollectorServletTest {
     private static Properties connectionproperties;
 
     @BeforeAll
-    static void beforeClass() throws IOException {
+    static void beforeClass() throws Exception {
         originalSystemProperties = addTestPropertiesToSystemProperties();
         dataSourceFactory = new DerbyDataSourceFactory();
         connectionproperties = new Properties();
@@ -92,7 +92,7 @@ class SonarCollectorServletTest {
     }
 
     @Test
-    void testReceiveSonarWebhookCall() throws ServletException, IOException, SQLException {
+    void testReceiveSonarWebhookCall() throws Exception {
         var factory = mock(URLConnectionFactory.class);
         var componentsShowConnection = createConnectionFromResource("json/sonar/api-components-show-version-1.0.0-SNAPSHOT.json");
         var measurementsConnection = createConnectionFromResource("json/sonar/api-measures-component-get-many-metrics.json");
@@ -154,7 +154,7 @@ class SonarCollectorServletTest {
      * @throws SQLException
      */
     @Test
-    void testReceiveSonarWebhookCallNoNewCoverage() throws ServletException, IOException, SQLException {
+    void testReceiveSonarWebhookCallNoNewCoverage() throws Exception {
         var factory = mock(URLConnectionFactory.class);
         var componentsShowConnection = createConnectionFromResource("json/sonar/api-components-show-version-1.0.0-SNAPSHOT.json");
         var measurementsConnection = createConnectionFromResource("json/sonar/api-measures-component-get-many-metrics-no-new_coverage.json");
@@ -190,7 +190,7 @@ class SonarCollectorServletTest {
     }
 
     @Test
-    void testReceiveSonarCloudWebhookCall() throws ServletException, IOException, SQLException {
+    void testReceiveSonarCloudWebhookCall() throws Exception {
         var factory = mock(URLConnectionFactory.class);
         var componentsShowConnection = createConnectionFromResource("json/sonar/api-components-show-version-1.0.0-SNAPSHOT.json");
         var measurementsConnection = createConnectionFromResource("json/sonar/api-measures-component-get-many-metrics-sonarcloud.json");
@@ -253,7 +253,7 @@ class SonarCollectorServletTest {
      * @throws SQLException
      */
     @Test
-    void testMeasuresView() throws ServletException, IOException, SQLException {
+    void testMeasuresView() throws Exception {
         var factory = mock(URLConnectionFactory.class);
         var componentsShowConnection = createConnectionFromResource("json/sonar/api-components-show-version-1.0.0-SNAPSHOT.json");
         var measurementsConnection = createConnectionFromResource("json/sonar/api-measures-component-get-many-metrics.json");
@@ -289,7 +289,7 @@ class SonarCollectorServletTest {
     }
 
     @Test
-    void testUseNoArgumentConstructorAndReceiveSonarWebhookCall() throws ServletException, IOException {
+    void testUseNoArgumentConstructorAndReceiveSonarWebhookCall() throws Exception {
         var logservice = new MockLogService();
         var servlet = new SonarCollectorServlet();
         servlet.setLogservice(logservice);
@@ -394,7 +394,7 @@ class SonarCollectorServletTest {
     }
 
     @Test
-    void testParseMeasures() throws JsonProcessingException, IOException {
+    void testParseMeasures() throws Exception {
         var root = SonarCollectorServlet.mapper.readTree(getClass().getClassLoader().getResourceAsStream("json/sonar/api-measures-component-get-many-metrics.json"));
         var measuresNode = root.path("component").path("measures");
         var servlet = new SonarCollectorServlet();
@@ -419,7 +419,7 @@ class SonarCollectorServletTest {
      * @throws IOException
      */
     @Test
-    void testParseMeasuresEmptyDocument() throws JsonProcessingException, IOException {
+    void testParseMeasuresEmptyDocument() throws Exception {
         var root = SonarCollectorServlet.mapper.readTree("{}");
         var measuresNode = root.path("component").path("measures");
         var servlet = new SonarCollectorServlet();
@@ -430,7 +430,7 @@ class SonarCollectorServletTest {
     }
 
     @Test
-    void testInjectConfigFromKaraf() throws IOException {
+    void testInjectConfigFromKaraf() throws Exception {
         var servlet = new SonarCollectorServlet();
         var logservice = new MockLogService();
         servlet.setLogservice(logservice);
@@ -443,7 +443,7 @@ class SonarCollectorServletTest {
     }
 
     @Test
-    void testVersionIsReleaseVersion() throws IOException {
+    void testVersionIsReleaseVersion() throws Exception {
         var servlet = new SonarCollectorServlet();
         assertFalse(servlet.versionIsReleaseVersion(""));
         assertFalse(servlet.versionIsReleaseVersion("1.0.0-SNAPSHOT"));
@@ -451,7 +451,7 @@ class SonarCollectorServletTest {
     }
 
     @Test
-    void testParseTimestamp() throws IOException {
+    void testParseTimestamp() throws Exception {
         var servlet = new SonarCollectorServlet();
         var timestamp = servlet.parseTimestamp("2017-11-19T10:39:24+0100");
         var date = new Date(timestamp);

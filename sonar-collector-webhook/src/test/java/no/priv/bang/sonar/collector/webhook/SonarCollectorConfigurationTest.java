@@ -154,7 +154,7 @@ class SonarCollectorConfigurationTest {
      * @throws IOException
      */
     @Test
-    void testGetApplicationPropertiesThrowsIOException() throws IOException {
+    void testGetApplicationPropertiesThrowsIOException() {
         var logservice = new MockLogService();
 
         // Verify that there are no log messages before the configuration property class is created

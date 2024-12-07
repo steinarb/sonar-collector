@@ -24,8 +24,6 @@ import java.util.HashMap;
 import java.util.Properties;
 
 import org.junit.jupiter.api.Test;
-import org.osgi.service.log.LogService;
-
 import no.priv.bang.osgi.service.mocks.logservice.MockLogService;
 
 class SonarCollectorConfigurationTest {
@@ -132,7 +130,7 @@ class SonarCollectorConfigurationTest {
 
     static class SonarCollectorConfigurationWithApplicationPropertiesThrowingIOException extends SonarCollectorConfiguration {
 
-        SonarCollectorConfigurationWithApplicationPropertiesThrowingIOException(LogService logservice) {
+        SonarCollectorConfigurationWithApplicationPropertiesThrowingIOException() {
             super();
         }
 
@@ -162,7 +160,7 @@ class SonarCollectorConfigurationTest {
         // Verify that there are no log messages before the configuration property class is created
         assertEquals(0, logservice.getLogmessages().size());
 
-        var configuration = new SonarCollectorConfigurationWithApplicationPropertiesThrowingIOException(logservice);
+        var configuration = new SonarCollectorConfigurationWithApplicationPropertiesThrowingIOException();
         configuration.loadProperties(logservice);
 
         // Verify that a single log message had been logged

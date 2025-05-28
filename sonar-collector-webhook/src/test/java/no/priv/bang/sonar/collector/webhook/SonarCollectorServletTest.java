@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2024 Steinar Bang
+ * Copyright 2017-2025 Steinar Bang
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,29 +46,22 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
+import org.apache.derby.jdbc.EmbeddedDataSource;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.ops4j.pax.jdbc.derby.impl.DerbyDataSourceFactory;
-import org.osgi.service.jdbc.DataSourceFactory;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import no.priv.bang.osgi.service.mocks.logservice.MockLogService;
 
 class SonarCollectorServletTest {
-    private static DataSourceFactory dataSourceFactory;
     private static Properties originalSystemProperties;
-    private static Properties connectionproperties;
 
     @BeforeAll
     static void beforeClass() throws Exception {
         originalSystemProperties = addTestPropertiesToSystemProperties();
-        dataSourceFactory = new DerbyDataSourceFactory();
-        connectionproperties = new Properties();
-        connectionproperties.setProperty(DataSourceFactory.JDBC_URL, "jdbc:derby:memory:sonar;create=true");
     }
 
     private static Properties addTestPropertiesToSystemProperties() throws IOException {
@@ -106,7 +99,7 @@ class SonarCollectorServletTest {
         MockLogService logservice = new MockLogService();
 
         var servlet = new SonarCollectorServlet(factory);
-        servlet.setDataSource(dataSourceFactory.createDataSource(connectionproperties));
+        servlet.setDataSource(createDataSource("sonar1"));
         servlet.setLogservice(logservice);
         servlet.activate(null);
 
@@ -168,7 +161,7 @@ class SonarCollectorServletTest {
         var logservice = new MockLogService();
 
         var servlet = new SonarCollectorServlet(factory);
-        servlet.setDataSource(dataSourceFactory.createDataSource(connectionproperties));
+        servlet.setDataSource(createDataSource("sonar2"));
         servlet.setLogservice(logservice);
         servlet.activate(null);
 
@@ -204,7 +197,7 @@ class SonarCollectorServletTest {
         var logservice = new MockLogService();
 
         var servlet = new SonarCollectorServlet(factory);
-        servlet.setDataSource(dataSourceFactory.createDataSource(connectionproperties));
+        servlet.setDataSource(createDataSource("sonar3"));
         servlet.setLogservice(logservice);
         servlet.activate(null);
 
@@ -267,7 +260,7 @@ class SonarCollectorServletTest {
         var logservice = new MockLogService();
 
         var servlet = new SonarCollectorServlet(factory);
-        servlet.setDataSource(dataSourceFactory.createDataSource(connectionproperties));
+        servlet.setDataSource(createDataSource("sonar4"));
         servlet.setLogservice(logservice);
         servlet.activate(null);
 
@@ -606,6 +599,13 @@ class SonarCollectorServletTest {
         var measurementsConnection = mock(HttpURLConnection.class);
         when(measurementsConnection.getInputStream()).thenReturn(measurementsBody);
         return measurementsConnection;
+    }
+
+    private DataSource createDataSource(String dbname) throws Exception {
+        var datasource = new EmbeddedDataSource();
+        datasource.setDatabaseName("memory:" + dbname);
+        datasource.setCreateDatabase("create");
+        return datasource;
     }
 
     private ServletInputStream wrap(InputStream inputStream) {

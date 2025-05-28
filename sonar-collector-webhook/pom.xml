@@ -29,6 +29,17 @@
         <Bundle-SymbolicName>no.priv.bang.sonar.${project.artifactId}</Bundle-SymbolicName>
     </properties>
 
+    <dependencyManagement>
+        <dependencies>
+            <!-- override inherited derby version -->
+            <dependency>
+                <groupId>org.apache.derby</groupId>
+                <artifactId>derby</artifactId>
+                <version>10.16.1.1</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -128,9 +139,14 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.ops4j.pax.jdbc</groupId>
-            <artifactId>pax-jdbc-derby</artifactId>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derby</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derbytools</artifactId>
+            <version>10.16.1.1</version>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>

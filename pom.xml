@@ -61,13 +61,6 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
-                <groupId>org.junit</groupId>
-                <artifactId>junit-bom</artifactId>
-                <version>${junit.jupiter.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
                 <groupId>no.priv.bang.osgi.service.adapters</groupId>
                 <artifactId>adapters-bom</artifactId>
                 <version>${osgi-service-adapters.version}</version>

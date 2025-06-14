@@ -35,7 +35,7 @@
             <dependency>
                 <groupId>org.apache.derby</groupId>
                 <artifactId>derby</artifactId>
-                <version>10.16.1.1</version>
+                <version>${derby.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -146,7 +146,7 @@
         <dependency>
             <groupId>org.apache.derby</groupId>
             <artifactId>derbytools</artifactId>
-            <version>10.16.1.1</version>
+            <version>${derby.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

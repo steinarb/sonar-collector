@@ -30,6 +30,7 @@
 
     <properties>
         <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/../jacoco-coverage-report/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+        <junit.jupiter.version>5.13.4</junit.jupiter.version>
         <derby.version>10.17.1.0</derby.version>
     </properties>
 
@@ -40,6 +41,13 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>${junit.jupiter.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <dependency>
                 <groupId>no.priv.bang.pom</groupId>
                 <artifactId>bang-bom</artifactId>

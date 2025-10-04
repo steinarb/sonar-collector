@@ -601,7 +601,7 @@ class SonarCollectorServletTest {
         return measurementsConnection;
     }
 
-    private DataSource createDataSource(String dbname) throws Exception {
+    private DataSource createDataSource(String dbname) {
         var datasource = new EmbeddedDataSource();
         datasource.setDatabaseName("memory:" + dbname);
         datasource.setCreateDatabase("create");

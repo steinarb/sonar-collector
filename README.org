@@ -17,7 +17,7 @@ The servlet has been written as a microservice that can be installed into an [[h
 [[https://github.com/steinarb/sonar-collector/actions/workflows/sonar-collector-maven-ci-build.yml][file:https://github.com/steinarb/sonar-collector/actions/workflows/sonar-collector-maven-ci-build.yml/badge.svg]]
 [[https://coveralls.io/github/badges/shields?branch=master][file:https://coveralls.io/repos/github/badges/shields/badge.svg?branch=master]]
 [[https://sonarcloud.io/summary/new_code?id=steinarb_sonar-collector][file:https://sonarcloud.io/api/project_badges/measure?project=steinarb_sonar-collector&metric=alert_status#.svg]]
-[[https://maven-badges.herokuapp.com/maven-central/no.priv.bang.sonar.sonar-collector/sonar-collector][file:https://maven-badges.herokuapp.com/maven-central/no.priv.bang.sonar.sonar-collector/sonar-collector/badge.svg]]
+[[https://maven-badges.sml.io/sonatype-central/no.priv.bang.sonar.sonar-collector/sonar-collector][file:https://maven-badges.sml.io/sonatype-central/no.priv.bang.sonar.sonar-collector/sonar-collector/badge.svg]]
 
 [[https://sonarcloud.io/summary/new_code?id=steinarb_sonar-collector][file:https://sonarcloud.io/images/project_badges/sonarcloud-white.svg]]
 

@@ -36,6 +36,7 @@ The servlet has been written as a microservice that can be installed into an [[h
 
 | Version | Date             | Description                                                                                 |
 |---------+------------------+---------------------------------------------------------------------------------------------|
+|  2.5.44 | <2026-07-20 Mon> | Use postgresql jdbc 42.7.13                                                                 |
 |  2.5.43 | <2026-07-01 Wed> | Use postgresql jdbc 42.7.12                                                                 |
 |  2.5.42 | <2026-05-03 Sun> | Use liquibase 5.0.2                                                                         |
 |  2.5.41 | <2026-05-03 Sun> | Use liquibase 5.0.2                                                                         |

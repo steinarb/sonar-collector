@@ -19,7 +19,7 @@ under the License.
     <parent>
         <groupId>no.priv.bang.sonar.sonar-collector</groupId>
         <artifactId>sonar-collector</artifactId>
-        <version>2.5.45-SNAPSHOT</version>
+        <version>${revision}</version>
     </parent>
     <artifactId>jacoco-coverage-report</artifactId>
 

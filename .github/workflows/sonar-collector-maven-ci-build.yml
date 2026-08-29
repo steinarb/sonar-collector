@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-
+    if: github.ref_type != 'tag' # Prevents regular CI from running unnecessarily on release tag push
     runs-on: ubuntu-latest
 
     steps:

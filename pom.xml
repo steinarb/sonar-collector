@@ -28,7 +28,7 @@ under the License.
     <packaging>pom</packaging>
 
     <name>SonarQube data collector</name>
-    <description>Apache karaf microservices to capture statistics over SonarQube/SonarCloud key measures.</description>
+    <description>Apache karaf microservice to capture statistics over SonarQube/SonarCloud key measures.</description>
 
     <properties>
         <revision>999-SNAPSHOT</revision>
